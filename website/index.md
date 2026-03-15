@@ -79,5 +79,4 @@ BPE solves this by treating **receiver-side capacity constraints as first-class 
 
 - [**Paper**](paper/index.md) — Full academic paper with formal model, proofs, and evaluation
 - [**Plan**](plan/README.md) — Design decisions, protocol spec, contracts blueprint, and roadmap
-- [**Research**](research/RESEARCH-1.md) — Original research exploration and prior art analysis
 - [**Implementation**](implementation/contracts.md) — Smart contracts, SDK, and simulation code

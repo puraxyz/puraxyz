@@ -92,7 +92,6 @@ nav:
     - Bibliography: plan/06-BIBLIOGRAPHY.md
     - Implementation Roadmap: plan/07-IMPLEMENTATION-ROADMAP.md
     - Gaps & Mitigations: plan/08-GAPS-AND-MITIGATIONS.md
-  - Research: research/RESEARCH-1.md
   - Implementation:
     - Contracts: implementation/contracts.md
     - SDK: implementation/sdk.md

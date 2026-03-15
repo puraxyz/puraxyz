@@ -12,10 +12,6 @@ for f in plan/*.md; do
     cp "$f" "$WEBSITE_DIR/plan/$(basename "$f")"
 done
 
-echo "==> Copying research docs..."
-mkdir -p "$WEBSITE_DIR/research"
-cp research/RESEARCH-1.md "$WEBSITE_DIR/research/RESEARCH-1.md"
-
 echo "==> Converting paper LaTeX sections + figures..."
 mkdir -p "$WEBSITE_DIR/paper"
 python3 scripts/convert_paper.py

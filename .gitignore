@@ -47,6 +47,9 @@ node_modules/
 # IDE
 .vscode/
 
+# Research (private)
+research/RESEARCH-1.md
+
 # Secrets
 .env
 contracts/.env
