@@ -1,0 +1,9 @@
+.article {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.article h1:first-child {
+  margin-top: 0;
+}

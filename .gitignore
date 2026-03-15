@@ -41,6 +41,9 @@ docs/paper/main.blg
 # Node
 node_modules/
 
+# Next.js
+web/.next/
+
 # OS
 .DS_Store
 

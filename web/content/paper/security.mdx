@@ -1,0 +1,90 @@
+---
+title: Security Analysis
+order: 6
+description: Sybil resistance, MEV protection, slashing
+---
+
+## Sybil Resistance
+
+BPE's Sybil resistance derives from two mechanisms: a minimum per-sink stake $S_{\min}$ and a concave capacity cap $\text{cap}(S) = \sqrt{S/u}$.
+
+An attacker splitting total stake $S$ into $n$ identities, each with stake $S/n$ (plus $S_{\min}$ overhead per identity), achieves total capacity:
+$$
+C_{\text{total}}(n) = n \cdot \sqrt{\frac{S/n}{u}} = \sqrt{n} \cdot \sqrt{\frac{S}{u}}
+$$
+at cost $n \cdot S_{\min}$ in minimum stake overhead. The marginal capacity gain $\partial C_{\text{total}} / \partial n = \frac{1}{2\sqrt{n}} \cdot \sqrt{S/u}$ is decreasing, while the marginal cost $S_{\min}$ is constant. The attack becomes unprofitable when:
+$$
+S_{\min} > \frac{1}{2\sqrt{n}} \cdot \sqrt{S/u} \cdot p
+$$
+where $p$ is the payment rate per unit capacity.
+
+We validate this analysis in simulation (Evaluation, Experiment E3).
+
+## Capacity Truthfulness
+
+Under the BPE mechanism with slashing:
+
+- **Over-reporting**: Declaring $\Craw > C_{\text{true}}$ attracts payment $F > C_{\text{true}}$. The excess accumulates as verifiable underperformance, triggering slashing. Expected payoff: $p \cdot C_{\text{true}} - s \cdot (\Craw - C_{\text{true}})$ where $s$ is the slash penalty per unit over-report.
+
+- **Under-reporting**: Declaring $\Craw < C_{\text{true}}$ reduces payment proportionally. Lost revenue: $p \cdot (C_{\text{true}} - \Craw)$. No slashing risk.
+
+For $s > p$, truthful reporting is a dominant strategy: over-reporting is penalized more than the payment gained, and under-reporting sacrifices revenue.
+
+## MEV Resistance
+
+The commit-reveal protocol prevents front-running of capacity updates:
+
+1.  Capacity values are hidden during the commit phase (only a hash is visible).
+
+2.  The 20-block reveal window limits timing attacks.
+
+3.  EWMA smoothing further dampens the impact of any single update, reducing the value of manipulating a single reveal.
+
+An attacker observing a commit transaction learns only that *some* capacity update is coming, not its magnitude or direction. The EWMA ensures that even perfectly timed front-runs shift pool weights by at most $\alpha$ (30%) of the capacity change.
+
+## Bayesian-Nash Incentive Compatibility
+
+We now prove that truthful capacity reporting is a Bayesian-Nash equilibrium (BNE) under the combined mechanism of EWMA smoothing, dynamic pricing, and slashing.
+
+#### Strategy space.
+
+Each sink $k$ with true capacity $C_k$ chooses a reporting strategy $\sigma_k \in \mathcal{S} = \{\text{truthful}, \text{over}(\varepsilon), \text{under}(\varepsilon)\}$ where $\varepsilon > 0$ is the deviation magnitude. The reported capacity is:
+$$
+\hat{C}_k =
+\begin{cases}
+C_k & \text{if } \sigma_k = \text{truthful}, \\
+C_k + \varepsilon & \text{if } \sigma_k = \text{over}(\varepsilon), \\
+C_k - \varepsilon & \text{if } \sigma_k = \text{under}(\varepsilon).
+\end{cases}
+$$
+
+#### Payoff function.
+
+Let $p(\tasktype, k, t)$ be the price, $F_k$ the flow rate routed to sink $k$ (proportional to smoothed capacity share), $s$ the slashing penalty rate, and $T_d$ the expected detection time for overperformance monitoring. The per-epoch expected payoff for sink $k$ is:
+$$
+\pi_k(\sigma_k, \boldsymbol{\sigma}_{-k}) =
+    p(\tasktype, k) \cdot \min(F_k, C_k) - s \cdot \max(F_k - C_k, 0) \cdot \mathbf{1}[t > T_d]
+$$
+where $F_k \propto \Csmooth(k) / \sum_j \Csmooth(j)$ is the flow share and $\mathbf{1}[t > T_d]$ indicates that slashing activates after detection.
+
+> **Proposition (Truthful BNE)**
+>
+> Under the BPE mechanism with slashing rate $s$, price $p$, EWMA parameter $\alpha$, and detection time $T_d$, truthful reporting $\sigma_k = \text{truthful}$ is a Bayesian-Nash equilibrium for all sinks when:
+> $$
+> s \cdot S_k > p \cdot \varepsilon \cdot T_d
+> $$
+> where $S_k$ is sink $k$'s stake, for all profitable deviations $\varepsilon > 0$.
+
+> **Proof.**
+>
+> We compare each deviation against truthful reporting.
+>
+> *Case 1: Over-reporting* ($\hat{C}_k = C_k + \varepsilon$). After EWMA smoothing, the effective capacity increase is $\alpha \varepsilon$ per update. This attracts additional flow $\Delta F \propto \alpha \varepsilon$. For epochs $t \leq T_d$, the excess flow $\Delta F$ exceeds true capacity, accumulating unmet demand. After $T_d$, the completion tracker detects the shortfall: completion rate $r_k < 0.5$ triggers slashing of $s_{\text{slash}} = 10\%$ of stake per 3 consecutive failing epochs. The expected gain from over-reporting over the detection window is at most $p \cdot \alpha \varepsilon \cdot T_d$. The expected loss from slashing is $s \cdot S_k$ (where $s = s_{\text{slash}}$). By the BNE condition, the loss exceeds the gain, making over-reporting unprofitable.
+>
+> *Case 2: Under-reporting* ($\hat{C}_k = C_k - \varepsilon$). No slashing risk, but the sink receives reduced flow $\Delta F \propto -\alpha \varepsilon$, forfeiting revenue $p \cdot \alpha \varepsilon$ per epoch indefinitely. Since this is strictly worse than truthful reporting, under-reporting is dominated.
+>
+> In both cases, no unilateral deviation improves expected payoff, establishing truthful reporting as a BNE. ◻
+
+#### Parameterization.
+
+With the deployed parameters ($s_{\text{slash}} = 10\%$ of stake, $T_d = 3 \times 300\text{s} = 900\text{s}$, minimum stake $S_{\min}$), the BNE condition holds when $0.1 \cdot S_{\min} > p \cdot \varepsilon \cdot 900$. For typical parameters ($S_{\min} = 1000$ tokens, $p = 10^{-3}$ tokens/unit/s), this bounds profitable over-reporting at $\varepsilon < 111$ units—far below practical capacity ranges, confirming incentive compatibility for realistic deviations.

@@ -1,0 +1,53 @@
+---
+title: Off-Chain Capacity Signals
+order: 10
+description: Signed attestation protocol for low-latency updates
+---
+
+The commit-reveal scheme provides MEV-resistant capacity updates but incurs latency of at least two block intervals plus a commit timeout (approximately 40 seconds on Base L2). For real-time routing decisions, this is prohibitive. We introduce an off-chain signed attestation protocol that reduces update latency to seconds while preserving the same on-chain EWMA smoothing and security guarantees.
+
+#### Protocol.
+
+Each sink $k$ periodically measures its available capacity and produces a signed *capacity attestation*:
+
+A capacity attestation is an EIP-712 typed data structure $a = (\tasktype, k, c, t_s, n)$ where $\tasktype$ is the task type, $k$ is the sink address, $c$ is the declared capacity, $t_s$ is the timestamp, and $n$ is a monotonically increasing nonce. The sink signs $a$ as $\sigma_k = \mathrm{Sign}_{sk_k}(a)$.
+
+Signed attestations are disseminated via any off-chain channel (direct API calls, P2P gossip, or posted to a relay). Any party may collect a batch of attestations and submit them to the on-chain `OffchainAggregator` contract, which performs the following for each attestation in the batch:
+
+1.  Verify the ECDSA signature against the claimed sink address.
+
+2.  Check timestamp freshness: $|t_{\text{now}} - t_s| < \Delta$ (we set $\Delta = 600$ seconds).
+
+3.  Check nonce monotonicity: $n > n_{\text{last}}(k)$ for the sink.
+
+4.  If valid, call the `CapacityRegistry` to apply the same EWMA smoothing as the commit-reveal path.
+
+Invalid attestations (bad signatures, stale timestamps, replayed nonces) are silently rejected with logged events; valid ones update the smoothed capacity.
+
+#### Latency comparison.
+
+Under the commit-reveal path, a capacity update requires a commit transaction (1 block), a waiting period (20 blocks $\approx 40$s), and a reveal transaction (1 block), totaling approximately 44 seconds. The off-chain path requires only the time to collect and relay an attestation batch, plus one on-chain transaction for the batch submission. In practice, this reduces end-to-end latency to under 5 seconds on Base L2.
+
+#### Gas comparison.
+
+| **Path** | **Gas** | **Latency** |
+|:---|---:|---:|
+| Commit + Reveal (on-chain) | 58,287 | ~40s |
+| Aggregated attestation (off-chain) | 9,595 | &lt;5s |
+| **Reduction** | **83.5%** | **~87.5%** |
+
+The 83.5% gas reduction comes from eliminating the commit phase entirely: the off-chain path skips hash storage, timeout checking, and the two-transaction round trip. The EWMA update itself is identical in both paths.
+
+#### Security equivalence.
+
+The off-chain attestation path provides the same steady-state security guarantees as commit-reveal:
+
+> **Proposition (Off-Chain Security)**
+>
+> Under the off-chain attestation protocol with EWMA smoothing, the capacity manipulation bounds hold: a single attestation can shift the smoothed capacity by at most $\alpha$ (30%) of the reported change. Stake requirements and slashing conditions are unchanged.
+
+> **Proof.**
+>
+> The EWMA update applied by the aggregator is identical to the reveal-phase update: $\Csmooth(k, t+1) = \alpha \cdot c + (1-\alpha) \cdot \Csmooth(k, t)$. Since the smoothing filter is the same, the maximum per-update impact is $\alpha \cdot |c - \Csmooth(k, t)|$, bounded by the stake-derived capacity cap $\text{cap}(S_k)$. The nonce monotonicity check prevents replay, serving the same role as the commit hash. ◻
+
+The trade-off is MEV resistance: commit-reveal hides capacity values during the commit phase, while off-chain attestations are visible to anyone who receives them. In practice, EWMA smoothing limits the exploitable value of front-running a single capacity update, making this trade-off acceptable for the significant latency and gas improvements.

@@ -1,0 +1,58 @@
+---
+title: Simulation
+order: 2
+description: Agent-based Python simulation validating BPE theoretical claims
+---
+
+An agent-based simulation validates the theoretical claims of BPE. The simulation models a multi-source, multi-sink economy with heterogeneous agent capacities and task types.
+
+## Configuration
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| Sources | 10 | Payment stream originators |
+| Sinks | 50 | Capacity-declaring service agents |
+| Task types | 3 | Heterogeneous service categories |
+| Timesteps | 1,000 | Simulation horizon |
+| EWMA $\alpha$ | 0.3 | Capacity smoothing parameter |
+
+## Experiments
+
+### 1. Convergence & Efficiency
+
+Measures allocation efficiency over time. BPE achieves **95.7%** versus 93.5% for round-robin and 79.7% for random allocation.
+
+### 2. Shock Response
+
+Simulates 20% node-kill events and measures recovery time. BPE recovers within **~50 steps**.
+
+### 3. EWMA Sweep
+
+Sensitivity analysis of the smoothing parameter $\alpha \in [0.05, 0.95]$ on allocation efficiency and stability.
+
+### 4. Sybil Resistance
+
+Confirms that stake fragmentation yields strictly negative net profit for all split counts $n > 1$ under the $\sqrt{\text{stake}}$ capacity cap.
+
+### 5. Buffer Utilization
+
+With overflow escrow sized at one period of peak demand, buffer stall rates drop from 73% to **under 9%**.
+
+## Running
+
+```bash
+cd simulation
+python bpe_sim.py
+```
+
+Outputs are saved as PDF figures in `docs/paper/figures/`:
+
+- `convergence.pdf` - Allocation efficiency over time
+- `shock.pdf` - Shock response and recovery
+- `ewma_sweep.pdf` - EWMA parameter sensitivity
+- `sybil.pdf` - Sybil cost analysis
+- `buffer.pdf` - Buffer utilization dynamics
+
+## Source
+
+Simulation source is on [GitHub](https://github.com/spiltdev/spilt/tree/main/simulation/bpe_sim.py).

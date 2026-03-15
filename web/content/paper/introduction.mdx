@@ -1,0 +1,21 @@
+---
+title: Introduction
+order: 1
+description: Motivation, problem statement, and contributions
+---
+
+Consider a three-stage AI agent pipeline: a transcription agent converts audio to text, a summarization agent condenses the transcript, and a report-generation agent produces the final output. Each agent is compensated via a continuous payment stream proportional to its throughput. When the summarization agent reaches its GPU capacity limit, the upstream payment stream continues—but the surplus cannot be "dropped" like excess data packets. Money must go somewhere.
+
+This scenario illustrates a fundamental gap in the emerging landscape of agent-to-agent payment protocols. Recent systems—Google's AP2, Coinbase's x402 (Coinbase, 2025), OpenAI–Stripe's ACP (OpenAI & Stripe, 2025), and Visa's TAP (Visa, 2025)—all address *authorization* and *trust* for agent payments, but none provide *flow control*: the ability to dynamically route, throttle, or redistribute monetary flows based on real-time capacity constraints. Traditional payment systems assume discrete, settled transactions; streaming payment protocols like Superfluid (Superfluid, 2024) enable continuous flows but have no built-in congestion awareness.
+
+In data networks, this problem was solved decades ago. Backpressure routing, introduced by Tassiulas and Ephremides (Tassiulas & Ephremides, 1992), provides throughput-optimal scheduling by using queue differentials to guide packet routing. Kelly's proportional fairness framework (Kelly et al., 1998) established that shadow prices on capacity constraints can be interpreted as economic signals. Yet no prior work has unified these insights with monetary mechanism design for agent economies.
+
+We introduce *Backpressure Economics* (BPE), a cryptoeconomic mechanism that adapts backpressure routing from communication networks to monetary flows. Our contributions are:
+
+1.  **Formal model** (Formal Model): We define a network payment flow model where sinks signal capacity via EWMA-smoothed declarations, and payments are routed via a max-weight scheduling rule adapted from Tassiulas–Ephremides.
+
+2.  **Throughput optimality** (Throughput Optimality): We prove that BPE achieves throughput-optimal payment allocation within the capacity region, using a Lyapunov drift argument modified to handle the no-drop monetary constraint via a bounded overflow buffer.
+
+3.  **Protocol design** (Protocol Design): We implement BPE using Superfluid's General Distribution Agreement (GDA) on Base, with commit-reveal capacity signaling, stake-weighted Sybil resistance, and multi-stage pipeline composition.
+
+4.  **Simulation** (Evaluation): We evaluate BPE in a 50-sink, 10-source agent economy, demonstrating 95.7% allocation efficiency versus 93.5% for round-robin and 79.7% for random allocation.

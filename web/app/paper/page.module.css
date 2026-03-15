@@ -1,0 +1,105 @@
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.page h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  margin-bottom: 2rem;
+}
+
+.description {
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.sectionList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sectionItem {
+  border-bottom: 1px solid var(--border);
+}
+
+.sectionLink {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.85rem 0.5rem;
+  color: var(--text);
+  text-decoration: none;
+  transition: background 0.15s;
+  border-radius: 6px;
+}
+
+.sectionLink:hover {
+  background: var(--card-bg);
+}
+
+.sectionNumber {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  min-width: 1.5rem;
+}
+
+.sectionTitle {
+  font-weight: 500;
+}
+
+.sectionDesc {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-left: auto;
+  text-align: right;
+}
+
+.citation {
+  margin-top: 2.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--card-bg);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.citation strong {
+  color: var(--text);
+}
+
+.note {
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.note a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.note a:hover {
+  text-decoration: underline;
+}
+
+.subsections {
+  margin-top: 2rem;
+}
+
+.subsections h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}

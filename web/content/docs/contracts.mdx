@@ -1,0 +1,74 @@
+---
+title: Smart Contracts
+order: 0
+description: Solidity contracts deployed on Base Sepolia with Superfluid GDA
+---
+
+BPE is implemented as five Solidity smart contracts deployed on Base Sepolia (L2), built on top of the Superfluid Protocol's General Distribution Agreement (GDA).
+
+## Architecture
+
+```
+┌─────────────────────┐     ┌─────────────────────────┐
+│  CapacityRegistry   │◄────│  StakeManager           │
+│  - task type reg    │     │  - stake/unstake/slash   │
+│  - sink reg         │     │  - capacity cap compute  │
+│  - commit-reveal    │     └─────────────────────────┘
+│  - EWMA smoothing   │
+└────────┬────────────┘
+         │ reads capacity
+         ▼
+┌─────────────────────┐     ┌─────────────────────────┐
+│  BackpressurePool   │────►│  Superfluid GDA Pool    │
+│  - rebalance()      │     │  (underlying primitive) │
+│  - needsRebalance() │     └─────────────────────────┘
+│  - pool per taskType│
+└─────────────────────┘
+         │
+         ▼
+┌─────────────────────┐
+│  EscrowBuffer       │
+│  - overflow hold    │
+│  - FIFO drain       │
+│  - B_max config     │
+└─────────────────────┘
+
+┌─────────────────────┐
+│  Pipeline           │
+│  - multi-pool chain │
+│  - upstream prop    │
+└─────────────────────┘
+```
+
+## Contracts
+
+| Contract | Purpose |
+|----------|---------|
+| `CapacityRegistry.sol` | Task type registry, sink registration, commit-reveal capacity signals, EWMA smoothing |
+| `BackpressurePool.sol` | Extends Superfluid GDA Pool with capacity-weighted rebalancing |
+| `StakeManager.sol` | Stake management, capacity caps via $\sqrt{\text{stake}/\text{unit}}$, slashing |
+| `EscrowBuffer.sol` | Overflow buffer for when all sinks are at capacity, FIFO drain |
+| `Pipeline.sol` | Multi-stage pipeline composition with upstream congestion propagation |
+
+## Deployment
+
+Contracts are deployed on **Base Sepolia** (testnet). Deployment addresses are tracked in `contracts/deployments/base-sepolia.json`.
+
+### Build & Test
+
+```bash
+cd contracts
+forge build
+forge test
+```
+
+All 40 unit tests pass. The test suite covers:
+
+- Capacity registration and EWMA smoothing
+- Stake management and capacity cap computation
+- Escrow buffer deposits and FIFO draining
+- Fork tests against live Superfluid on Base Sepolia
+
+## Source
+
+Contract source code is on [GitHub](https://github.com/spiltdev/spilt/tree/main/contracts/src).

@@ -1,0 +1,64 @@
+---
+title: Dynamic Pricing Mechanism
+order: 11
+description: Queue-length pricing and economic backpressure
+---
+
+BPE's backpressure allocation determines *who* receives payment; we now formalize the complementary question of *how much* each unit of service costs. We introduce a dynamic pricing curve that creates *economic backpressure*: as queue load builds at a sink, the per-unit price rises, naturally throttling demand before overflow buffers are needed.
+
+> **Definition (Queue-Length Price)**
+>
+> For task type $\tasktype$ and sink $k$ at time $t$, the per-unit price is:
+> $$
+> p(\tasktype, k, t) = \beta_\tasktype(t) \cdot
+>     \left(1 + \gamma \cdot \frac{Q(\tasktype, k, t)}{\Csmooth(k, t, \tasktype)}\right)
+> $$
+> where $\beta_\tasktype(t) > 0$ is the base fee for task type $\tasktype$, $\gamma > 0$ is the price sensitivity parameter, $Q(\tasktype, k, t) \geq 0$ is the current queue load reported by sink $k$, and $\Csmooth(k, t, \tasktype)$ is the EWMA-smoothed capacity.
+
+When a sink has zero queue load, the price reduces to the base fee $\beta_\tasktype$. As $Q / \Csmooth \to 1$ (queue approaches capacity), the price doubles. When $Q > \Csmooth$ (overloaded), the price rises further, discouraging additional demand.
+
+#### Base fee adjustment.
+
+The base fee $\beta_\tasktype$ adjusts per epoch following an EIP-1559-style mechanism (Roughgarden, 2021). Let $D(\tasktype, t)$ denote aggregate demand (total flow rate from sources) and $C_{\text{total}}(\tasktype, t) = \sum_k \Csmooth(k, t, \tasktype)$ be aggregate capacity. At each epoch boundary:
+
+$$
+\beta_\tasktype(t+1) =
+\begin{cases}
+\beta_\tasktype(t) \cdot (1 + \delta) & \text{if } D(\tasktype, t) > C_{\text{total}}(\tasktype, t), \\
+\beta_\tasktype(t) \cdot (1 - \delta) & \text{otherwise},
+\end{cases}
+$$
+where $\delta = 0.125$ (12.5%), matching the maximum per-block adjustment rate of EIP-1559. A floor $\beta_{\min}$ prevents the base fee from collapsing to zero during sustained under-utilization.
+
+> **Proposition (Price Equilibrium)**
+>
+> Under the adjustment rule with price-sensitive demand $D(\tasktype, \beta) = D_0 / \beta$ (unit-elastic), there exists a unique equilibrium base fee:
+> $$
+> \beta^* = \frac{D_0}{C_{\text{total}}(\tasktype)}
+> $$
+> at which $D(\tasktype, \beta^*) = C_{\text{total}}(\tasktype)$.
+
+> **Proof.**
+>
+> At equilibrium, the adjustment rule is stationary, requiring $D(\tasktype, \beta^*) = C_{\text{total}}$. Substituting the demand function: $D_0 / \beta^* = C_{\text{total}}$, yielding $\beta^* = D_0 / C_{\text{total}}$. Uniqueness follows from strict monotonicity of $D(\cdot)$ in $\beta$. Stability follows because $\beta < \beta^*$ implies excess demand, triggering $\beta \uparrow$, and $\beta > \beta^*$ implies excess capacity, triggering $\beta \downarrow$. ◻
+
+#### Connection to Kelly shadow prices.
+
+Proposition (Price Equilibrium) recovers a classical result from network pricing theory. Kelly (Kelly et al., 1998) showed that the Lagrange multiplier on each link's capacity constraint in the proportional fairness optimization emerges as a per-unit price. In BPE, the equilibrium base fee $\beta^*$ is precisely this shadow price for the aggregate capacity constraint. The queue-length surcharge $\gamma \cdot Q/\Csmooth$ refines this by providing per-sink price differentiation: sinks with shorter queues offer lower prices, attracting more demand, which is exactly the routing signal that a price-taking source should follow.
+
+> **Proposition (Routing Equivalence)**
+>
+> A cost-minimizing source facing prices across sinks routes flow to the sink with the lowest price. At equilibrium, source flow distributes such that prices equalize across sinks with available capacity:
+> $$
+> Q(\tasktype, k, t) / \Csmooth(k, t, \tasktype) = Q(\tasktype, j, t) / \Csmooth(j, t, \tasktype)
+> \quad \forall\, k, j \in K_\tasktype
+> $$
+> i.e., all active sinks operate at the same utilization ratio.
+
+> **Proof.**
+>
+> If sink $k$ has a lower utilization ratio $Q_k/\Csmooth_k < Q_j/\Csmooth_j$, then $p(\tasktype, k, t) < p(\tasktype, j, t)$. A cost-minimizing source strictly prefers $k$, shifting demand until utilization ratios equalize. At this point, no unilateral deviation reduces cost, establishing a Nash equilibrium in routing. ◻
+
+#### Economic backpressure.
+
+Traditional backpressure routing uses queue differentials as a signal to route traffic away from congested links (Tassiulas & Ephremides, 1992). Our pricing mechanism achieves the same effect through economic incentives: congested sinks become expensive, and rational sources route elsewhere. The key advantage is that pricing operates *without centralized coordination*—each source independently queries per-sink prices and routes to minimize cost, yet the aggregate effect is optimal load balancing.

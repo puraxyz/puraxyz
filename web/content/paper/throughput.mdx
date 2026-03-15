@@ -1,0 +1,83 @@
+---
+title: Throughput Optimality
+order: 4
+description: Proof of throughput-optimal allocation
+---
+
+We prove that BPE achieves throughput-optimal payment allocation within the capacity region, following the Lyapunov drift framework of Neely (Neely, 2010).
+
+## Capacity Region
+
+The capacity region $\Lambda^*$ is the set of arrival rate vectors $\boldsymbol{\lambda} = (\lambda_\tasktype)_{\tasktype \in \mathcal{T}}$ such that there exists a feasible allocation $\{F(k, \tasktype)\}$ satisfying:
+$$
+\begin{align}
+\sum_{k \in K_\tasktype} F(k, \tasktype) &= \lambda_\tasktype &&\forall \tasktype \in \mathcal{T} \\
+F(k, \tasktype) &\leq \Csmooth(k, \tasktype) &&\forall k, \tasktype \\
+F(k, \tasktype) &\geq 0 &&\forall k, \tasktype
+\end{align}
+$$
+
+## Lyapunov Function
+
+Define the Lyapunov function as the sum of squared virtual queue backlogs:
+$$
+L(t) = \sum_{\tasktype \in \mathcal{T}} \sum_{k \in K_\tasktype} Q(k, t, \tasktype)^2
+$$
+
+The one-step conditional Lyapunov drift is:
+$$
+\Delta(t) = \E\bigl[L(t+1) - L(t) \;\big|\; \mathbf{Q}(t)\bigr]
+$$
+
+## Main Result
+
+> **Theorem (Throughput Optimality)**
+>
+> For any arrival rate vector $\boldsymbol{\lambda}$ strictly inside the capacity region $\Lambda^*$ (i.e., $\boldsymbol{\lambda} \in (1-\epsilon)\Lambda^*$ for some $\epsilon > 0$), the BPE max-weight payment routing stabilizes all virtual queues. Specifically:
+> $$
+> \limsup_{T \to \infty} \frac{1}{T} \sum_{t=0}^{T-1} \sum_{k,\tasktype}
+> \E\bigl[Q(k, t, \tasktype)\bigr] \leq \frac{D}{\epsilon}
+> $$
+> where $D$ is a constant depending on maximum arrival and capacity rates.
+
+> **Proof sketch.**
+>
+> Following Neely, we bound the Lyapunov drift. From the queue dynamics:
+> $$
+> \begin{align}
+> Q(k, t+1, \tasktype)^2 &\leq Q(k, t, \tasktype)^2
+>     + F(k, t, \tasktype)^2 + \Csmooth(k, t, \tasktype)^2 \notag \\
+>     &\quad + 2Q(k, t, \tasktype)\bigl[F(k, t, \tasktype) - \Csmooth(k, t, \tasktype)\bigr]
+> \end{align}
+> $$
+>
+> Summing over all $(k, \tasktype)$ and taking conditional expectations:
+> $$
+> \Delta(t) \leq D + 2 \sum_{k, \tasktype} Q(k, t, \tasktype) \cdot
+> \E\bigl[F(k, t, \tasktype) - \Csmooth(k, t, \tasktype) \;\big|\; \mathbf{Q}(t)\bigr]
+> $$
+> where $D = \sum_{k,\tasktype} \bigl[F_{\max}^2 + C_{\max}^2\bigr]$.
+>
+> The max-weight rule minimizes the right-hand side over all feasible allocations. Since $\boldsymbol{\lambda} \in (1-\epsilon)\Lambda^*$, there exists a stationary randomized policy with $\E[F(k,t,\tasktype)] \leq \Csmooth(k,\tasktype) - \epsilon'$ for some $\epsilon' > 0$. The max-weight policy achieves drift at least as negative, yielding:
+> $$
+> \Delta(t) \leq D - \epsilon' \sum_{k,\tasktype} Q(k, t, \tasktype)
+> $$
+>
+> By the Foster–Lyapunov criterion (Meyn & Tweedie, 2009), the queue process is positive recurrent, and the time-averaged backlog bound follows from telescoping the drift inequality. ◻
+
+## Overflow Buffer Bound
+
+> **Theorem (Overflow Buffer Bound)**
+>
+> Under the same conditions as Theorem (Throughput Optimality), the overflow buffer satisfies:
+> $$
+> \limsup_{T \to \infty} \frac{1}{T} \sum_{t=0}^{T-1}
+> \E\bigl[B(\tasktype, t)\bigr] \leq \frac{D_B}{\epsilon}
+> $$
+> for a constant $D_B$ depending on the maximum arrival-capacity gap.
+
+> **Proof sketch.**
+>
+> Augment the Lyapunov function with the buffer: $\tilde{L}(t) = L(t) + \sum_\tasktype B(\tasktype, t)^2$. The buffer dynamics mirror a virtual queue with service rate equal to total available capacity. The drift bound carries through identically. ◻
+
+The no-drop constraint distinguishes BPE from standard backpressure. In data networks, excess packets are dropped; here excess payments are buffered. The buffer bound guarantees that this does not cause unbounded accumulation under sufficient aggregate capacity.

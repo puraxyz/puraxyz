@@ -1,0 +1,31 @@
+---
+title: Discussion and Future Work
+order: 8
+description: Implications, limitations, future work
+---
+
+#### Contributions beyond the base protocol.
+
+This work extends the original backpressure allocation mechanism in three key directions: (i) a dynamic pricing layer (Dynamic Pricing) that creates economic backpressure via EIP-1559-style fee adjustment; (ii) an off-chain attestation protocol (Off-Chain Attestation) that reduces capacity update gas by 83.5% while preserving EWMA smoothing guarantees; and (iii) a completion tracking system with dual-signed receipts that enables automatic slashing of under-performing sinks. Together, these transform BPE from a fixed-rate distributor to a market-driven mechanism with verifiable quality of service.
+
+#### Limitations.
+
+BPE assumes capacity is *verifiable*—that over-reporting can be detected and penalized. The completion tracker (Security Analysis) addresses this for task completions, but does not cover quality of output. Future work could integrate TEE attestation or ZK proofs of computation to provide stronger verification guarantees.
+
+On-chain EWMA computation and pool unit updates incur gas costs that scale linearly with the number of sinks per task type. At 50 sinks, rebalance costs are viable on Base L2; at 1000+, batched or off-chain computation with on-chain verification (e.g., via ZK proofs) may be necessary.
+
+#### Multi-hop routing.
+
+The current single-hop architecture (sources directly to sinks) precludes intermediary agents. A multi-hop extension would enable payment routing through chains of agents, with backpressure propagating along each hop—directly paralleling the original Tassiulas–Ephremides formulation.
+
+#### Cross-chain operation.
+
+Superfluid's GDA is deployed on multiple EVM chains. A cross-chain BPE deployment could route payments across chains via bridge-aware backpressure, treating each chain's pool as a node in a higher-level routing graph.
+
+#### PID control connection.
+
+The EWMA smoothing and backpressure feedback loop bear structural similarity to PID control. A formal connection could enable auto-tuning of $\alpha$ and the rebalance threshold based on observed system dynamics.
+
+#### Backpressure-demurrage composability.
+
+BPE (flow-based allocation) and demurrage (stock-based velocity) are orthogonal. A token with both mechanisms would simultaneously incentivize spending velocity (demurrage) and efficient allocation of resulting flows (BPE).

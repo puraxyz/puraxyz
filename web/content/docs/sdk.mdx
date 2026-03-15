@@ -1,0 +1,49 @@
+---
+title: TypeScript SDK
+order: 1
+description: Type-safe client for interacting with BPE contracts via viem
+---
+
+The `@spilt/sdk` package provides a TypeScript client for interacting with BPE smart contracts.
+
+## Installation
+
+```bash
+npm install @spilt/sdk
+```
+
+## Features
+
+- **Contract ABIs** - Pre-compiled ABIs for all BPE contracts
+- **Type-safe interactions** - Full TypeScript types via [viem](https://viem.sh/)
+- **Helper functions** - Common operations like capacity signal computation and stream management
+- **Address registry** - Deployed contract addresses for supported networks
+
+## Usage
+
+```typescript
+import { addresses, contracts } from '@spilt/sdk'
+
+// Get contract addresses for Base Sepolia
+const { capacityRegistry, backpressurePool, stakeManager } = addresses.baseSepolia
+
+// Use with viem
+import { createPublicClient, http } from 'viem'
+import { baseSepolia } from 'viem/chains'
+
+const client = createPublicClient({
+  chain: baseSepolia,
+  transport: http(),
+})
+
+// Read smoothed capacity for a sink
+const capacity = await client.readContract({
+  ...contracts.capacityRegistry,
+  functionName: 'getSmoothedCapacity',
+  args: [taskTypeId, sinkAddress],
+})
+```
+
+## Source
+
+SDK source code is on [GitHub](https://github.com/spiltdev/spilt/tree/main/sdk/src).

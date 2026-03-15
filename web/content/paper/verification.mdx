@@ -1,0 +1,89 @@
+---
+title: Completion-Based Capacity Verification
+order: 12
+description: Dual-signed receipts and auto-slash mechanism
+---
+
+The incentive-compatibility proof in Proposition (Truthful BNE) assumes a detection mechanism capable of identifying over-reporting sinks within a bounded time window $T_d$. This section formalises the *CompletionTracker* protocol that realises such detection on-chain without external oracles.
+
+### Dual-Signed Completion Receipts
+
+Every task completed in BPE produces an *EIP-712* typed-data receipt signed by both the executing sink and the requesting source:
+
+> **Definition (CompletionReceipt)**
+>
+> A completion receipt is a tuple
+> $$
+> \mathcal{R} = \bigl(\tasktype,\; \texttt{sink},\; \texttt{source},\;
+>                        \texttt{taskId},\; t\bigr)
+> $$
+> where $\tasktype$ identifies the task type, $\texttt{sink}$ and $\texttt{source}$ are Ethereum addresses, $\texttt{taskId}$ is a unique 32-byte identifier, and $t$ is the block timestamp at submission. The receipt is valid iff both $\mathrm{ECDSA.recover}(H_{712}(\mathcal{R})) = \texttt{sink}$ and $\mathsf{msg.sender} = \texttt{source}$.
+
+Dual signing prevents unilateral fabrication: a malicious sink cannot inflate its completions without cooperation from a source that actually consumed the service, and a malicious source cannot credit a sink that did not perform.
+
+### Rolling-Window Epoch Accounting
+
+Time is partitioned into epochs of duration $T_{\mathrm{epoch}} = 300$ s. For each (task-type, sink) pair, the contract maintains:
+
+$$
+r_k^{(e)} = \frac{\kappa_k^{(e)}}{\Csmooth(\tasktype, k)}
+$$
+
+where $\kappa_k^{(e)}$ is the number of valid receipts submitted during epoch $e$ and $\Csmooth(\tasktype, k)$ is the EWMA-smoothed declared capacity. We cap $r_k^{(e)}$ at $1$ (100% utilisation).
+
+When an epoch elapses, any participant may call `advanceEpoch` to finalise the rate and reset the counter. The on-chain cost is ~48,000 gas per epoch advance (see Evaluation, Experiment E6).
+
+### Statistical Divergence Detection
+
+> **Definition (Under-performance)**
+>
+> Sink $k$ *under-performs* in epoch $e$ if $r_k^{(e)} < \tau$, where $\tau = 0.5$ (the slash threshold in basis points, `SLASH_THRESHOLD_BPS = 5000`).
+
+The protocol tracks a consecutive counter $n_k$ that increments when $r_k^{(e)} < \tau$ and resets to zero otherwise.
+
+> **Proposition (Detection Latency)**
+>
+> An over-reporting sink that sustains capacity inflation $\hat{C}_k - C_k = \varepsilon > 0$ is detected and slashed within
+> $$
+> T_d = n_{\mathrm{thresh}} \times T_{\mathrm{epoch}} = 3 \times 300\,\text{s}
+>      = 900\,\text{s}
+> $$
+> provided the excess demand $\varepsilon$ induces a utilisation deficit $r_k < \tau$ for $n_{\mathrm{thresh}} = 3$ consecutive epochs.
+
+> **Proof.**
+>
+> When $\hat{C}_k > C_k$, the additional flow routed to sink $k$ is $\Delta F \propto \alpha \varepsilon / \sum_j \Csmooth(j)$. Tasks arriving at rate exceeding true capacity $C_k$ cannot be completed, so $\kappa_k^{(e)} \leq C_k < \hat{C}_k$. Hence $r_k^{(e)} = \kappa_k / \hat{C}_k \leq C_k / (C_k + \varepsilon) < 1$. For $\varepsilon$ large enough such that $C_k / (C_k + \varepsilon) < \tau$, the under-performance counter increments each epoch. After $n_{\mathrm{thresh}} = 3$ such epochs, the auto-slash fires, proving the claim. ◻
+
+### Auto-Slash Mechanism
+
+When $n_k \geq n_{\mathrm{thresh}}$, the `advanceEpoch` function atomically invokes `StakeManager.slash`:
+
+$$
+\Delta S_{\mathrm{slash}} = \frac{s_{\mathrm{bps}}}{10\,000} \cdot S_k
+$$
+
+with $s_{\mathrm{bps}} = 1000$ (10% of stake) and a reason hash `keccak256("COMPLETION_UNDERPERFORMANCE")`. After slashing:
+
+1.  The consecutive counter resets ($n_k \gets 0$), giving the sink a recovery window.
+
+2.  The reduced stake lowers the concave capacity cap $\text{cap}(S_k) = \sqrt{S_k / u}$, forcing the sink to either re-stake or operate at genuinely lower capacity—both outcomes align incentives.
+
+3.  The epoch counter and completion tally reset for the next measurement window.
+
+#### Composability with BNE condition.
+
+The slash amount feeds directly into the BNE condition: substituting $s = s_{\mathrm{bps}} / 10\,000$, $T_d = 900$ s, the BNE holds for all deviations $\varepsilon < 0.1 \cdot S_k / (p \cdot 900)$, consistent with the parameterisation of Security Analysis.
+
+### Future Verification Hardening
+
+The statistical detection mechanism operates purely on completion counts, requiring no access to the task payload or execution environment. Two complementary approaches can further reduce the trust assumption on source-sink collusion:
+
+#### Trusted Execution Environments (TEEs).
+
+Sinks running inside a TEE (e.g., Intel SGX, ARM TrustZone) can produce hardware-attested proofs of execution. An on-chain verifier interface `ICapacityVerifier.verify(attestation)` can augment the `CompletionReceipt` with a TEE quote, reducing the receipt to a *single-party* proof of work that does not require source co-signing.
+
+#### ZK-ML proofs.
+
+For deterministic ML inference tasks, recent advances in zero-knowledge machine learning (zkML) allow sinks to generate succinct proofs that a specific model produced a specific output. Integrating ZK-ML verification would upgrade the completion tracking from *statistical* (probabilistic detection over epochs) to *cryptographic* (per-task deterministic verification), at the cost of higher sink-side computation.
+
+Both extensions are backward-compatible: the `CompletionTracker` contract can be wrapped by a verifier contract that gates `recordCompletion` on additional cryptographic evidence, without modifying the epoch accounting or auto-slash logic.

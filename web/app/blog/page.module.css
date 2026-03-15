@@ -1,0 +1,47 @@
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.page h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.postList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.postItem {
+  border-bottom: 1px solid var(--border);
+}
+
+.postLink {
+  display: block;
+  padding: 1.25rem 0.5rem;
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.postLink:hover {
+  background: var(--card-bg);
+}
+
+.postTitle {
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin-bottom: 0.35rem;
+}
+
+.postMeta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}

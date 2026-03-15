@@ -1,0 +1,46 @@
+---
+title: Protocol Design
+order: 5
+description: Implementation on Superfluid GDA
+---
+
+We implement BPE on Ethereum (Base L2) using Superfluid's General Distribution Agreement (GDA) (Superfluid, 2024). The architecture comprises four contracts.
+
+## Architecture Overview
+
+*BPE protocol architecture. Solid arrows denote read dependencies; the dashed arrow represents the auto-slash feedback path from CompletionTracker to StakeManager.*
+
+## StakeManager
+
+Sinks deposit ERC-20 tokens to stake. The capacity cap is computed as $\text{cap}(k) = \sqrt{\text{stake}(k) / u}$ where $u$ is the stake unit parameter (set to $10^{18}$). This concave function implements Sybil resistance: splitting stake $S$ into $n$ sinks yields total capacity $n \cdot \sqrt{S/(nu)} = \sqrt{n} \cdot \sqrt{S/u} < n \cdot \sqrt{S/u}$ for $n > 1$—strictly less than the capacity from a single identity. A minimum per-sink stake $S_{\min}$ further penalizes splitting.
+
+## CapacityRegistry
+
+The registry manages task type creation, sink registration, and capacity signaling. Capacity updates use a two-phase commit-reveal protocol for MEV resistance:
+
+1.  **Commit**: Sink submits $h = \texttt{keccak256}(C, \text{nonce})$.
+
+2.  **Reveal**: Within 20 blocks, sink reveals $(C, \text{nonce})$. The contract verifies the hash, applies the stake cap, and computes the EWMA update: $\Csmooth_{\text{new}} = 0.3 \cdot C_{\text{capped}} + 0.7 \cdot \Csmooth_{\text{old}}$.
+
+The registry maintains an aggregate `totalCapacity` per task type, updated atomically on each reveal.
+
+## BackpressurePool
+
+For each task type, the pool creates a Superfluid GDA pool and acts as its admin. On `rebalance`, it reads all sink capacities from the registry and sets each sink's pool units proportional to their smoothed capacity: $\text{units}(k) = \lfloor C_{\text{smooth}}(k) \cdot 10^9 / C_{\text{total}} \rfloor$.
+
+Sources create Constant Flow Agreement (CFA) streams *to the pool address*. The GDA automatically distributes incoming flows to members proportional to their units—achieving capacity-proportional payment routing without centralized scheduling.
+
+Rebalance is *permissionless*: any address may call it. A 5% threshold (measured in basis points of total capacity change) prevents unnecessary gas expenditure.
+
+## EscrowBuffer
+
+When all sinks in a task type are at capacity, excess payments are deposited into the buffer. The `drain` function distributes buffered funds proportionally to current sink capacities. A configurable `bufferMax` caps the buffer size; when full, sources must pause.
+
+## Pipeline Composition
+
+For multi-stage agent pipelines, the `Pipeline` contract chains BackpressurePools. The key mechanism is *upstream propagation*: each stage's effective capacity is constrained by its downstream stage:
+$$
+C_{\text{eff}}(\text{stage}_i) = \min\bigl(C_{\text{local}}(\text{stage}_i),\;
+C_{\text{eff}}(\text{stage}_{i+1})\bigr)
+$$
+Rebalance proceeds back-to-front, ensuring downstream congestion propagates upstream before any stage is rebalanced.

@@ -1,0 +1,71 @@
+---
+title: Formal Model
+order: 3
+description: Network model definition and Lyapunov analysis setup
+---
+
+## Network Graph
+
+A payment flow network is a directed graph $G = (V, E)$ where $V = S \cup K$ with $S$ the set of *sources* (payment senders) and $K$ the set of *sinks* (service providers). Each edge $e = (s, k) \in E$ represents a potential payment flow from source $s \in S$ to sink $k \in K$.
+
+We consider a slotted time model with discrete epochs $t \in \{0, 1, 2, \ldots\}$. The system tracks multiple *task types* $\tasktype \in \mathcal{T}$, which serve as commodities in the multi-commodity flow formulation.
+
+Each sink $k \in K$ declares a capacity signal $\Craw(k, t, \tasktype) \in \R_{\geq 0}$ for each task type $\tasktype$ it serves, representing its maximum throughput (payment absorbable per epoch). The EWMA-smoothed capacity is:
+$$
+\Csmooth(k, t, \tasktype) = \alpha \cdot \Craw(k, t, \tasktype)
+    + (1 - \alpha) \cdot \Csmooth(k, t-1, \tasktype)
+$$
+where $\alpha \in (0, 1]$ is the smoothing parameter.
+
+For each sink $k$ and task type $\tasktype$, the virtual queue backlog $Q(k, t, \tasktype)$ tracks unprocessed payment accumulation:
+$$
+Q(k, t+1, \tasktype) = \max\bigl\{Q(k, t, \tasktype) + F(k, t, \tasktype)
+    - \Csmooth(k, t, \tasktype),\; 0\bigr\}
+$$
+where $F(k, t, \tasktype)$ is the payment flow routed to sink $k$ at time $t$.
+
+## Backpressure Payment Routing
+
+In the standard Tassiulas–Ephremides formulation, the max-weight scheduler selects links to maximize $\sum_{(i,j)} W_{ij}(t) \cdot \mu_{ij}(t)$ where $W_{ij}(t)$ is the differential backlog and $\mu_{ij}(t)$ the allocated rate. For BPE's single-hop architecture (sources connect directly to sinks), we adapt this as follows.
+
+The differential backlog for sink $k$ from source $s$ under task type $\tasktype$ is:
+$$
+W(k, t, \tasktype) = Q(s, t, \tasktype) - Q(k, t, \tasktype)
+$$
+where $Q(s, t, \tasktype)$ represents the source's pending payment queue.
+
+> **Definition (Max-Weight Routing)**
+>
+> At each epoch $t$, for each task type $\tasktype$, allocate the total source flow $\Lambda(\tasktype, t) = \sum_{s \in S_\tasktype} \lambda_s(t)$ to sinks proportionally to their capacity-weighted backpressure:
+> $$
+> F(k, t, \tasktype) = \frac{W(k, t, \tasktype)^+ \cdot \Csmooth(k, t, \tasktype)}
+> {\sum_{k' \in K_\tasktype} W(k', t, \tasktype)^+ \cdot \Csmooth(k', t, \tasktype)}
+> \cdot \Lambda(\tasktype, t)
+> $$
+> where $x^+ = \max(x, 0)$.
+
+In the steady state where all sinks have similar backlog levels, this reduces to proportional-to-capacity allocation—which is the mechanism implemented in our Superfluid GDA pool (member units proportional to smoothed capacity).
+
+## Multi-Commodity Extension
+
+Task types serve as commodities. Each source $s$ emits flow for a specific task type $\tasktype_s$, and sinks may register for multiple task types. The virtual queues are maintained per $(k, \tasktype)$ pair, achieving commodity-specific backpressure identical to the multi-commodity extension of Tassiulas–Ephremides (Tassiulas & Ephremides, 1992).
+
+## EWMA Smoothing
+
+The smoothing parameter $\alpha$ trades off responsiveness against oscillation. Following Jacobson's EWMA for TCP RTT estimation (Jacobson, 1988), we set $\alpha = 0.3$ (validated in Evaluation).
+
+For a sink with constant true capacity $c$, the EWMA-smoothed signal converges geometrically: $|\Csmooth(k, t) - c| \leq (1-\alpha)^t \cdot |\Csmooth(k, 0) - c|$.
+
+> **Proof.**
+>
+> By direct expansion of the EWMA equation with $\Craw(k, t) = c$ for all $t$. ◻
+
+## Monetary No-Drop Constraint
+
+Unlike data packets, money cannot be dropped. When total source flow exceeds total sink capacity, BPE deploys an *overflow buffer* $B(\tasktype, t)$:
+$$
+B(\tasktype, t+1) = B(\tasktype, t) + \Lambda(\tasktype, t)
+    - \sum_{k \in K_\tasktype} \min\bigl\{F(k,t,\tasktype),\; \Csmooth(k,t,\tasktype)\bigr\}
+$$
+
+The buffer absorbs excess and drains proportionally to capacity as capacity becomes available. We prove in Throughput Optimality that $B(t)$ is bounded under sufficient capacity.
