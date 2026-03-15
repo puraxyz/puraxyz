@@ -1,11 +1,11 @@
 # TypeScript SDK
 
-The `@synthesi/sdk` package provides a TypeScript client for interacting with BPE smart contracts.
+The `@spilt/sdk` package provides a TypeScript client for interacting with BPE smart contracts.
 
 ## Installation
 
 ```bash
-npm install @synthesi/sdk
+npm install @spilt/sdk
 ```
 
 ## Features
@@ -18,7 +18,7 @@ npm install @synthesi/sdk
 ## Usage
 
 ```typescript
-import { addresses, contracts } from '@synthesi/sdk'
+import { addresses, contracts } from '@spilt/sdk'
 
 // Get contract addresses for Base Sepolia
 const { capacityRegistry, backpressurePool, stakeManager } = addresses.baseSepolia
@@ -42,4 +42,4 @@ const capacity = await client.readContract({
 
 ## Source
 
-SDK source code is in [`sdk/src/`](https://github.com/synthesi-protocol/synthesi/tree/main/sdk/src).
+SDK source code is in [`sdk/src/`](https://github.com/spiltdev/spilt/tree/main/sdk/src).

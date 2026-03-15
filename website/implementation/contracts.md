@@ -67,4 +67,4 @@ All 40 unit tests pass. The test suite covers:
 
 ## Source
 
-Contract source code is in [`contracts/src/`](https://github.com/synthesi-protocol/synthesi/tree/main/contracts/src).
+Contract source code is in [`contracts/src/`](https://github.com/spiltdev/spilt/tree/main/contracts/src).

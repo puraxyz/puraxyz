@@ -51,4 +51,4 @@ Outputs are saved as PDF figures in `docs/paper/figures/`:
 
 ## Source
 
-Simulation source: [`simulation/bpe_sim.py`](https://github.com/synthesi-protocol/synthesi/tree/main/simulation/bpe_sim.py)
+Simulation source: [`simulation/bpe_sim.py`](https://github.com/spiltdev/spilt/tree/main/simulation/bpe_sim.py)

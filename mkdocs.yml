@@ -1,8 +1,8 @@
-site_name: Backpressure Economics
+site_name: Spilt
 site_description: Capacity-Constrained Monetary Flow Control for Agent Economies
-site_url: https://synthesi-protocol.github.io/synthesi/
-repo_url: https://github.com/synthesi-protocol/synthesi
-repo_name: synthesi
+site_url: https://spilt.dev/
+repo_url: https://github.com/spiltdev/spilt
+repo_name: spilt
 
 docs_dir: website
 

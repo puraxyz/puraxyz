@@ -1,20 +1,20 @@
-# @synthesi/sdk
+# @spilt/sdk
 
-TypeScript SDK for the [Backpressure Economics](../README.md) protocol on Base Sepolia.
+TypeScript SDK for the [Spilt](https://spilt.dev) protocol on Base Sepolia.
 
 ## Installation
 
 ```bash
-npm install @synthesi/sdk
+npm install @spilt/sdk
 ```
 
 ## Usage
 
 ```typescript
-import { getAddresses } from "@synthesi/sdk";
-import * as sink from "@synthesi/sdk/actions/sink";
-import * as pool from "@synthesi/sdk/actions/pool";
-import * as pricing from "@synthesi/sdk/actions/pricing";
+import { getAddresses } from "@spilt/sdk";
+import * as sink from "@spilt/sdk/actions/sink";
+import * as pool from "@spilt/sdk/actions/pool";
+import * as pricing from "@spilt/sdk/actions/pricing";
 import { createPublicClient, createWalletClient, http } from "viem";
 import { baseSepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";

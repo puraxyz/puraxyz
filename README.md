@@ -1,4 +1,4 @@
-# Backpressure Economics (BPE)
+# Spilt — Backpressure Economics (BPE)
 
 **Capacity-Constrained Monetary Flow Control for Agent Economies**
 
@@ -45,7 +45,7 @@ contracts/          Solidity smart contracts (Foundry)
   script/           Deployment scripts
   deployments/      Deployed addresses (Base Sepolia)
 
-sdk/                TypeScript SDK (@synthesi/sdk)
+sdk/                TypeScript SDK (@spilt/sdk)
   src/actions/      8 action modules (sink, source, pool, stake, ...)
   src/examples/     Full-flow demo + testnet validation script
 

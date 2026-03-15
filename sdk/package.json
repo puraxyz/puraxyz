@@ -1,7 +1,7 @@
 {
-  "name": "@synthesi/sdk",
+  "name": "@spilt/sdk",
   "version": "0.1.0",
-  "description": "TypeScript SDK for the Backpressure Economics protocol",
+  "description": "TypeScript SDK for the Spilt protocol",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
