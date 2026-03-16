@@ -131,6 +131,16 @@ Build the PDF:
 cd docs/paper && pdflatex main && bibtex main && pdflatex main && pdflatex main
 ```
 
+## Community
+
+Spilt is early infrastructure looking for feedback from builders working on multi-agent systems.
+
+- **Docs & explainer**: [spilt.dev](https://spilt.dev)
+- **GitHub Issues**: [Report bugs or suggest features](https://github.com/spiltdev/spilt/issues)
+- **Twitter/X**: Follow for updates (link TBD)
+
+If you're building agents that pay other agents, or thinking about how agent economies work at scale, [open an issue](https://github.com/spiltdev/spilt/issues) or reach out directly.
+
 ## License
 
 [MIT](LICENSE)

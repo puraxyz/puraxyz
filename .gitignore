@@ -50,6 +50,9 @@ node_modules/
 # Research (private)
 research/RESEARCH-1.md
 
+# GTM drafts (private)
+gtm/
+
 # Secrets
 .env
 contracts/.env
