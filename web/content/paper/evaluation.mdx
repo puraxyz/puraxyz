@@ -74,4 +74,4 @@ The off-chain aggregation path reduces per-update gas by 83.5% compared to commi
 
 We validate the dynamic pricing curve by simulating demand shocks against multiple sinks with deployed contract parameters ($\gamma = 10{,}000$ BPS, $\delta = 12.5\%$, epoch duration 60s).
 
-Under steady-state conditions with uniform demand across 5 sinks, prices converge to within 2% of the equilibrium base fee $\beta^*$ predicted by Proposition (Price Equilibrium) within 8 epochs (~8 minutes). When a sudden demand spike doubles the request rate for one task type, the base fee adjusts upward over 6 epochs, reducing demand until the system re-equilibrates—the "economic backpressure" effect described in Dynamic Pricing.
+Under steady-state conditions with uniform demand across 5 sinks, prices converge to within 2% of the equilibrium base fee $\beta^*$ predicted by Proposition (Price Equilibrium) within 8 epochs (~8 minutes). When a sudden demand spike doubles the request rate for one task type, the base fee adjusts upward over 6 epochs, reducing demand until the system re-equilibrates. This is the "economic backpressure" effect described in Dynamic Pricing.

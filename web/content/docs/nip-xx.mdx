@@ -1,0 +1,86 @@
+---
+title: "NIP-XX: Backpressure Relay Economics"
+order: 3
+description: Economic layer for Nostr relays using backpressure-based resource allocation
+---
+
+This is a summary of the full [NIP-XX specification](https://github.com/backproto/backproto/blob/main/docs/nips/NIP-XX-backpressure-relay-economics.md).
+
+## Abstract
+
+NIP-XX defines an economic layer for Nostr relays using backpressure-based resource allocation. Relays declare multi-dimensional capacity (throughput, storage, bandwidth) that is verified and smoothed on-chain, enabling proportional payment distribution via streaming micropayments.
+
+## Problem
+
+Current Nostr relay economics are unsustainable:
+
+- Most relays run at a loss or rely on donations
+- Paid-relay models (NIP-42) require manual pricing that doesn't adapt to load
+- No spam resistance without censorship
+- No incentive alignment between relay operators and users
+
+## How It Works
+
+### 1. Capacity Declaration
+
+Relays register on-chain and declare three dimensions:
+
+| Dimension | Unit | Description |
+|-----------|------|-------------|
+| Throughput | events/sec | Maximum event ingestion rate |
+| Storage | GB | Available storage for event retention |
+| Bandwidth | Mbps | Available bandwidth for query serving |
+
+These combine into a **composite score** (default weights: 50% throughput, 25% storage, 25% bandwidth).
+
+### 2. Capacity Verification
+
+Relay capacity claims are verified through EIP-712 signed attestations, EWMA-smoothed (α = 0.3) for stability. Attestations that differ more than 50% from the current smoothed value are dampened to resist manipulation.
+
+### 3. Payment Distribution
+
+A Superfluid GDA pool distributes streaming payments proportional to verified capacity. Relays that meet the anti-spam minimum receive continuous micropayments from users publishing events.
+
+### 4. Anti-Spam Pricing
+
+Dynamic per-event pricing based on relay congestion:
+
+- **Low congestion** (&lt;50% capacity): base rate
+- **Medium congestion** (50–80%): 2× base rate
+- **High congestion** (&gt;80%): 4× base rate
+
+This makes spam economically unviable at scale without requiring content filtering.
+
+## New Event Kinds
+
+| Kind | Description |
+|------|-------------|
+| `39100` | Relay capacity declaration (replaceable) |
+| `39101` | Relay payment receipt |
+| `1100` | Capacity attestation (ephemeral) |
+
+## Contracts
+
+Two contracts implement this NIP:
+
+- **RelayCapacityRegistry**: Relay registration, EIP-712 attestation verification, EWMA smoothing, composite capacity scoring
+- **RelayPaymentPool**: Anti-spam minimum enforcement, BPE-weighted payment distribution via Superfluid GDA
+
+## SDK Support
+
+```typescript
+import * as relay from "@backproto/sdk/actions/relay";
+
+// Register a relay
+await relay.registerRelay(walletClient, addrs, "wss://relay.example.com", 100n);
+
+// Set anti-spam minimum
+await relay.setAntiSpamMinimum(walletClient, addrs, 50n);
+
+// Read composite capacity
+const cap = await relay.getCompositeCapacity(publicClient, addrs, relayAddress);
+```
+
+## Full Specification
+
+The complete NIP-XX specification with all protocol details, message formats, and implementation requirements is in the [docs/nips](https://github.com/backproto/backproto/blob/main/docs/nips/NIP-XX-backpressure-relay-economics.md) directory.

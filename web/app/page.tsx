@@ -1,7 +1,7 @@
 import Link from "next/link";
 import styles from "./page.module.css";
 
-const contracts = [
+const coreContracts = [
   { name: "StakeManager", addr: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3" },
   { name: "CapacityRegistry", addr: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948" },
   { name: "BackpressurePool", addr: "0x8e999a246afea241cf3c1d400dd7786cf591fa88" },
@@ -12,25 +12,53 @@ const contracts = [
   { name: "OffchainAggregator", addr: "0xa70993d6d4cb5e4cf5ee8ddcbfde875e55a937fa" },
 ];
 
+const domains = [
+  {
+    title: "AI Agents",
+    description:
+      "Capacity-weighted streaming payment routing via Superfluid GDA. Payments flow to agents with verified spare capacity.",
+    contracts: "8 contracts: CapacityRegistry, BackpressurePool, StakeManager, EscrowBuffer, Pipeline, PricingCurve, CompletionTracker, OffchainAggregator",
+  },
+  {
+    title: "Demurrage",
+    description:
+      "Time-decaying Super Tokens that incentivize circulation over hoarding. Epoch-based velocity metrics track turnover.",
+    contracts: "2 contracts: DemurrageToken, VelocityMetrics",
+  },
+  {
+    title: "Nostr Relays",
+    description:
+      "NIP-compliant relay capacity signaling with anti-spam pricing. BPE-weighted payment pools make relay operation sustainable.",
+    contracts: "2 contracts: RelayCapacityRegistry, RelayPaymentPool",
+  },
+  {
+    title: "Lightning",
+    description:
+      "EWMA-smoothed channel capacity oracles and cross-protocol routing across Superfluid, Lightning, and on-chain settlement.",
+    contracts: "3 contracts: LightningCapacityOracle, LightningRoutingPool, CrossProtocolRouter",
+  },
+];
+
 export default function Home() {
   return (
     <>
       <section className={styles.hero}>
-        <div className={styles.badge}>Live on Base Sepolia</div>
+        <div className={styles.badge}>17 contracts &middot; 125 tests passing &middot; Base Sepolia</div>
         <h1 className={styles.title}>
-          <span>Backpressure economics</span> for agent payments
+          <span>Backpressure economics</span> for decentralized networks
         </h1>
         <p className={styles.subtitle}>
-          When AI agents pay each other via streaming payments, there is no flow
-          control. Spilt adapts backpressure routing from network theory so
-          payments automatically flow to agents with spare capacity.
+          When downstream participants reach capacity, payments and messages must
+          reroute, buffer, or throttle. Backproto makes receiver-side capacity
+          constraints a first-class protocol primitive, across AI agents,
+          Nostr relays, Lightning channels, and streaming payments.
         </p>
         <div className={styles.buttons}>
           <Link href="/explainer" className={styles.btnPrimary}>
             How it works
           </Link>
           <a
-            href="https://github.com/spiltdev/spilt"
+            href="https://github.com/backproto/backproto"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.btnSecondary}
@@ -43,22 +71,37 @@ export default function Home() {
         </div>
       </section>
 
+      <section className={styles.section}>
+        <div className={styles.sectionTitle}>Four Domains, One Protocol</div>
+        <div className={styles.cards}>
+          {domains.map(({ title, description, contracts }) => (
+            <div key={title} className={styles.card}>
+              <div className={styles.cardTitle}>{title}</div>
+              <p className={styles.cardText}>{description}</p>
+              <p className={styles.cardText} style={{ opacity: 0.6, fontSize: "0.75rem", marginTop: "0.5rem" }}>
+                {contracts}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <div className={styles.diagram}>
         <div className={styles.diagramBox}>
           <pre>
-            <code>{`CapacityRegistry <─── StakeManager
-  (EWMA, commit-reveal)     (stake, sqrt cap)
-        │
-        ▼
-  BackpressurePool ──→ Superfluid GDA Pool
-  (rebalance)            (streaming distribution)
-        │
-        ├──→ EscrowBuffer     (overflow hold)
-        └──→ Pipeline          (multi-stage chains)
-
-  PricingCurve          (EIP-1559-style dynamic fees)
-  CompletionTracker     (statistical capacity verification)
-  OffchainAggregator    (batched EIP-712 attestations)`}</code>
+            <code>{`                  ┌──────────────────────────────┐
+                  │       Platform Layer          │
+                  │  UniversalCapacityAdapter      │
+                  │  ReputationLedger              │
+                  │  CrossProtocolRouter           │
+                  └──────┬──────┬──────┬──────────┘
+                         │      │      │
+         ┌───────────────┤      │      ├──────────────────┐
+         ▼               ▼      ▼      ▼                  ▼
+  ┌─────────────┐ ┌──────────┐ ┌───────────────┐ ┌────────────────┐
+  │  Core BPE   │ │Demurrage │ │ Nostr Relays  │ │   Lightning    │
+  │  8 contracts│ │2 contract│ │ 2 contracts   │ │  3 contracts   │
+  └─────────────┘ └──────────┘ └───────────────┘ └────────────────┘`}</code>
           </pre>
         </div>
       </div>
@@ -92,10 +135,10 @@ export default function Home() {
             </p>
           </div>
           <div className={styles.card}>
-            <div className={styles.cardTitle}>Sybil Resistant</div>
+            <div className={styles.cardTitle}>Cross-Domain Reputation</div>
             <p className={styles.cardText}>
-              Concave capacity cap: splitting stake across identities is always
-              unprofitable. Truthful reporting is a Bayesian-Nash equilibrium.
+              Portable reputation across all domains. Negative signals hurt 3×.
+              Good cross-domain reputation earns up to 50% stake discount.
             </p>
           </div>
         </div>
@@ -103,7 +146,7 @@ export default function Home() {
 
       <section className={styles.contracts}>
         <div className={styles.sectionTitle}>
-          Deployed Contracts &middot; Base Sepolia
+          Core Contracts &middot; Base Sepolia
         </div>
         <table>
           <thead>
@@ -113,7 +156,7 @@ export default function Home() {
             </tr>
           </thead>
           <tbody>
-            {contracts.map(({ name, addr }) => (
+            {coreContracts.map(({ name, addr }) => (
               <tr key={addr}>
                 <td>
                   <code>{name}</code>

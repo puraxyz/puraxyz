@@ -1,54 +1,80 @@
 ---
 title: Smart Contracts
 order: 0
-description: Solidity contracts deployed on Base Sepolia with Superfluid GDA
+description: 17 Solidity contracts across 4 domains deployed on Base Sepolia
 ---
 
-BPE is implemented as five Solidity smart contracts deployed on Base Sepolia (L2), built on top of the Superfluid Protocol's General Distribution Agreement (GDA).
+Backproto is implemented as 17 Solidity smart contracts deployed on Base Sepolia (L2), spanning four domains plus a platform layer.
 
 ## Architecture
 
 ```
-┌─────────────────────┐     ┌─────────────────────────┐
-│  CapacityRegistry   │◄────│  StakeManager           │
-│  - task type reg    │     │  - stake/unstake/slash   │
-│  - sink reg         │     │  - capacity cap compute  │
-│  - commit-reveal    │     └─────────────────────────┘
-│  - EWMA smoothing   │
-└────────┬────────────┘
-         │ reads capacity
-         ▼
-┌─────────────────────┐     ┌─────────────────────────┐
-│  BackpressurePool   │────►│  Superfluid GDA Pool    │
-│  - rebalance()      │     │  (underlying primitive) │
-│  - needsRebalance() │     └─────────────────────────┘
-│  - pool per taskType│
-└─────────────────────┘
-         │
-         ▼
-┌─────────────────────┐
-│  EscrowBuffer       │
-│  - overflow hold    │
-│  - FIFO drain       │
-│  - B_max config     │
-└─────────────────────┘
-
-┌─────────────────────┐
-│  Pipeline           │
-│  - multi-pool chain │
-│  - upstream prop    │
-└─────────────────────┘
+                  ┌──────────────────────────────┐
+                  │       Platform Layer          │
+                  │  UniversalCapacityAdapter      │
+                  │  ReputationLedger              │
+                  │  CrossProtocolRouter           │
+                  └──────┬──────┬──────┬──────────┘
+                         │      │      │
+         ┌───────────────┤      │      ├──────────────────┐
+         ▼               ▼      ▼      ▼                  ▼
+  ┌─────────────┐ ┌──────────┐ ┌───────────────┐ ┌────────────────┐
+  │  Core BPE   │ │Demurrage │ │ Nostr Relays  │ │   Lightning    │
+  │  8 contracts│ │2 contracts│ │ 2 contracts   │ │  3 contracts   │
+  └─────────────┘ └──────────┘ └───────────────┘ └────────────────┘
 ```
 
-## Contracts
+## Core BPE (8 contracts)
+
+The foundational layer: capacity-weighted streaming payment routing for AI agents via Superfluid GDA.
 
 | Contract | Purpose |
 |----------|---------|
-| `CapacityRegistry.sol` | Task type registry, sink registration, commit-reveal capacity signals, EWMA smoothing |
-| `BackpressurePool.sol` | Extends Superfluid GDA Pool with capacity-weighted rebalancing |
-| `StakeManager.sol` | Stake management, capacity caps via $\sqrt{\text{stake}/\text{unit}}$, slashing |
-| `EscrowBuffer.sol` | Overflow buffer for when all sinks are at capacity, FIFO drain |
-| `Pipeline.sol` | Multi-stage pipeline composition with upstream congestion propagation |
+| `CapacityRegistry` | Task type + sink registry, commit-reveal capacity signals, EWMA smoothing |
+| `StakeManager` | Stake/unstake/slash, concave capacity cap $\sqrt{\text{stake}/\text{unit}}$ |
+| `BackpressurePool` | Superfluid GDA pool with capacity-weighted unit rebalancing |
+| `EscrowBuffer` | Overflow buffer when all sinks saturated, FIFO drain |
+| `Pipeline` | Multi-stage pipeline composition with upstream congestion propagation |
+| `PricingCurve` | EIP-1559-style dynamic fees based on queue length |
+| `CompletionTracker` | Statistical capacity verification with auto-slash |
+| `OffchainAggregator` | Batched EIP-712 attestation submission (83.5% gas savings) |
+
+## Demurrage (2 contracts)
+
+Time-decaying tokens that incentivize circulation over hoarding, layered with velocity tracking.
+
+| Contract | Purpose |
+|----------|---------|
+| `DemurrageToken` | ERC-20 Super Token with configurable decay rate per epoch |
+| `VelocityMetrics` | Epoch-based monetary velocity and turnover rate tracking |
+
+## Nostr Relays (2 contracts)
+
+NIP-compliant relay capacity signaling and economic sustainability for relay operators.
+
+| Contract | Purpose |
+|----------|---------|
+| `RelayCapacityRegistry` | Relay registration with EIP-712 signed capacity attestations, EWMA smoothing |
+| `RelayPaymentPool` | Anti-spam minimum + BPE-weighted streaming payment distribution |
+
+## Lightning (3 contracts)
+
+Channel capacity oracles and cross-protocol routing for Lightning Network integration.
+
+| Contract | Purpose |
+|----------|---------|
+| `LightningCapacityOracle` | EWMA-smoothed Lightning node capacity from signed attestation batches |
+| `LightningRoutingPool` | BPE pool weighting nodes by capacity/congestion score |
+| `CrossProtocolRouter` | Unified routing across Superfluid, Lightning, and on-chain settlement |
+
+## Platform (2 contracts)
+
+The composition layer: universal adapter and cross-domain reputation.
+
+| Contract | Purpose |
+|----------|---------|
+| `UniversalCapacityAdapter` | Domain adapter registry, normalizes capacity 0–10000, routes to core BPE |
+| `ReputationLedger` | Cross-domain portable reputation, 3× negative weight, up to 50% stake discount |
 
 ## Deployment
 
@@ -62,13 +88,14 @@ forge build
 forge test
 ```
 
-All 40 unit tests pass. The test suite covers:
+All 125 tests pass. The test suite covers:
 
-- Capacity registration and EWMA smoothing
-- Stake management and capacity cap computation
-- Escrow buffer deposits and FIFO draining
+- Core BPE: capacity registration, EWMA, staking, escrow, pricing, completion tracking
+- Demurrage: wrap/unwrap, decay mechanics, epoch advancement, velocity metrics
+- Lightning: node registration, EIP-712 batch attestation, EWMA smoothing
+- Platform: reputation scoring, cross-domain aggregation, stake discounts
 - Fork tests against live Superfluid on Base Sepolia
 
 ## Source
 
-Contract source code is on [GitHub](https://github.com/spiltdev/spilt/tree/main/contracts/src).
+Contract source code is on [GitHub](https://github.com/backproto/backproto/tree/main/contracts/src).

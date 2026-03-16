@@ -17,6 +17,15 @@ import { Pipeline } from "../src/Pipeline.sol";
 import { PricingCurve } from "../src/PricingCurve.sol";
 import { CompletionTracker } from "../src/CompletionTracker.sol";
 import { OffchainAggregator } from "../src/OffchainAggregator.sol";
+import { DemurrageToken } from "../src/DemurrageToken.sol";
+import { VelocityMetrics } from "../src/VelocityMetrics.sol";
+import { RelayCapacityRegistry } from "../src/nostr/RelayCapacityRegistry.sol";
+import { RelayPaymentPool } from "../src/nostr/RelayPaymentPool.sol";
+import { LightningCapacityOracle } from "../src/lightning/LightningCapacityOracle.sol";
+import { LightningRoutingPool } from "../src/lightning/LightningRoutingPool.sol";
+import { CrossProtocolRouter } from "../src/lightning/CrossProtocolRouter.sol";
+import { UniversalCapacityAdapter } from "../src/UniversalCapacityAdapter.sol";
+import { ReputationLedger } from "../src/ReputationLedger.sol";
 
 /// @notice Minimal ERC20 for staking; deployer receives initial supply.
 contract BPEToken is ERC20 {
@@ -49,6 +58,7 @@ contract Deploy is Script {
     uint256 constant STAKE_UNIT = 1e18;
     uint256 constant MIN_SINK_STAKE = 100e18;
     uint256 constant USDC_SUPPLY = 1_000_000e6; // 1M tUSDC (6 decimals)
+    uint256 constant DECAY_RATE = 1_585_489_599; // ~5% annual decay
 
     function run() external {
         uint256 deployerKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
@@ -135,33 +145,81 @@ contract Deploy is Script {
         // Authorize the completion tracker to slash underperforming sinks
         stakeManager.setSlasher(address(tracker), true);
 
+        // ─── Phase A: Demurrage Layer ───
+        _deployBackproto(deployer, address(stakeToken), address(registry), address(stakeManager), address(pool), address(pricing));
+
         vm.stopBroadcast();
 
         // ─── Output deployment JSON (copy to deployments/base-sepolia.json) ───
         console.log("");
         console.log("--- Deployment Addresses (JSON) ---");
-        console.log("{");
-        console.log('  "chainId": 84532,');
-        _logAddr("stakeToken", address(stakeToken));
-        _logAddr("stakeManager", address(stakeManager));
-        _logAddr("capacityRegistry", address(registry));
-        _logAddr("bpeSuperToken", address(bpeSuperToken));
-        _logAddr("paymentToken", address(paymentToken));
-        _logAddr("paymentSuperToken", address(paymentSuperToken));
-        _logAddr("backpressurePool", address(pool));
-        _logAddr("escrowBuffer", address(buffer));
-        _logAddr("pipeline", address(pipeline));
-        _logAddr("pricingCurve", address(pricing));
-        _logAddr("completionTracker", address(tracker));
-        _logAddr("offchainAggregator", address(aggregator));
-        // Last entry without trailing comma
-        console.log(string.concat('  "gdaV1": "', vm.toString(GDA_V1), '"'));
-        console.log("}");
-
+        console.log("See console logs above for all addresses.");
         console.log("--- Deployment Complete ---");
     }
 
-    function _logAddr(string memory name, address addr) internal pure {
-        console.log(string.concat('  "', name, '": "', vm.toString(addr), '",'));
+    function _deployBackproto(
+        address deployer,
+        address stakeToken_,
+        address registry_,
+        address stakeManager_,
+        address pool_,
+        address pricing_
+    ) internal {
+        // Phase A: Demurrage
+        DemurrageToken demurrageToken = new DemurrageToken(
+            "Demurrage BPE", "dBPE", stakeToken_, DECAY_RATE, deployer, deployer
+        );
+        console.log("DemurrageToken:", address(demurrageToken));
+
+        VelocityMetrics velocityMetrics = new VelocityMetrics(
+            address(demurrageToken), deployer
+        );
+        console.log("VelocityMetrics:", address(velocityMetrics));
+
+        // Phase B: Nostr
+        bytes32 relayTaskTypeId = keccak256("NOSTR_RELAY");
+        RelayCapacityRegistry relayRegistry = new RelayCapacityRegistry(
+            registry_, stakeManager_, relayTaskTypeId, deployer
+        );
+        console.log("RelayCapacityRegistry:", address(relayRegistry));
+
+        RelayPaymentPool relayPool = new RelayPaymentPool(
+            address(relayRegistry), registry_, pool_, deployer
+        );
+        console.log("RelayPaymentPool:", address(relayPool));
+
+        // Phase C: Lightning
+        _deployLightningAndPlatform(deployer, registry_, stakeManager_, pool_, pricing_);
+    }
+
+    function _deployLightningAndPlatform(
+        address deployer,
+        address registry_,
+        address stakeManager_,
+        address pool_,
+        address pricing_
+    ) internal {
+        bytes32 lightningTaskTypeId = keccak256("LIGHTNING_ROUTING");
+        LightningCapacityOracle lightningOracle = new LightningCapacityOracle(
+            registry_, stakeManager_, lightningTaskTypeId, deployer
+        );
+        console.log("LightningCapacityOracle:", address(lightningOracle));
+
+        LightningRoutingPool lightningPool = new LightningRoutingPool(
+            pool_, registry_, address(lightningOracle), pricing_, lightningTaskTypeId, deployer
+        );
+        console.log("LightningRoutingPool:", address(lightningPool));
+
+        CrossProtocolRouter router = new CrossProtocolRouter(deployer);
+        console.log("CrossProtocolRouter:", address(router));
+
+        // Phase D: Platform Unification
+        UniversalCapacityAdapter adapter = new UniversalCapacityAdapter(
+            registry_, stakeManager_, deployer
+        );
+        console.log("UniversalCapacityAdapter:", address(adapter));
+
+        ReputationLedger reputation = new ReputationLedger(deployer);
+        console.log("ReputationLedger:", address(reputation));
     }
 }

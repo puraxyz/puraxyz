@@ -10,7 +10,7 @@ Tassiulas and Ephremides (Tassiulas & Ephremides, 1992) introduced the *max-weig
 
 ## Network Pricing and Congestion Control
 
-Kelly et al. (Kelly et al., 1998) showed that network rate allocation can be decomposed into a system problem (shadow prices on link capacities) and user problems (utility maximization subject to prices). The shadow prices emerge as Lagrange multipliers on capacity constraints—an insight that directly bridges network routing and economics. Srikant (Srikant, 2004) formalized TCP congestion control as distributed optimization, with AIMD (Additive Increase Multiplicative Decrease) serving as a primal-dual algorithm. Jacobson (Jacobson, 1988) established EWMA for round-trip time estimation in TCP, providing the practical precedent for our capacity smoothing mechanism.
+Kelly et al. (Kelly et al., 1998) showed that network rate allocation can be decomposed into a system problem (shadow prices on link capacities) and user problems (utility maximization subject to prices). The shadow prices emerge as Lagrange multipliers on capacity constraints, an insight that directly bridges network routing and economics. Srikant (Srikant, 2004) formalized TCP congestion control as distributed optimization, with AIMD (Additive Increase Multiplicative Decrease) serving as a primal-dual algorithm. Jacobson (Jacobson, 1988) established EWMA for round-trip time estimation in TCP, providing the practical precedent for our capacity smoothing mechanism.
 
 ## Token Engineering
 
@@ -18,7 +18,7 @@ Zhang and Zargham (Zhang & Zargham, 2020) take a dynamical systems approach to t
 
 ## Demurrage Economics
 
-Gesell (Gesell, 1916) proposed demurrage (a holding tax on currency) to increase monetary velocity. Fisher (Fisher, 1933) formalized this in *Stamp Scrip*. Both are *stock-based* velocity mechanisms: they penalize holding money. BPE is fundamentally different—a *flow-based allocation* mechanism that routes payments to where capacity exists. The two approaches are orthogonal and composable: demurrage encourages spending velocity, while BPE ensures efficient allocation of the resulting flows.
+Gesell (Gesell, 1916) proposed demurrage (a holding tax on currency) to increase monetary velocity. Fisher (Fisher, 1933) formalized this in *Stamp Scrip*. Both are *stock-based* velocity mechanisms: they penalize holding money. BPE is fundamentally different: a *flow-based allocation* mechanism that routes payments to where capacity exists. The two approaches are orthogonal and composable: demurrage encourages spending velocity, while BPE ensures efficient allocation of the resulting flows.
 
 ## Sender-Side Capacity Awareness
 
@@ -26,4 +26,4 @@ Automated market makers (AMMs) like Uniswap (Adams et al., 2021) implement sende
 
 ## AI Agent Payment Protocols
 
-The 2024–2026 wave of agent payment protocols addresses authorization and identity: Google's AP2 (Google, 2025) handles inter-agent authentication, Coinbase's x402 (Coinbase, 2025) uses HTTP 402 for single-shot payments, OpenAI–Stripe's ACP (OpenAI & Stripe, 2025) provides billing and invoicing, and Visa's TAP (Visa, 2025) extends card-network authorization to agents. Cha et al. (Cha et al., 2025) study LLM inference pricing via self-play. *None of these systems address flow control*—the dynamic rerouting of payment streams based on real-time capacity. BPE fills this gap.
+The 2024–2026 wave of agent payment protocols addresses authorization and identity: Google's AP2 (Google, 2025) handles inter-agent authentication, Coinbase's x402 (Coinbase, 2025) uses HTTP 402 for single-shot payments, OpenAI–Stripe's ACP (OpenAI & Stripe, 2025) provides billing and invoicing, and Visa's TAP (Visa, 2025) extends card-network authorization to agents. Cha et al. (Cha et al., 2025) study LLM inference pricing via self-play. *None of these systems address flow control*: the dynamic rerouting of payment streams based on real-time capacity. BPE fills this gap.

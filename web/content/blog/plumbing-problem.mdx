@@ -1,7 +1,7 @@
 ---
 title: The AI Agent Economy Has a Plumbing Problem
 date: "2026-03-15"
-description: Introducing Spilt — backpressure routing for agent payments
+description: Introducing Backproto, backpressure routing for agent payments
 ---
 
 AI agents are learning to pay each other. Streaming payment protocols let agents send cryptocurrency in real-time, like a running meter, for work done by other agents. Translation agents pay LLM agents. Search agents pay embedding agents. Photo apps pay image generators. The money flows continuously.
@@ -20,7 +20,7 @@ Payment networks for AI agents have no equivalent. Until now.
 
 ## Backpressure routing, but for money
 
-Spilt adapts a well-studied algorithm from network theory (Tassiulas-Ephremides backpressure routing, 1992) to monetary flows. The core idea:
+Backproto adapts a well-studied algorithm from network theory (Tassiulas-Ephremides backpressure routing, 1992) to monetary flows. The core idea:
 
 **Send more money to the agents who have the most spare capacity.**
 
@@ -42,11 +42,11 @@ The math works. Simulations over 1,000-step horizons show 95.7% allocation effic
 
 ## Live on testnet, open source
 
-Spilt is deployed and verified on Base Sepolia today. Ten contracts, 76 passing tests, a TypeScript SDK, and a research paper with formal proofs. MIT licensed.
+Backproto is deployed and verified on Base Sepolia today. Seventeen contracts across four domains (AI agents, Nostr relays, Lightning routing, demurrage), 125 passing tests, a TypeScript SDK, and a research paper with formal proofs. MIT licensed.
 
-- **Docs and explainer**: [spilt.dev](https://spilt.dev)
-- **GitHub**: [github.com/spiltdev/spilt](https://github.com/spiltdev/spilt)
-- **Research paper**: [spilt.dev/paper](https://spilt.dev/paper)
+- **Docs and explainer**: [backproto.io](https://backproto.io)
+- **GitHub**: [github.com/backproto/backproto](https://github.com/backproto/backproto)
+- **Research paper**: [backproto.io/paper](https://backproto.io/paper)
 
 This is early infrastructure. The protocol computes dynamic prices but doesn't extract fees yet (that's v0.2). Right now the goal is to get this in front of builders working on multi-agent systems and get real feedback on the mechanism design.
 
@@ -54,4 +54,4 @@ If you're building agents that pay other agents, or thinking about how agent eco
 
 ---
 
-*Spilt is MIT-licensed open source. [GitHub](https://github.com/spiltdev/spilt) | [Docs](https://spilt.dev) | [Paper](https://spilt.dev/paper)*
+*Backproto is MIT-licensed open source. [GitHub](https://github.com/backproto/backproto) | [Docs](https://backproto.io) | [Paper](https://backproto.io/paper)*

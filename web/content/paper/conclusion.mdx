@@ -6,7 +6,7 @@ description: Summary and outlook
 
 We have presented Backpressure Economics (BPE), a cryptoeconomic mechanism that adapts Tassiulas–Ephremides backpressure routing to monetary flows in AI agent economies. BPE addresses a gap unserved by current agent payment protocols: the dynamic rerouting of continuous payment streams based on real-time capacity constraints.
 
-Our formal model maps network backpressure concepts—virtual queues, differential backlogs, max-weight scheduling—to the monetary domain, with a bounded overflow buffer handling the fundamental constraint that money cannot be dropped. We prove throughput optimality within the capacity region via Lyapunov drift analysis and implement the protocol using Superfluid GDA pools on Base.
+Our formal model maps network backpressure concepts (virtual queues, differential backlogs, max-weight scheduling) to the monetary domain, with a bounded overflow buffer handling the fundamental constraint that money cannot be dropped. We prove throughput optimality within the capacity region via Lyapunov drift analysis and implement the protocol using Superfluid GDA pools on Base.
 
 Simulation results demonstrate that BPE achieves 95.7% allocation efficiency compared to 93.5% for round-robin and 79.7% for random allocation, with robust shock recovery and effective Sybil resistance via the concave stake cap.
 

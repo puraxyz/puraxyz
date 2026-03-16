@@ -1,28 +1,29 @@
 ---
 title: TypeScript SDK
 order: 1
-description: Type-safe client for interacting with BPE contracts via viem
+description: Type-safe client for interacting with Backproto contracts via viem
 ---
 
-The `@spilt/sdk` package provides a TypeScript client for interacting with BPE smart contracts.
+The `@backproto/sdk` package provides a TypeScript client for interacting with all 17 Backproto smart contracts across 4 domains.
 
 ## Installation
 
 ```bash
-npm install @spilt/sdk
+npm install @backproto/sdk
 ```
 
 ## Features
 
-- **Contract ABIs** - Pre-compiled ABIs for all BPE contracts
-- **Type-safe interactions** - Full TypeScript types via [viem](https://viem.sh/)
-- **Helper functions** - Common operations like capacity signal computation and stream management
-- **Address registry** - Deployed contract addresses for supported networks
+- **Contract ABIs**: Pre-compiled ABIs for all 17 contracts
+- **Type-safe interactions**: Full TypeScript types via [viem](https://viem.sh/)
+- **13 action modules**: Core BPE + Demurrage + Relay + Lightning + Platform
+- **Address registry**: Deployed contract addresses for supported networks
+- **EIP-712 signing**: Helpers for attestations and completion receipts
 
 ## Usage
 
 ```typescript
-import { addresses, contracts } from '@spilt/sdk'
+import { addresses, contracts } from '@backproto/sdk'
 
 // Get contract addresses for Base Sepolia
 const { capacityRegistry, backpressurePool, stakeManager } = addresses.baseSepolia
@@ -44,6 +45,31 @@ const capacity = await client.readContract({
 })
 ```
 
+## Action Modules
+
+### Core BPE
+
+| Module | Description |
+|--------|-------------|
+| `actions/sink` | Register/deregister sinks |
+| `actions/source` | Register task types, start/stop payment streams |
+| `actions/pool` | Create pools, rebalance, read member units |
+| `actions/stake` | Stake/unstake tokens, read capacity cap |
+| `actions/buffer` | Deposit to / drain from escrow buffer |
+| `actions/pricing` | Report queue load, advance pricing epoch, read prices |
+| `actions/completion` | Record completions, advance completion epoch |
+| `actions/aggregator` | Submit batched off-chain attestations |
+| `signing` | EIP-712 signing helpers |
+
+### Domain Extensions
+
+| Module | Description |
+|--------|-------------|
+| `actions/demurrage` | Wrap/unwrap demurrage tokens, rebase, read decay rates |
+| `actions/relay` | Register Nostr relays, join pools, set anti-spam minimums |
+| `actions/lightning` | Register Lightning nodes, join routing pools, get optimal routes |
+| `actions/platform` | Aggregate reputation, stake discounts, route attestations |
+
 ## Source
 
-SDK source code is on [GitHub](https://github.com/spiltdev/spilt/tree/main/sdk/src).
+SDK source code is on [GitHub](https://github.com/backproto/backproto/tree/main/sdk/src).

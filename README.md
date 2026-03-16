@@ -1,58 +1,87 @@
-# Spilt - Backpressure Economics (BPE)
+# Backproto: Backpressure Economics for Decentralized Networks
 
-**Capacity-Constrained Monetary Flow Control for Agent Economies**
+**Universal capacity-constrained flow control across AI agents, Nostr relays, Lightning routing, and streaming payments**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.26-363636.svg)](https://soliditylang.org/)
 [![Base Sepolia](https://img.shields.io/badge/Network-Base%20Sepolia-0052FF.svg)](https://sepolia.basescan.org/)
+[![Tests](https://img.shields.io/badge/Tests-125%20passing-brightgreen.svg)](#)
 
 ---
 
-BPE adapts the [Tassiulas–Ephremides backpressure routing algorithm](https://doi.org/10.1109/9.182479) from communication networks to monetary flows in multi-agent economies. Streaming payment protocols enable continuous flows between AI agents, yet none provide **flow control** - when a downstream agent reaches capacity, payments accumulate with no mechanism to reroute, buffer, or throttle. BPE solves this by treating receiver-side capacity constraints as first-class payment routing primitives.
+Backproto adapts the [Tassiulas–Ephremides backpressure routing algorithm](https://doi.org/10.1109/9.182479) from communication networks to monetary and data flows in decentralized systems. When downstream participants reach capacity, payments and messages must reroute, buffer, or throttle. Backproto makes receiver-side capacity constraints a first-class protocol primitive.
+
+The protocol spans **four domains**:
+
+| Domain | What it solves |
+|--------|---------------|
+| **Core BPE** | Capacity-weighted streaming payment routing for AI agents via Superfluid GDA |
+| **Demurrage** | Time-decaying super tokens + velocity metrics to incentivize circulation |
+| **Nostr Relays** | Relay capacity signaling, anti-spam pricing, BPE-weighted payment pools |
+| **Lightning** | EWMA-smoothed channel capacity oracles, cross-protocol routing |
+
+Plus a **platform layer** (universal capacity adapter, cross-domain reputation ledger, and protocol router) that composes these domains into one system.
 
 ## Architecture
 
 ```
-CapacityRegistry <─── StakeManager
-  (EWMA, commit-reveal)     (stake, √cap)
-        │
-        ▼
-  BackpressurePool ──→ Superfluid GDA Pool
-  (rebalance)            (streaming distribution)
-        │
-        ├──→ EscrowBuffer     (overflow hold)
-        └──→ Pipeline          (multi-stage chains)
-
-  PricingCurve          (EIP-1559-style dynamic fees)
-  CompletionTracker     (statistical capacity verification)
-  OffchainAggregator    (batched EIP-712 attestations)
+                        ┌─────────────────────────────────┐
+                        │       Platform Layer             │
+                        │  UniversalCapacityAdapter        │
+                        │  ReputationLedger                │
+                        │  CrossProtocolRouter             │
+                        └──────┬───────┬──────┬───────────┘
+                               │       │      │
+             ┌─────────────────┤       │      ├──────────────────┐
+             ▼                 ▼       ▼      ▼                  ▼
+  ┌───────────────────┐ ┌──────────────┐ ┌──────────────────┐ ┌────────────────┐
+  │   Core BPE        │ │  Demurrage   │ │   Nostr Relays   │ │   Lightning    │
+  │  CapacityRegistry │ │  Demurrage-  │ │  RelayCapacity-  │ │  LightningCap- │
+  │  StakeManager     │ │   Token      │ │   Registry       │ │   acityOracle  │
+  │  BackpressurePool │ │  Velocity-   │ │  RelayPayment-   │ │  LightningRout-│
+  │  EscrowBuffer     │ │   Metrics    │ │   Pool           │ │   ingPool      │
+  │  Pipeline         │ └──────────────┘ └──────────────────┘ └────────────────┘
+  │  PricingCurve     │
+  │  CompletionTracker│
+  │  OffchainAggr.    │
+  └───────────────────┘
 ```
 
 ## Key Results
 
-- **Throughput-optimal** allocation via Lyapunov drift analysis - every stabilisable demand vector is served
+- **Throughput-optimal** allocation via Lyapunov drift analysis: every stabilisable demand vector is served
 - **95.7%** allocation efficiency vs 93.5% for round-robin (simulation)
 - **83.5%** gas reduction via off-chain attestation aggregation
-- **Sybil-resistant** concave capacity cap: $\text{cap}(S) = \sqrt{S/u}$
-- **Incentive-compatible** - truthful reporting is a Bayesian-Nash equilibrium
+- **Sybil-resistant** concave capacity cap: cap(S) = √(S/u)
+- **Incentive-compatible**: truthful reporting is a Bayesian-Nash equilibrium
+- **Cross-domain reputation**: portable scores with 3× negative weight, up to 50% stake discount
 
 ## Repository Structure
 
 ```
-contracts/          Solidity smart contracts (Foundry)
-  src/              8 contracts + 7 interfaces
-  test/             Unit + fork tests (76 passing)
-  script/           Deployment scripts
-  deployments/      Deployed addresses (Base Sepolia)
+contracts/              Solidity smart contracts (Foundry)
+  src/                  17 contracts across 4 domains + platform
+    lightning/          LightningCapacityOracle, LightningRoutingPool, CrossProtocolRouter
+    nostr/              RelayCapacityRegistry, RelayPaymentPool
+    interfaces/         14 interfaces
+  test/                 125 passing tests
+  script/               Full-stack deployment script
+  deployments/          Deployed addresses (Base Sepolia)
 
-sdk/                TypeScript SDK (@spilt/sdk)
-  src/actions/      8 action modules (sink, source, pool, stake, ...)
-  src/examples/     Full-flow demo + testnet validation script
+sdk/                    TypeScript SDK (@backproto/sdk)
+  src/actions/          13 action modules (sink, source, pool, stake, buffer,
+                        pricing, completion, aggregator, demurrage, relay,
+                        lightning, platform, signing)
+  src/examples/         Full-flow demo + testnet validation
 
-docs/paper/         Research paper (LaTeX, 14 sections)
-simulation/         Python simulation (5 experiments, figure generation)
-plan/               Design documents and protocol specification
-website/            MkDocs Material site source
+docs/
+  paper/                Research paper (LaTeX, 14 sections)
+  nips/                 NIP-XX: Backpressure Relay Economics spec
+
+simulation/             Python simulation (5 experiments, figure generation)
+plan/                   Design documents 00–08 (historical) + protocol spec
+web/                    Next.js website (backproto.io)
+gtm/                    Go-to-market material
 ```
 
 ## Quick Start
@@ -61,16 +90,15 @@ website/            MkDocs Material site source
 
 - [Foundry](https://book.getfoundry.sh/) (forge, cast, anvil)
 - [Node.js](https://nodejs.org/) ≥ 18 + npm
-- Python 3.10+ (for simulation and website build)
+- Python 3.10+ (for simulation)
 
 ### Contracts
 
 ```bash
 cd contracts
-cp .env.example .env          # fill in your values
 forge install
 forge build
-forge test                    # 76 tests, all passing
+forge test            # 125 tests passing
 ```
 
 ### SDK
@@ -78,68 +106,81 @@ forge test                    # 76 tests, all passing
 ```bash
 cd sdk
 npm install
-npm run build                 # compile TypeScript
-npm run lint                  # type-check
+npm run build         # compile TypeScript
+npm run lint          # type-check
+```
+
+### Website
+
+```bash
+cd web
+npm install
+npm run dev           # local preview at localhost:3000
 ```
 
 ### Simulation
 
 ```bash
 pip install numpy matplotlib
-python simulation/bpe_sim.py  # runs 5 experiments, outputs figures to docs/paper/figures/
+python simulation/bpe_sim.py
 ```
 
-### Website
+## Contracts: 17 Deployed on Base Sepolia
 
-```bash
-python3 -m venv .venv && source .venv/bin/activate
-pip install mkdocs-material pypandoc_binary pymupdf
-./scripts/build-site.sh       # build to site/
-./scripts/build-site.sh --serve  # local preview at localhost:8000
-```
-
-## Deployed Contracts (Base Sepolia)
-
-All contracts are verified on [Basescan](https://sepolia.basescan.org/).
+### Core BPE
 
 | Contract | Address |
 |----------|---------|
-| BPEToken | [`0xf5cf3cd405ac3b48dde534d9793ce9118d4ca4a5`](https://sepolia.basescan.org/address/0xf5cf3cd405ac3b48dde534d9793ce9118d4ca4a5) |
-| TestUSDC | [`0xb1152e5426e4cebd7a3f034fff7fae2711e8ff15`](https://sepolia.basescan.org/address/0xb1152e5426e4cebd7a3f034fff7fae2711e8ff15) |
-| StakeManager | [`0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3`](https://sepolia.basescan.org/address/0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3) |
-| CapacityRegistry | [`0x6f58f28c0a270c198c65cff5c5a7ba9d86088948`](https://sepolia.basescan.org/address/0x6f58f28c0a270c198c65cff5c5a7ba9d86088948) |
-| BackpressurePool | [`0x8e999a246afea241cf3c1d400dd7786cf591fa88`](https://sepolia.basescan.org/address/0x8e999a246afea241cf3c1d400dd7786cf591fa88) |
-| EscrowBuffer | [`0x8d2f5b40315cccf9b7aa10869c035f9c7a0a3160`](https://sepolia.basescan.org/address/0x8d2f5b40315cccf9b7aa10869c035f9c7a0a3160) |
-| Pipeline | [`0xbc2c20d75ab5a03f592bcfdb7d8c40fdd3f7afa7`](https://sepolia.basescan.org/address/0xbc2c20d75ab5a03f592bcfdb7d8c40fdd3f7afa7) |
-| PricingCurve | [`0x11522daf010c08d5d26a2b1369567279a27338e3`](https://sepolia.basescan.org/address/0x11522daf010c08d5d26a2b1369567279a27338e3) |
-| CompletionTracker | [`0xff3dab79a53ffd11bae041e094ed0b6217acfc3c`](https://sepolia.basescan.org/address/0xff3dab79a53ffd11bae041e094ed0b6217acfc3c) |
-| OffchainAggregator | [`0xa70993d6d4cb5e4cf5ee8ddcbfde875e55a937fa`](https://sepolia.basescan.org/address/0xa70993d6d4cb5e4cf5ee8ddcbfde875e55a937fa) |
+| BPEToken | [`0x129Cb89ED216637925871951cA6FFc5F01F7c9a2`](https://sepolia.basescan.org/address/0x129Cb89ED216637925871951cA6FFc5F01F7c9a2) |
+| TestUSDC | [`0x11bbA4095f8a4b2C8DD9f2d61C8ae5B16d013f08`](https://sepolia.basescan.org/address/0x11bbA4095f8a4b2C8DD9f2d61C8ae5B16d013f08) |
+| StakeManager | [`0x4936822CB9e316ee951Af2204916878acCDD564E`](https://sepolia.basescan.org/address/0x4936822CB9e316ee951Af2204916878acCDD564E) |
+| CapacityRegistry | [`0x4ED9386110051eC66b96e5d2e627048D57df5B64`](https://sepolia.basescan.org/address/0x4ED9386110051eC66b96e5d2e627048D57df5B64) |
+| BackpressurePool | [`0x8a1F99e32d6d3D79d8AaF275000D6cbb57A8AF6a`](https://sepolia.basescan.org/address/0x8a1F99e32d6d3D79d8AaF275000D6cbb57A8AF6a) |
+| EscrowBuffer | [`0x31288aB9b12298Ff0C022ffD9F90797bB238d90a`](https://sepolia.basescan.org/address/0x31288aB9b12298Ff0C022ffD9F90797bB238d90a) |
+| Pipeline | [`0x1eebaB27BD472b5956D8335CDB69b940F079e6dE`](https://sepolia.basescan.org/address/0x1eebaB27BD472b5956D8335CDB69b940F079e6dE) |
+| PricingCurve | [`0x37D65E1C233a13bDf6E48Bd4BD9B4103888dA866`](https://sepolia.basescan.org/address/0x37D65E1C233a13bDf6E48Bd4BD9B4103888dA866) |
+| CompletionTracker | [`0x7Dd6d47AC3b0BbF3D99bd61D1f1B1F85350A90c4`](https://sepolia.basescan.org/address/0x7Dd6d47AC3b0BbF3D99bd61D1f1B1F85350A90c4) |
+| OffchainAggregator | [`0x98c621051b5909f41d3d9A32b3b7DbB02615a179`](https://sepolia.basescan.org/address/0x98c621051b5909f41d3d9A32b3b7DbB02615a179) |
+
+### Demurrage, Nostr, Lightning, Platform
+
+| Contract | Domain | Address |
+|----------|--------|---------|
+| DemurrageToken | Demurrage | [`0x20C03C01Bd68d44DB89e3BA531009Cf0AA9074De`](https://sepolia.basescan.org/address/0x20C03C01Bd68d44DB89e3BA531009Cf0AA9074De) |
+| VelocityMetrics | Demurrage | [`0x1b7eBD1FB40dbDd624543807350b1Ffb19F96dfE`](https://sepolia.basescan.org/address/0x1b7eBD1FB40dbDd624543807350b1Ffb19F96dfE) |
+| RelayCapacityRegistry | Nostr | [`0x205457d92b5d92AD0F98cDC5FF37C61F5697565D`](https://sepolia.basescan.org/address/0x205457d92b5d92AD0F98cDC5FF37C61F5697565D) |
+| RelayPaymentPool | Nostr | [`0x04815dA053F9d90875Ea61BAFcE7D4daD35E2fF5`](https://sepolia.basescan.org/address/0x04815dA053F9d90875Ea61BAFcE7D4daD35E2fF5) |
+| LightningCapacityOracle | Lightning | [`0x31fEE06423FDA16733e25dBd8145AC0E56E4da42`](https://sepolia.basescan.org/address/0x31fEE06423FDA16733e25dBd8145AC0E56E4da42) |
+| LightningRoutingPool | Lightning | [`0x1CD5CE34a130e7953E56ae1949BeaC8B733e0247`](https://sepolia.basescan.org/address/0x1CD5CE34a130e7953E56ae1949BeaC8B733e0247) |
+| CrossProtocolRouter | Lightning | [`0x89df6EF70ef288f61003E392D3E5ddC8D9bD6e2d`](https://sepolia.basescan.org/address/0x89df6EF70ef288f61003E392D3E5ddC8D9bD6e2d) |
+| UniversalCapacityAdapter | Platform | [`0x66368dbFdf4de036efB4D37bC73B490903062421`](https://sepolia.basescan.org/address/0x66368dbFdf4de036efB4D37bC73B490903062421) |
+| ReputationLedger | Platform | [`0xdbCD358acEe7671D1ce7311CF9aC2a5B1C266B55`](https://sepolia.basescan.org/address/0xdbCD358acEe7671D1ce7311CF9aC2a5B1C266B55) |
 
 ## Paper
 
 The research paper is in [`docs/paper/`](docs/paper/) (LaTeX). Key sections:
 
-1. **Formal Model** - capacity-constrained monetary flow network with EWMA smoothing
-2. **Throughput Optimality** - Lyapunov drift proof with explicit overflow buffer bounds
-3. **Dynamic Pricing** - EIP-1559-style queue-length pricing with equilibrium analysis
-4. **Off-Chain Attestation** - batched EIP-712 capacity signals (83.5% gas savings)
-5. **Security Analysis** - Sybil resistance, MEV resistance, Bayesian-Nash incentive compatibility
-6. **Capacity Verification** - statistical completion tracking with auto-slash
+1. **Formal Model**: capacity-constrained monetary flow network with EWMA smoothing
+2. **Throughput Optimality**: Lyapunov drift proof with explicit overflow buffer bounds
+3. **Dynamic Pricing**: EIP-1559-style queue-length pricing with equilibrium analysis
+4. **Off-Chain Attestation**: batched EIP-712 capacity signals (83.5% gas savings)
+5. **Security Analysis**: Sybil resistance, MEV resistance, Bayesian-Nash incentive compatibility
+6. **Capacity Verification**: statistical completion tracking with auto-slash
 
-Build the PDF:
 ```bash
 cd docs/paper && pdflatex main && bibtex main && pdflatex main && pdflatex main
 ```
 
 ## Community
 
-Spilt is early infrastructure looking for feedback from builders working on multi-agent systems.
+Backproto is early infrastructure looking for feedback from builders across AI agents, Nostr, Lightning, and DeFi.
 
-- **Docs & explainer**: [spilt.dev](https://spilt.dev)
-- **GitHub Issues**: [Report bugs or suggest features](https://github.com/spiltdev/spilt/issues)
+- **Website**: [backproto.io](https://backproto.io)
+- **GitHub**: [github.com/backproto/backproto](https://github.com/backproto/backproto)
+- **Telegram**: [t.me/backproto](https://t.me/backproto)
 - **Twitter/X**: Follow for updates (link TBD)
 
-If you're building agents that pay other agents, or thinking about how agent economies work at scale, [open an issue](https://github.com/spiltdev/spilt/issues) or reach out directly.
+If you're building decentralized systems that need capacity-aware economic coordination, [open an issue](https://github.com/backproto/backproto/issues) or reach out directly.
 
 ## License
 

@@ -14,6 +14,20 @@ export type ChainAddresses = {
   gdaV1: `0x${string}`;
   gdaV1Forwarder: `0x${string}`;
   superTokenFactory: `0x${string}`;
+  // Backproto extensions
+  demurrageToken: `0x${string}`;
+  velocityMetrics: `0x${string}`;
+  relayCapacityRegistry: `0x${string}`;
+  relayPaymentPool: `0x${string}`;
+  lightningCapacityOracle: `0x${string}`;
+  lightningRoutingPool: `0x${string}`;
+  crossProtocolRouter: `0x${string}`;
+  universalCapacityAdapter: `0x${string}`;
+  reputationLedger: `0x${string}`;
+  // OpenClaw integration
+  openClawCapacityAdapter: `0x${string}`;
+  openClawCompletionVerifier: `0x${string}`;
+  openClawReputationBridge: `0x${string}`;
 };
 
 /** Well-known Superfluid addresses on Base Sepolia */
@@ -28,21 +42,35 @@ const SUPERFLUID_BASE_SEPOLIA = {
  * Populated after running Deploy.s.sol and recording output.
  */
 export const addresses: Record<number, ChainAddresses> = {
-  // Base Sepolia (chain ID 84532) - deployed 2026-03-14
+  // Base Sepolia (chain ID 84532) - deployed 2026-03-16
   84532: {
-    stakeToken: "0xf5cf3cd405ac3b48dde534d9793ce9118d4ca4a5",
-    stakeManager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3",
-    capacityRegistry: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948",
-    bpeSuperToken: "0x7faf85cc70540ef4e9bf8880150ff4fd7a4d2fa4",
-    paymentToken: "0xb1152e5426e4cebd7a3f034fff7fae2711e8ff15",
-    paymentSuperToken: "0x04bf42ae7d7b55c2000653067ccd37400a4f5a74",
-    backpressurePool: "0x8e999a246afea241cf3c1d400dd7786cf591fa88",
-    escrowBuffer: "0x8d2f5b40315cccf9b7aa10869c035f9c7a0a3160",
-    pipeline: "0xbc2c20d75ab5a03f592bcfdb7d8c40fdd3f7afa7",
-    pricingCurve: "0x11522daf010c08d5d26a2b1369567279a27338e3",
-    completionTracker: "0xff3dab79a53ffd11bae041e094ed0b6217acfc3c",
-    offchainAggregator: "0xa70993d6d4cb5e4cf5ee8ddcbfde875e55a937fa",
+    stakeToken: "0x129Cb89ED216637925871951cA6FFc5F01F7c9a2",
+    stakeManager: "0x4936822CB9e316ee951Af2204916878acCDD564E",
+    capacityRegistry: "0x4ED9386110051eC66b96e5d2e627048D57df5B64",
+    bpeSuperToken: "0x9C1Ae19eB1BB106750D2a9Cb64742B99e4Dcf6e7",
+    paymentToken: "0x11bbA4095f8a4b2C8DD9f2d61C8ae5B16d013f08",
+    paymentSuperToken: "0xc6394CedA69Fec539900492735386A331eF4810a",
+    backpressurePool: "0x8a1F99e32d6d3D79d8AaF275000D6cbb57A8AF6a",
+    escrowBuffer: "0x31288aB9b12298Ff0C022ffD9F90797bB238d90a",
+    pipeline: "0x1eebaB27BD472b5956D8335CDB69b940F079e6dE",
+    pricingCurve: "0x37D65E1C233a13bDf6E48Bd4BD9B4103888dA866",
+    completionTracker: "0x7Dd6d47AC3b0BbF3D99bd61D1f1B1F85350A90c4",
+    offchainAggregator: "0x98c621051b5909f41d3d9A32b3b7DbB02615a179",
     ...SUPERFLUID_BASE_SEPOLIA,
+    // Backproto extensions
+    demurrageToken: "0x20C03C01Bd68d44DB89e3BA531009Cf0AA9074De",
+    velocityMetrics: "0x1b7eBD1FB40dbDd624543807350b1Ffb19F96dfE",
+    relayCapacityRegistry: "0x205457d92b5d92AD0F98cDC5FF37C61F5697565D",
+    relayPaymentPool: "0x04815dA053F9d90875Ea61BAFcE7D4daD35E2fF5",
+    lightningCapacityOracle: "0x31fEE06423FDA16733e25dBd8145AC0E56E4da42",
+    lightningRoutingPool: "0x1CD5CE34a130e7953E56ae1949BeaC8B733e0247",
+    crossProtocolRouter: "0x89df6EF70ef288f61003E392D3E5ddC8D9bD6e2d",
+    universalCapacityAdapter: "0x66368dbFdf4de036efB4D37bC73B490903062421",
+    reputationLedger: "0xdbCD358acEe7671D1ce7311CF9aC2a5B1C266B55",
+    // OpenClaw integration (placeholder -- update after deployment)
+    openClawCapacityAdapter: "0x0000000000000000000000000000000000000000",
+    openClawCompletionVerifier: "0x0000000000000000000000000000000000000000",
+    openClawReputationBridge: "0x0000000000000000000000000000000000000000",
   },
 };
 

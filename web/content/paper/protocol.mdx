@@ -12,7 +12,7 @@ We implement BPE on Ethereum (Base L2) using Superfluid's General Distribution A
 
 ## StakeManager
 
-Sinks deposit ERC-20 tokens to stake. The capacity cap is computed as $\text{cap}(k) = \sqrt{\text{stake}(k) / u}$ where $u$ is the stake unit parameter (set to $10^{18}$). This concave function implements Sybil resistance: splitting stake $S$ into $n$ sinks yields total capacity $n \cdot \sqrt{S/(nu)} = \sqrt{n} \cdot \sqrt{S/u} < n \cdot \sqrt{S/u}$ for $n > 1$—strictly less than the capacity from a single identity. A minimum per-sink stake $S_{\min}$ further penalizes splitting.
+Sinks deposit ERC-20 tokens to stake. The capacity cap is computed as $\text{cap}(k) = \sqrt{\text{stake}(k) / u}$ where $u$ is the stake unit parameter (set to $10^{18}$). This concave function implements Sybil resistance: splitting stake $S$ into $n$ sinks yields total capacity $n \cdot \sqrt{S/(nu)} = \sqrt{n} \cdot \sqrt{S/u} < n \cdot \sqrt{S/u}$ for $n > 1$, strictly less than the capacity from a single identity. A minimum per-sink stake $S_{\min}$ further penalizes splitting.
 
 ## CapacityRegistry
 
@@ -28,7 +28,7 @@ The registry maintains an aggregate `totalCapacity` per task type, updated atomi
 
 For each task type, the pool creates a Superfluid GDA pool and acts as its admin. On `rebalance`, it reads all sink capacities from the registry and sets each sink's pool units proportional to their smoothed capacity: $\text{units}(k) = \lfloor C_{\text{smooth}}(k) \cdot 10^9 / C_{\text{total}} \rfloor$.
 
-Sources create Constant Flow Agreement (CFA) streams *to the pool address*. The GDA automatically distributes incoming flows to members proportional to their units—achieving capacity-proportional payment routing without centralized scheduling.
+Sources create Constant Flow Agreement (CFA) streams *to the pool address*. The GDA automatically distributes incoming flows to members proportional to their units, achieving capacity-proportional payment routing without centralized scheduling.
 
 Rebalance is *permissionless*: any address may call it. A 5% threshold (measured in basis points of total capacity change) prevents unnecessary gas expenditure.
 

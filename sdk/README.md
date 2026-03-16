@@ -1,20 +1,21 @@
-# @spilt/sdk
+# @backproto/sdk
 
-TypeScript SDK for the [Spilt](https://spilt.dev) protocol on Base Sepolia.
+TypeScript SDK for the [Backproto](https://backproto.io) protocol on Base Sepolia.
 
 ## Installation
 
 ```bash
-npm install @spilt/sdk
+npm install @backproto/sdk
 ```
 
 ## Usage
 
 ```typescript
-import { getAddresses } from "@spilt/sdk";
-import * as sink from "@spilt/sdk/actions/sink";
-import * as pool from "@spilt/sdk/actions/pool";
-import * as pricing from "@spilt/sdk/actions/pricing";
+import { getAddresses } from "@backproto/sdk";
+import * as sink from "@backproto/sdk/actions/sink";
+import * as pool from "@backproto/sdk/actions/pool";
+import * as pricing from "@backproto/sdk/actions/pricing";
+import * as lightning from "@backproto/sdk/actions/lightning";
 import { createPublicClient, createWalletClient, http } from "viem";
 import { baseSepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
@@ -30,9 +31,14 @@ await sink.registerSink(walletClient, addrs, taskTypeId, 50n);
 
 // Read the dynamic price
 const price = await pricing.getPrice(publicClient, addrs, taskTypeId, account.address);
+
+// Get optimal Lightning route
+const route = await lightning.getOptimalRoute(publicClient, addrs, 3);
 ```
 
 ## Modules
+
+### Core BPE
 
 | Module | Description |
 |--------|-------------|
@@ -46,12 +52,20 @@ const price = await pricing.getPrice(publicClient, addrs, taskTypeId, account.ad
 | `actions/aggregator` | Submit batched off-chain attestations |
 | `signing` | EIP-712 signing helpers for attestations and completion receipts |
 
+### Domain Extensions
+
+| Module | Description |
+|--------|-------------|
+| `actions/demurrage` | Wrap/unwrap demurrage tokens, rebase, read decay |
+| `actions/relay` | Register relays, join pools, set anti-spam minimums |
+| `actions/lightning` | Register nodes, join routing pools, get optimal routes |
+| `actions/platform` | Aggregate reputation, stake discounts, route attestations |
+
 ## Examples
 
-- [`examples/full-flow.ts`](src/examples/full-flow.ts) - 7-step end-to-end demo
-- [`examples/testnet-validation.ts`](src/examples/testnet-validation.ts) - multi-scenario validation with CSV output
+- [`examples/full-flow.ts`](src/examples/full-flow.ts): 7-step end-to-end demo
+- [`examples/testnet-validation.ts`](src/examples/testnet-validation.ts): multi-scenario validation with CSV output
 
-Run examples:
 ```bash
 PRIVATE_KEY=0x... npx tsx src/examples/full-flow.ts
 ```

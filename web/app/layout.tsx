@@ -16,12 +16,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Spilt - Backpressure Economics for Agent Economies",
-    template: "%s | Spilt",
+    default: "Backproto: Backpressure Economics for Decentralized Networks",
+    template: "%s | Backproto",
   },
   description:
-    "Capacity-constrained monetary flow control for AI agent economies. Backpressure routing for streaming payments.",
-  metadataBase: new URL("https://spilt.dev"),
+    "Universal capacity-constrained flow control across AI agents, Nostr relays, Lightning routing, and streaming payments.",
+  metadataBase: new URL("https://backproto.io"),
 };
 
 export default function RootLayout({

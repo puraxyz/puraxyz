@@ -21,7 +21,7 @@ export default function Nav() {
       <nav className={styles.nav}>
         <div className={styles.inner}>
           <Link href="/" className={styles.logo}>
-            spilt<span>.dev</span>
+            backproto<span>.io</span>
           </Link>
           <div className={styles.links}>
             {links.map(({ href, label }) => (
@@ -35,7 +35,7 @@ export default function Nav() {
               </Link>
             ))}
             <a
-              href="https://github.com/spiltdev/spilt"
+              href="https://github.com/backproto/backproto"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.github}
@@ -69,7 +69,7 @@ export default function Nav() {
             </Link>
           ))}
           <a
-            href="https://github.com/spiltdev/spilt"
+            href="https://github.com/backproto/backproto"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.link}
