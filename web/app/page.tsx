@@ -1,5 +1,7 @@
 import Link from "next/link";
-import ArchitectureDiagram from "./components/ArchitectureDiagram";
+import BackpressureFlow from "./components/BackpressureFlow";
+import ChainStrip from "./components/ChainStrip";
+import DomainPanels from "./components/DomainPanels";
 import styles from "./page.module.css";
 
 const coreContracts = [
@@ -13,54 +15,281 @@ const coreContracts = [
   { name: "OffchainAggregator", addr: "0xa70993d6d4cb5e4cf5ee8ddcbfde875e55a937fa" },
 ];
 
-const domains = [
+const comparisonRows = [
   {
-    title: "AI Agents",
-    description:
-      "Capacity-weighted streaming payment routing via Superfluid GDA. Payments flow to agents with verified spare capacity.",
-    contracts: "8 contracts: CapacityRegistry, BackpressurePool, StakeManager, EscrowBuffer, Pipeline, PricingCurve, CompletionTracker, OffchainAggregator",
-    color: "#0d9488",
+    feature: "Capacity awareness",
+    statusQuo: "None",
+    roundRobin: "None",
+    loadBalancer: "Server-side only",
+    bpe: "On-chain, signed",
   },
   {
-    title: "Demurrage",
-    description:
-      "Time-decaying Super Tokens that incentivize circulation over hoarding. Epoch-based velocity metrics track turnover.",
-    contracts: "2 contracts: DemurrageToken, VelocityMetrics",
-    color: "#d97706",
+    feature: "Economic incentives",
+    statusQuo: "✗",
+    roundRobin: "✗",
+    loadBalancer: "✗",
+    bpe: "Streaming payments",
   },
   {
-    title: "Lightning",
-    description:
-      "EWMA-smoothed channel capacity oracles and cross-protocol routing across Superfluid, Lightning, and on-chain settlement.",
-    contracts: "3 contracts: LightningCapacityOracle, LightningRoutingPool, CrossProtocolRouter",
-    color: "#a16207",
+    feature: "Throughput efficiency",
+    statusQuo: "~70%",
+    roundRobin: "93.5%",
+    loadBalancer: "~90%",
+    bpe: "95.7%",
   },
   {
-    title: "Nostr Relays",
-    description:
-      "NIP-compliant relay capacity signaling with anti-spam pricing. BPE-weighted payment pools make relay operation sustainable.",
-    contracts: "2 contracts: RelayCapacityRegistry, RelayPaymentPool",
-    color: "#6366f1",
+    feature: "Cross-domain reputation",
+    statusQuo: "✗",
+    roundRobin: "✗",
+    loadBalancer: "✗",
+    bpe: "Portable, weighted",
   },
+  {
+    feature: "Gas cost / overhead",
+    statusQuo: "N/A",
+    roundRobin: "N/A",
+    loadBalancer: "Centralized",
+    bpe: "83.5% reduction via EIP-712",
+  },
+  {
+    feature: "Fairness guarantee",
+    statusQuo: "None",
+    roundRobin: "Equal share",
+    loadBalancer: "Weight-based",
+    bpe: "Lyapunov-optimal",
+  },
+];
+
+const audiences = [
+  { label: "AI agent platforms", href: "/docs/contracts" },
+  { label: "Protocol architects", href: "/paper" },
+  { label: "Lightning developers", href: "/explainer#lightning" },
+  { label: "Nostr relay operators", href: "/explainer#nostr" },
+  { label: "Infra teams", href: "/docs/sdk" },
+];
+
+const stats = [
+  { value: "95.7%", label: "Allocation efficiency" },
+  { value: "83.5%", label: "Gas reduction" },
+  { value: "3×", label: "Penalty for bad actors" },
+  { value: "17", label: "Deployed contracts" },
 ];
 
 export default function Home() {
   return (
     <>
+      {/* ─── 1. Hero ───────────────────────────────────────── */}
       <section className={styles.hero}>
-        <div className={styles.badge}>17 contracts &middot; 125 tests passing &middot; Base Sepolia</div>
-        <h1 className={styles.title}>
-          <span>Backpressure economics</span> for decentralized networks
-        </h1>
-        <p className={styles.subtitle}>
-          When downstream participants reach capacity, payments and messages must
-          reroute, buffer, or throttle. Backproto makes receiver-side capacity
-          constraints a first-class protocol primitive, across AI agents,
-          Nostr relays, Lightning channels, and streaming payments.
-        </p>
+        <BackpressureFlow />
+        <div className={styles.heroContent}>
+          <h1 className={styles.title}>
+            Capacity-aware routing for decentralized networks
+          </h1>
+          <p className={styles.subtitle}>
+            When nodes hit capacity, payments reroute. Backproto makes
+            backpressure a protocol primitive.
+          </p>
+          <div className={styles.buttons}>
+            <Link href="/explainer" className={styles.btnPrimary}>
+              How it works &rarr;
+            </Link>
+            <a
+              href="https://github.com/backproto/backproto"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.btnSecondary}
+            >
+              GitHub
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 2. Chain strip ────────────────────────────────── */}
+      <ChainStrip />
+
+      {/* ─── 3. The Problem ────────────────────────────────── */}
+      <section className={styles.section}>
+        <div className={styles.problemGrid}>
+          <div className={styles.problemStatement}>
+            <h2 className={styles.problemTitle}>
+              Networks break when the best nodes get all the traffic
+            </h2>
+            <p className={styles.problemSub}>
+              Capacity is invisible. The most capable agents overload while
+              mediocre ones sit idle. There is no price signal, no rerouting,
+              no backpressure.
+            </p>
+          </div>
+          <div className={styles.painPoints}>
+            <div className={styles.painPoint}>
+              <span className={styles.painDot} />
+              AI agents drop requests silently when overwhelmed
+            </div>
+            <div className={styles.painPoint}>
+              <span className={styles.painDot} />
+              Lightning channels fail at peak routing&mdash;40% failure rates
+            </div>
+            <div className={styles.painPoint}>
+              <span className={styles.painDot} />
+              Nostr relays have no way to signal congestion or earn fairly
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 4. The Solution ───────────────────────────────── */}
+      <section className={styles.section}>
+        <div className={styles.solution}>
+          <h2 className={styles.solutionTitle}>
+            Backproto makes <span className={styles.underline}>capacity</span> a
+            first-class protocol primitive
+          </h2>
+          <div className={styles.steps}>
+            <div className={styles.step}>
+              <span className={styles.stepNum}>1</span>
+              <div>
+                <strong>Declare</strong>
+                <span className={styles.stepDesc}>
+                  Agents sign capacity attestations
+                </span>
+              </div>
+            </div>
+            <span className={styles.stepArrow}>&rarr;</span>
+            <div className={styles.step}>
+              <span className={styles.stepNum}>2</span>
+              <div>
+                <strong>Price</strong>
+                <span className={styles.stepDesc}>
+                  Dynamic fees from utilization curves
+                </span>
+              </div>
+            </div>
+            <span className={styles.stepArrow}>&rarr;</span>
+            <div className={styles.step}>
+              <span className={styles.stepNum}>3</span>
+              <div>
+                <strong>Route</strong>
+                <span className={styles.stepDesc}>
+                  Streaming payments flow to spare capacity
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 5. Who is this for ────────────────────────────── */}
+      <section className={styles.section}>
+        <div className={styles.label}>Who is this for</div>
+        <div className={styles.audience}>
+          {audiences.map(({ label, href }) => (
+            <Link key={label} href={href} className={styles.pill}>
+              {label}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── 6. Comparison ─────────────────────────────────── */}
+      <section className={styles.section}>
+        <div className={styles.label}>How BPE compares</div>
+        <div className={styles.tableWrap}>
+          <table className={styles.compTable}>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Status quo</th>
+                <th>Round-robin</th>
+                <th>Load balancer</th>
+                <th className={styles.colHighlight}>BPE</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comparisonRows.map((row) => (
+                <tr key={row.feature}>
+                  <td className={styles.featureCell}>{row.feature}</td>
+                  <td>{row.statusQuo}</td>
+                  <td>{row.roundRobin}</td>
+                  <td>{row.loadBalancer}</td>
+                  <td className={styles.colHighlight}>{row.bpe}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* ─── 7. Domain panels ──────────────────────────────── */}
+      <section className={styles.section}>
+        <div className={styles.label}>Four domains, one protocol</div>
+        <DomainPanels />
+      </section>
+
+      {/* ─── 8. Results ────────────────────────────────────── */}
+      <section className={styles.section}>
+        <div className={styles.label}>Key results</div>
+        <div className={styles.statBar}>
+          {stats.map(({ value, label }, i) => (
+            <div key={label} className={styles.stat}>
+              <span className={styles.statValue}>{value}</span>
+              <span className={styles.statLabel}>{label}</span>
+              {i < stats.length - 1 && <span className={styles.statDivider} />}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── 9. Contracts ──────────────────────────────────── */}
+      <section className={styles.section}>
+        <div className={styles.label}>Core contracts &middot; Base Sepolia</div>
+        <div className={styles.terminal}>
+          <div className={styles.termBar}>
+            <span className={styles.termDot} style={{ background: "#ef4444" }} />
+            <span className={styles.termDot} style={{ background: "#eab308" }} />
+            <span className={styles.termDot} style={{ background: "#22c55e" }} />
+          </div>
+          <div className={styles.termBody}>
+            <div className={styles.termPrompt}>$ forge deploy --verify</div>
+            <table className={styles.termTable}>
+              <tbody>
+                {coreContracts.map(({ name, addr }) => (
+                  <tr key={addr}>
+                    <td>
+                      <a
+                        href={`https://github.com/backproto/backproto/blob/main/contracts/src/${name}.sol`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {name}
+                      </a>
+                    </td>
+                    <td>
+                      <a
+                        href={`https://sepolia.basescan.org/address/${addr}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {addr}
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 10. Bottom CTA ────────────────────────────────── */}
+      <section className={styles.bottomCta}>
+        <h2 className={styles.ctaTitle}>Start building</h2>
         <div className={styles.buttons}>
-          <Link href="/explainer" className={styles.btnPrimary}>
-            How it works
+          <Link href="/docs" className={styles.btnPrimary}>
+            Read the docs &rarr;
+          </Link>
+          <Link href="/paper" className={styles.btnSecondary}>
+            Paper
           </Link>
           <a
             href="https://github.com/backproto/backproto"
@@ -68,105 +297,9 @@ export default function Home() {
             rel="noopener noreferrer"
             className={styles.btnSecondary}
           >
-            View on GitHub
+            GitHub
           </a>
-          <Link href="/paper" className={styles.btnSecondary}>
-            Read the paper
-          </Link>
         </div>
-      </section>
-
-      <section className={styles.section}>
-        <div className={styles.sectionTitle}>Four Domains, One Protocol</div>
-        <div className={styles.cards}>
-          {domains.map(({ title, description, contracts, color }) => (
-            <div key={title} className={styles.card} style={{ borderTop: `2px solid ${color}` }}>
-              <div className={styles.cardTitle}>{title}</div>
-              <p className={styles.cardText}>{description}</p>
-              <p className={styles.cardText} style={{ opacity: 0.6, fontSize: "0.75rem", marginTop: "0.5rem" }}>
-                {contracts}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <ArchitectureDiagram />
-
-      <section className={styles.section}>
-        <div className={styles.sectionTitle}>Key Results</div>
-        <div className={styles.cards}>
-          <div className={styles.card}>
-            <div className={styles.cardTitle}>Throughput Optimal</div>
-            <p className={styles.cardText}>
-              Proof via Lyapunov drift analysis that every stabilisable demand
-              vector is served with bounded overflow buffers.
-            </p>
-          </div>
-          <div className={styles.card}>
-            <div className={styles.cardTitle}>
-              <span className={styles.metric}>95.7%</span> Efficiency
-            </div>
-            <p className={styles.cardText}>
-              Allocation efficiency vs 93.5% for round-robin under steady load
-              across 1,000-step simulation horizons.
-            </p>
-          </div>
-          <div className={styles.card}>
-            <div className={styles.cardTitle}>
-              <span className={styles.metric}>83.5%</span> Gas Reduction
-            </div>
-            <p className={styles.cardText}>
-              Off-chain attestation aggregation via batched EIP-712 signatures
-              cuts on-chain costs dramatically.
-            </p>
-          </div>
-          <div className={styles.card}>
-            <div className={styles.cardTitle}>Cross-Domain Reputation</div>
-            <p className={styles.cardText}>
-              Portable reputation across all domains. Negative signals hurt 3×.
-              Good cross-domain reputation earns up to 50% stake discount.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.contracts}>
-        <div className={styles.sectionTitle}>
-          Core Contracts &middot; Base Sepolia
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Contract</th>
-              <th>Address</th>
-            </tr>
-          </thead>
-          <tbody>
-            {coreContracts.map(({ name, addr }) => (
-              <tr key={addr}>
-                <td>
-                  <a
-                    href={`https://github.com/backproto/backproto/blob/main/contracts/src/${name}.sol`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <code>{name}</code>
-                  </a>
-                </td>
-                <td>
-                  <a
-                    href={`https://sepolia.basescan.org/address/${addr}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <code>{addr}</code>
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </section>
     </>
   );
