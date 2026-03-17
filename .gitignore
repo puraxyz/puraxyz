@@ -24,8 +24,7 @@ contracts/out/
 contracts/cache/
 contracts/broadcast/
 
-# Foundry dependencies (installed via forge install)
-contracts/lib/
+# Foundry dependencies (git submodules, not ignored)
 
 # Python
 __pycache__/
