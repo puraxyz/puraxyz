@@ -12,7 +12,7 @@ Streaming payment protocols enable continuous monetary flows between AI agents, 
 
 BPE solves this by treating **receiver-side capacity constraints as first-class payment routing primitives**.
 
-## Key Contributions
+## Contributions
 
 <div class="grid cards" markdown>
 

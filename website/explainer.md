@@ -334,7 +334,7 @@ The [Lightning Network](https://en.wikipedia.org/wiki/Lightning_Network) enables
 
 Backproto adds a **real-time capacity signaling layer** for Lightning, without modifying the Lightning protocol itself:
 
-**LightningCapacityOracle.** Node operators submit signed attestations of their aggregate outbound liquidity. These reports are smoothed using [EWMA](https://en.wikipedia.org/wiki/Exponential_smoothing) (the same technique) so a single bad report doesn't swing the data. Crucially, operators only report aggregate capacity, not individual channel balances, preserving privacy.
+**LightningCapacityOracle.** Node operators submit signed attestations of their aggregate outbound liquidity. These reports are smoothed using [EWMA](https://en.wikipedia.org/wiki/Exponential_smoothing) (the same technique) so a single bad report doesn't swing the data. Operators only report aggregate capacity, not individual channel balances, preserving privacy.
 
 **LightningRoutingPool.** A BPE pool where Lightning nodes are weighted by their routing capacity. Nodes with more available liquidity and balanced channels earn more streaming revenue. This creates a direct economic incentive to keep channels well-funded and balanced.
 

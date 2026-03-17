@@ -9,9 +9,6 @@ export default function Footer() {
             <a href="https://github.com/backproto/backproto" target="_blank" rel="noopener noreferrer">
               GitHub
             </a>
-            <a href="https://t.me/backproto" target="_blank" rel="noopener noreferrer">
-              Telegram
-            </a>
             <a href="https://sepolia.basescan.org/address/0x8e999a246afea241cf3c1d400dd7786cf591fa88" target="_blank" rel="noopener noreferrer">
               Basescan
             </a>

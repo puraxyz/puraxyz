@@ -177,7 +177,6 @@ Backproto is early infrastructure looking for feedback from builders across AI a
 
 - **Website**: [backproto.io](https://backproto.io)
 - **GitHub**: [github.com/backproto/backproto](https://github.com/backproto/backproto)
-- **Telegram**: [t.me/backproto](https://t.me/backproto)
 - **Twitter/X**: Follow for updates (link TBD)
 
 If you're building decentralized systems that need capacity-aware economic coordination, [open an issue](https://github.com/backproto/backproto/issues) or reach out directly.
