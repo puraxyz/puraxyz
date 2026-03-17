@@ -117,6 +117,14 @@ export default function Home() {
               How it works &rarr;
             </Link>
             <a
+              href="https://router.backproto.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.btnSecondary}
+            >
+              Live reference &rarr;
+            </a>
+            <a
               href="https://github.com/backproto/backproto"
               target="_blank"
               rel="noopener noreferrer"
@@ -324,6 +332,14 @@ export default function Home() {
           <Link href="/docs/getting-started" className={styles.btnPrimary}>
             Deploy an economy &rarr;
           </Link>
+          <a
+            href="https://router.backproto.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.btnSecondary}
+          >
+            Live reference
+          </a>
           <Link href="/docs" className={styles.btnSecondary}>
             All docs
           </Link>

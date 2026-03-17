@@ -46,12 +46,20 @@ contract TestUSDC is ERC20 {
 }
 
 /// @title Deploy
-/// @notice Full-stack BPE deployment on Base Sepolia.
-///         Usage: forge script script/Deploy.s.sol --rpc-url base_sepolia --broadcast --verify
+/// @notice Full-stack BPE deployment.
+///         Sepolia:  forge script script/Deploy.s.sol --rpc-url base_sepolia --broadcast --verify
+///         Mainnet:  forge script script/Deploy.s.sol --rpc-url base_mainnet --broadcast --verify
 contract Deploy is Script {
-    // ─── Base Sepolia Superfluid addresses ───
-    address constant GDA_V1 = 0x53F4f44C813Dc380182d0b2b67fe5832A12B97f8;
-    address constant SUPER_TOKEN_FACTORY = 0x7447E94Dfe3d804a9f46Bf12838d467c912C8F6C;
+    // ─── Superfluid addresses (chain-aware) ───
+    function _gdaV1() internal view returns (address) {
+        if (block.chainid == 8453) return 0xfE6c87BE05feDB2059d2EC41bA0A09826C9FD7aa;
+        return 0x53F4f44C813Dc380182d0b2b67fe5832A12B97f8; // Base Sepolia
+    }
+
+    function _superTokenFactory() internal view returns (address) {
+        if (block.chainid == 8453) return 0xe20B9a38E0c96F61d1bA6b42a61512D56Fea1Eb3;
+        return 0x7447E94Dfe3d804a9f46Bf12838d467c912C8F6C; // Base Sepolia
+    }
 
     // ─── Deploy parameters ───
     uint256 constant INITIAL_SUPPLY = 1_000_000e18;
@@ -84,7 +92,7 @@ contract Deploy is Script {
         console.log("CapacityRegistry:", address(registry));
 
         // 4. SuperToken wrapper for BPE (used for staking rewards if needed)
-        ISuperTokenFactory factory = ISuperTokenFactory(SUPER_TOKEN_FACTORY);
+        ISuperTokenFactory factory = ISuperTokenFactory(_superTokenFactory());
         ISuperToken bpeSuperToken = factory.createERC20Wrapper(
             IERC20Metadata(address(stakeToken)),
             ISuperTokenFactory.Upgradability.SEMI_UPGRADABLE,
@@ -107,7 +115,7 @@ contract Deploy is Script {
 
         // 6. BackpressurePool - uses tUSDCx as the streaming payment token
         BackpressurePool pool = new BackpressurePool(
-            GDA_V1, address(paymentSuperToken), address(registry), deployer
+            _gdaV1(), address(paymentSuperToken), address(registry), deployer
         );
         console.log("BackpressurePool:", address(pool));
 
