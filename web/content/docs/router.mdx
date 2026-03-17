@@ -1,0 +1,101 @@
+---
+title: Router Dashboard
+order: 4
+description: Live agent economy dashboard running on Base Sepolia with automated scenario cycles
+---
+
+The **Router** is a reference application that runs a live agent economy on Base Sepolia. It manages four named agents—**Atlas**, **Beacon**, **Cipher**, **Dispatch**—through automated scenario phases, demonstrating how the protocol responds to changing demand in real time.
+
+## What it shows
+
+The dashboard polls chain state every 15 seconds and renders:
+
+- **Agent cards** — stake, capacity cap, pool units, completion rate, queue load, dynamic price per agent
+- **Flow chart** — how flow distributes across agents over time
+- **Price chart** — rolling 100-block window of the base fee set by PricingCurve
+- **Status bar** — current scenario phase, tick number, block number, chain ID
+
+## Scenario phases
+
+The tick engine cycles through five phases (60 ticks / ~1 hour per cycle):
+
+| Phase | Ticks | Flow multiplier | Purpose |
+|-------|-------|----------------|---------|
+| RAMP | 10 | 0.5× | Gradual demand increase |
+| STEADY | 20 | 1.0× | Baseline load |
+| SPIKE | 10 | 2.0× | Sudden demand surge |
+| SHOCK | 5 | 3.0× | Extreme overload |
+| RECOVER | 15 | 0.7× | Cooldown / drain |
+
+During SPIKE and SHOCK, you can observe backpressure in action: prices rise, saturated agents receive fewer pool units, and flow redirects to agents with spare capacity.
+
+## Architecture
+
+```
+┌─────────────┐    ┌──────────────┐    ┌────────────────────┐
+│ Vercel CRON  │───▶│ /api/tick    │───▶│ tick.ts (on-chain) │
+│ (1 min)      │    │ (auth guard) │    │ → adjust flows     │
+└─────────────┘    └──────────────┘    │ → complete tasks   │
+                                        │ → update prices    │
+┌─────────────┐    ┌──────────────┐    └────────────────────┘
+│ Dashboard    │───▶│ /api/state   │───▶ reads chain via viem
+│ (polls 15s)  │    └──────────────┘
+└─────────────┘
+```
+
+- **`/api/tick`** — Vercel CRON-triggered endpoint. Executes one tick: adjusts flow rates based on the current scenario phase, completes tasks, and lets PricingCurve update the base fee. Protected by `CRON_SECRET`.
+- **`/api/state`** — Read-only endpoint. Reads all agent states, pool data, and pricing from Base Sepolia via viem.
+
+## Running locally
+
+```bash
+# 1. Clone and install
+cd router
+npm install
+
+# 2. Generate four agent wallets
+cast wallet new   # repeat 4 times, save private keys
+
+# 3. Configure environment
+cp .env.example .env
+# Fill in ATLAS_PRIVATE_KEY, BEACON_PRIVATE_KEY, CIPHER_PRIVATE_KEY, DISPATCH_PRIVATE_KEY
+
+# 4. Fund wallets with Base Sepolia ETH and tokens
+# Each agent needs ~0.01 ETH and stake/payment tokens from the deploy
+
+# 5. Run the one-time setup (registers task type, creates pool, stakes agents)
+npm run setup
+
+# 6. Start the dashboard
+npm run dev
+# Open http://localhost:3001
+
+# 7. Trigger a tick manually
+curl http://localhost:3001/api/tick
+```
+
+## Deploying to Vercel
+
+The router includes a `vercel.json` for deployment. Set up a Vercel CRON job to hit `/api/tick` every minute:
+
+```json
+{
+  "crons": [{
+    "path": "/api/tick",
+    "schedule": "* * * * *"
+  }]
+}
+```
+
+Environment variables needed: `RPC_URL`, `ATLAS_PRIVATE_KEY`, `BEACON_PRIVATE_KEY`, `CIPHER_PRIVATE_KEY`, `DISPATCH_PRIVATE_KEY`, `CRON_SECRET`, `CHAIN_ID`.
+
+## Tech stack
+
+- **Next.js 16** with `--webpack` flag (required for SDK resolution)
+- **viem** for chain reads and transaction signing
+- **@backproto/sdk** — uses the full SDK for staking, pool management, pricing, and completions
+- SDK is currently synced via `npm run sync-sdk` (copies local build into node_modules) until the SDK is published on npm
+
+## Source
+
+[github.com/backproto/backproto/tree/main/router](https://github.com/backproto/backproto/tree/main/router)
