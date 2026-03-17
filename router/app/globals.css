@@ -1,0 +1,50 @@
+:root {
+  --bg: #09090b;
+  --bg-elevated: #111113;
+  --bg-surface: #18181b;
+  --border: #27272a;
+  --border-bright: #3f3f46;
+
+  --text: #e4e4e7;
+  --text-muted: #a1a1aa;
+  --text-dim: #71717a;
+
+  --accent: #d97706;
+  --accent-hover: #f59e0b;
+  --accent-dim: rgba(217, 119, 6, 0.15);
+
+  --green: #22c55e;
+  --blue: #3b82f6;
+  --red: #ef4444;
+  --yellow: #eab308;
+
+  --font-sans: system-ui, -apple-system, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", "Fira Code", monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}

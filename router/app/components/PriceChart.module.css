@@ -1,0 +1,38 @@
+.wrapper {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+}
+
+.current {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  padding: 24px 0;
+  text-align: center;
+}

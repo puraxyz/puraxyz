@@ -1,0 +1,76 @@
+.wrapper {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.feed {
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.event {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.event:last-child {
+  border-bottom: none;
+}
+
+.time {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.agent {
+  font-weight: 600;
+  font-size: 0.75rem;
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+.action {
+  color: var(--text-muted);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.txLink {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.txLink:hover {
+  text-decoration: underline;
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  padding: 24px 0;
+  text-align: center;
+}
