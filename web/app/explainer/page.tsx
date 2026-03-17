@@ -1,8 +1,36 @@
+import Image from "next/image";
 import Mermaid from "../components/Mermaid";
+import TableOfContents from "../components/TableOfContents";
 import { Radio, Zap, Coins, Globe, PawPrint } from "lucide-react";
 import styles from "./page.module.css";
 
 export const metadata = { title: "How It Works" };
+
+const sections = [
+  { id: "the-problem", label: "The Problem", level: 2 as const },
+  { id: "why-crypto", label: "Why Crypto?", level: 2 as const },
+  { id: "properties", label: "Properties that matter", level: 3 as const },
+  { id: "key-concepts", label: "Key concepts", level: 3 as const },
+  { id: "where-runs", label: "Where does BPE run?", level: 3 as const },
+  { id: "the-solution", label: "The Solution", level: 2 as const },
+  { id: "how-it-works", label: "How It Works", level: 2 as const },
+  { id: "declare", label: "1. Declare", level: 3 as const },
+  { id: "verify", label: "2. Verify", level: 3 as const },
+  { id: "price", label: "3. Price", level: 3 as const },
+  { id: "route", label: "4. Route", level: 3 as const },
+  { id: "buffer", label: "5. Buffer", level: 3 as const },
+  { id: "big-picture", label: "The Big Picture", level: 2 as const },
+  { id: "why-care", label: "Why Should I Care?", level: 2 as const },
+  { id: "five-domains", label: "Five Domains", level: 2 as const },
+  { id: "lightning", label: "Lightning Network", level: 3 as const },
+  { id: "nostr", label: "Nostr Relays", level: 3 as const },
+  { id: "demurrage", label: "Demurrage", level: 3 as const },
+  { id: "platform", label: "Platform Layer", level: 3 as const },
+  { id: "openclaw", label: "OpenClaw Agents", level: 3 as const },
+  { id: "bitcoin", label: "How This Helps Bitcoin", level: 2 as const },
+  { id: "glossary", label: "Glossary", level: 2 as const },
+  { id: "deeper", label: "Go Deeper", level: 2 as const },
+];
 
 function StepNum({ n }: { n: number }) {
   return (
@@ -29,8 +57,13 @@ function StepNum({ n }: { n: number }) {
 
 export default function ExplainerPage() {
   return (
-    <div className={styles.page}>
-      <h1>How BPE Works: The Plain-Language Guide</h1>
+    <div className={styles.layout}>
+      <TableOfContents sections={sections} />
+      <div className={styles.page}>
+      <h1 className={styles.heading}>
+        <Image src="/backproto.png" width={40} height={40} alt="" style={{ borderRadius: 8 }} />
+        How BPE Works: The Plain-Language Guide
+      </h1>
       <p className={styles.subtitle}>
         <strong>No math degree required.</strong> This page explains Backpressure
         Economics (BPE) from scratch, with pictures.
@@ -38,7 +71,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h2>The Problem: AI Agents Need to Pay Each Other</h2>
+      <h2 id="the-problem">The Problem: AI Agents Need to Pay Each Other</h2>
       <p>
         Imagine a world where AI agents do work for each other, paying with
         cryptocurrency in real-time, streaming tiny amounts every second, like a
@@ -88,7 +121,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h2>Wait, Why Does This Need Crypto?</h2>
+      <h2 id="why-crypto">Wait, Why Does This Need Crypto?</h2>
       <p>
         Fair question. If you&apos;re coming from the AI/ML world, you might
         wonder why any of this involves a blockchain. Here&apos;s the short
@@ -96,7 +129,7 @@ export default function ExplainerPage() {
         controls.</strong>
       </p>
 
-      <h3>The properties that matter</h3>
+      <h3 id="properties">The properties that matter</h3>
       <p>
         <strong>Streaming payments.</strong> Agents need to pay each other
         continuously, not in lump sums. A translation agent pays an LLM agent a
@@ -107,8 +140,9 @@ export default function ExplainerPage() {
         block without requiring a transaction for each payment.
       </p>
       <p>
-        <strong>Programmable routing.</strong> The core of BPE is a smart
-        contract that automatically splits incoming payment streams based on
+        <strong>Programmable routing.</strong> The core of BPE is a{" "}
+        <a href="https://en.wikipedia.org/wiki/Smart_contract">smart
+        contract</a> that automatically splits incoming payment streams based on
         capacity data. Nobody has to approve the split. Nobody can censor it. The
         rules are in the code, and the code runs on a public blockchain where
         anyone can verify it. Try getting Stripe or PayPal to programmatically
@@ -125,12 +159,12 @@ export default function ExplainerPage() {
         <strong>Composability.</strong> Every contract on the network can call
         every other contract. BPE&apos;s routing pools can plug into lending
         protocols, insurance contracts, or any other on-chain system without
-        needing an integration partner. This means new domains (Nostr relays,
-        Lightning channels, anything else) can plug into the same capacity
+        needing an integration partner. This means new domains (Lightning channels,
+        Nostr relays, anything else) can plug into the same capacity
         infrastructure without anyone&apos;s permission.
       </p>
 
-      <h3>Key concepts (quick glossary for AI developers)</h3>
+      <h3 id="key-concepts">Key concepts (quick glossary for AI developers)</h3>
       <table>
         <thead>
           <tr>
@@ -173,10 +207,12 @@ export default function ExplainerPage() {
         </tbody>
       </table>
 
-      <h3>Where does BPE run?</h3>
+      <h3 id="where-runs">Where does BPE run?</h3>
       <p>
         BPE is deployed on <strong><a href="https://base.org">Base</a></strong>,
-        an Ethereum Layer 2 network built by Coinbase. Base inherits
+        an Ethereum{" "}
+        <a href="https://en.wikipedia.org/wiki/Blockchain_layer_2">Layer 2</a>{" "}
+        network built by Coinbase. Base inherits
         Ethereum&apos;s security guarantees while offering transaction fees under
         $0.01 and confirmation times around 2 seconds. This makes it practical
         for the frequent capacity updates, rebalancing, and attestation
@@ -195,10 +231,10 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h2>The Solution: Backpressure Routing for Money</h2>
+      <h2 id="the-solution">The Solution: Backpressure Routing for Money</h2>
       <p>
         BPE borrows a brilliant idea from how the internet works:{" "}
-        <strong>backpressure routing</strong>. The core idea is simple:
+        <strong><a href="https://en.wikipedia.org/wiki/Backpressure_routing">backpressure routing</a></strong>. The core idea is simple:
       </p>
       <blockquote>
         <strong>
@@ -225,7 +261,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h2>How Does It Actually Work?</h2>
+      <h2 id="how-it-works">How Does It Actually Work?</h2>
       <p>
         There are five key ideas, and they form a pipeline:
       </p>
@@ -267,7 +303,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3><StepNum n={1} /> Declare: &quot;Here&apos;s How Much I Can Handle&quot;</h3>
+      <h3 id="declare"><StepNum n={1} /> Declare: &quot;Here&apos;s How Much I Can Handle&quot;</h3>
       <p>
         Every AI agent that wants to receive payments (<strong>called a
         &quot;sink&quot;</strong>) tells the network how much work it can
@@ -281,7 +317,8 @@ export default function ExplainerPage() {
         <strong>Stake to play.</strong> Every agent must put down a deposit (like
         a security deposit on an apartment). The more you deposit, the more
         capacity you&apos;re allowed to claim. This prevents someone from
-        creating a thousand fake agents to steal payments.
+        creating a thousand fake agents to steal payments (a{" "}
+        <a href="https://en.wikipedia.org/wiki/Sybil_attack">Sybil attack</a>).
       </p>
 
       <div className={styles.diagram}>
@@ -303,7 +340,7 @@ export default function ExplainerPage() {
         attack unprofitable.
       </p>
       <p>
-        <strong>Commit-reveal.</strong> Agents don&apos;t just blurt out their
+        <strong><a href="https://en.wikipedia.org/wiki/Commitment_scheme">Commit-reveal</a>.</strong> Agents don&apos;t just blurt out their
         capacity. They first submit a sealed commitment (like a sealed auction
         bid), then reveal the actual number later. This prevents other agents
         from seeing your number and gaming the system.
@@ -311,7 +348,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3><StepNum n={2} /> Verify: &quot;Prove You Actually Did the Work&quot;</h3>
+      <h3 id="verify"><StepNum n={2} /> Verify: &quot;Prove You Actually Did the Work&quot;</h3>
       <p>
         Declaring capacity is one thing. Actually doing the work is another. BPE
         has a built-in lie detector:
@@ -351,9 +388,10 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3><StepNum n={3} /> Price: Busy Agents Cost More</h3>
+      <h3 id="price"><StepNum n={3} /> Price: Busy Agents Cost More</h3>
       <p>
-        Just like Uber&apos;s surge pricing, BPE makes busy agents more
+        Just like Uber&apos;s{" "}
+        <a href="https://en.wikipedia.org/wiki/Dynamic_pricing">surge pricing</a>, BPE makes busy agents more
         expensive:
       </p>
 
@@ -393,7 +431,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3><StepNum n={4} /> Route: Money Flows Where Capacity Is</h3>
+      <h3 id="route"><StepNum n={4} /> Route: Money Flows Where Capacity Is</h3>
       <p>
         This is the magic step. A smart contract called the{" "}
         <strong>Backpressure Pool</strong> collects all incoming payment streams
@@ -435,7 +473,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3><StepNum n={5} /> Buffer: A Safety Net for Overflow</h3>
+      <h3 id="buffer"><StepNum n={5} /> Buffer: A Safety Net for Overflow</h3>
       <p>
         What if ALL agents are at capacity and money keeps coming in? Instead of
         losing it, BPE holds it in an <strong>escrow buffer</strong>, like a
@@ -463,7 +501,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h2>The Big Picture</h2>
+      <h2 id="big-picture">The Big Picture</h2>
       <p>
         Here&apos;s how all the pieces fit together in one view:
       </p>
@@ -501,7 +539,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h2>Why Should I Care?</h2>
+      <h2 id="why-care">Why Should I Care?</h2>
       <p>
         BPE matters because AI agents are starting to transact with each other
         autonomously, paying for compute, data, and services without humans in
@@ -547,7 +585,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h2>Beyond AI Agents: Five Domains</h2>
+      <h2 id="five-domains">Beyond AI Agents: Five Domains</h2>
       <p>
         The core BPE mechanism (declare, verify, price, route, buffer) is
         domain-agnostic. Anywhere there&apos;s a capacity-constrained service
@@ -563,8 +601,8 @@ export default function ExplainerPage() {
     end
 
     AI["AI Agents<br/>8 contracts"] --> CORE
-    NOSTR["Nostr Relays<br/>2 contracts"] --> CORE
     LN["Lightning<br/>3 contracts"] --> CORE
+    NOSTR["Nostr Relays<br/>2 contracts"] --> CORE
     DEM["Demurrage<br/>2 contracts"] --> CORE
     OC["OpenClaw<br/>3 contracts"] --> CORE
 
@@ -582,78 +620,11 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3><Radio size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Nostr Relays: Making Relay Operation Sustainable</h3>
+      <h3 id="lightning"><Zap size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Lightning Network: Better Routing Through Capacity Signals</h3>
       <p>
-        <a href="https://nostr.com/">Nostr</a> is a decentralized social
-        protocol. Messages are distributed through relays, servers operated by
-        volunteers. Most relays run at a loss or depend on donations. Users have
-        no way to discover which relays have capacity, and relays have no way to
-        price their services based on actual load.
-      </p>
-      <p>
-        Backproto adds an economic layer for Nostr relays using the same BPE
-        primitives:
-      </p>
-      <ol>
-        <li>
-          Relay operators register and declare <strong>multi-dimensional
-          capacity</strong>: throughput (events/sec), storage (GB), and bandwidth
-          (Mbps)
-        </li>
-        <li>
-          Capacity is verified through cryptographically signed attestations,
-          smoothed over time to prevent gaming
-        </li>
-        <li>
-          A payment pool distributes relay subscription revenue proportional to
-          verified spare capacity
-        </li>
-        <li>
-          <strong>Anti-spam pricing</strong> scales with congestion: publishing
-          events costs more on busy relays (2x at 50% load, 4x at 80%)
-        </li>
-      </ol>
-
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph LR
-    subgraph "Relay Operators"
-        R1["Relay A<br/>High capacity"]
-        R2["Relay B<br/>Medium capacity"]
-        R3["Relay C<br/>Low capacity"]
-    end
-
-    R1 -->|capacity attestations| REG["Relay Capacity<br/>Registry"]
-    R2 -->|capacity attestations| REG
-    R3 -->|capacity attestations| REG
-
-    REG --> POOL["Relay Payment Pool<br/>(Superfluid GDA)"]
-
-    POOL -->|"60% of revenue"| R1
-    POOL -->|"30% of revenue"| R2
-    POOL -->|"10% of revenue"| R3
-
-    USERS["Nostr Users<br/>Subscription streams"] --> POOL
-
-    style REG fill:#6366f1,color:#fff
-    style POOL fill:#0d9488,color:#fff`}
-        />
-      </div>
-
-      <p>
-        The result: relay operators who invest in real capacity earn
-        proportionally more. Operators who overcommit get less (and get slashed).
-        Users get a reliable discovery mechanism for quality relays. We&apos;ve
-        drafted <strong>NIP-XX</strong>, a Nostr Improvement Proposal to
-        standardize this.
-      </p>
-
-      <hr />
-
-      <h3><Zap size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Lightning Network: Better Routing Through Capacity Signals</h3>
-      <p>
-        The <a href="https://lightning.network/">Lightning Network</a> enables
-        instant Bitcoin payments through a network of payment channels. But
+        The <a href="https://en.wikipedia.org/wiki/Lightning_Network">Lightning Network</a> enables
+        instant Bitcoin payments through a network of{" "}
+        <a href="https://en.wikipedia.org/wiki/Payment_channel">payment channels</a>. But
         routing payments through Lightning is unreliable: senders rely on stale
         gossip data about channel liquidity and have to probe routes by trial and
         error until one works.
@@ -665,7 +636,9 @@ export default function ExplainerPage() {
       <p>
         <strong>LightningCapacityOracle.</strong> Node operators submit signed
         attestations of their aggregate outbound liquidity. These reports are
-        smoothed using EWMA so a single bad report doesn&apos;t swing the data.
+        smoothed using{" "}
+        <a href="https://en.wikipedia.org/wiki/Exponential_smoothing">EWMA</a>{" "}
+        so a single bad report doesn&apos;t swing the data.
         Operators only report aggregate capacity, not individual channel
         balances, preserving privacy.
       </p>
@@ -748,12 +721,81 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3><Coins size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Demurrage: Tokens That Lose Value Over Time</h3>
+      <h3 id="nostr"><Radio size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Nostr Relays: Making Relay Operation Sustainable</h3>
+      <p>
+        <a href="https://nostr.com/">Nostr</a> is a decentralized social
+        protocol. Messages are distributed through relays, servers operated by
+        volunteers. Most relays run at a loss or depend on donations. Users have
+        no way to discover which relays have capacity, and relays have no way to
+        price their services based on actual load.
+      </p>
+      <p>
+        Backproto adds an economic layer for Nostr relays using the same BPE
+        primitives:
+      </p>
+      <ol>
+        <li>
+          Relay operators register and declare <strong>multi-dimensional
+          capacity</strong>: throughput (events/sec), storage (GB), and bandwidth
+          (Mbps)
+        </li>
+        <li>
+          Capacity is verified through cryptographically signed attestations,
+          smoothed over time to prevent gaming
+        </li>
+        <li>
+          A payment pool distributes relay subscription revenue proportional to
+          verified spare capacity
+        </li>
+        <li>
+          <strong>Anti-spam pricing</strong> scales with congestion: publishing
+          events costs more on busy relays (2x at 50% load, 4x at 80%)
+        </li>
+      </ol>
+
+      <div className={styles.diagram}>
+        <Mermaid
+          chart={`graph LR
+    subgraph "Relay Operators"
+        R1["Relay A<br/>High capacity"]
+        R2["Relay B<br/>Medium capacity"]
+        R3["Relay C<br/>Low capacity"]
+    end
+
+    R1 -->|capacity attestations| REG["Relay Capacity<br/>Registry"]
+    R2 -->|capacity attestations| REG
+    R3 -->|capacity attestations| REG
+
+    REG --> POOL["Relay Payment Pool<br/>(Superfluid GDA)"]
+
+    POOL -->|"60% of revenue"| R1
+    POOL -->|"30% of revenue"| R2
+    POOL -->|"10% of revenue"| R3
+
+    USERS["Nostr Users<br/>Subscription streams"] --> POOL
+
+    style REG fill:#6366f1,color:#fff
+    style POOL fill:#0d9488,color:#fff`}
+        />
+      </div>
+
+      <p>
+        The result: relay operators who invest in real capacity earn
+        proportionally more. Operators who overcommit get less (and get slashed).
+        Users get a reliable discovery mechanism for quality relays. We&apos;ve
+        drafted <strong>NIP-XX</strong>, a Nostr Improvement Proposal to
+        standardize this.
+      </p>
+
+      <hr />
+
+      <h3 id="demurrage"><Coins size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Demurrage: Tokens That Lose Value Over Time</h3>
       <p>
         Most tokens just sit in wallets. In an agent economy, that&apos;s a
         problem: idle money means idle capacity.{" "}
-        <strong>Demurrage</strong> is an old economic idea (proposed by Silvio
-        Gesell in 1916) that puts a holding cost on currency, effectively
+        <strong><a href="https://en.wikipedia.org/wiki/Demurrage_(currency)">Demurrage</a></strong> is an old economic idea (proposed by{" "}
+        <a href="https://en.wikipedia.org/wiki/Silvio_Gesell">Silvio
+        Gesell</a> in 1916) that puts a holding cost on currency, effectively
         encouraging people to spend it rather than hoard it.
       </p>
       <p>
@@ -809,7 +851,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3><Globe size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Platform Layer: Plugging It All Together</h3>
+      <h3 id="platform"><Globe size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Platform Layer: Plugging It All Together</h3>
       <p>
         With four different domains using BPE, there&apos;s a coordination
         problem: how do you share infrastructure and reputation across domains?
@@ -869,11 +911,11 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3><PawPrint size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> OpenClaw Agents: Coordinating Skill Networks at Scale</h3>
+      <h3 id="openclaw"><PawPrint size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> OpenClaw Agents: Coordinating Skill Networks at Scale</h3>
       <p>
         <a href="https://openclaw.com/">OpenClaw</a> is the largest
-        open-source AI agent framework (315k+ GitHub stars) with ClawHub, a
-        marketplace of 700+ installable agent skills. As OpenClaw deployments
+        open-source AI agent framework (315k GitHub stars and growing) with ClawHub, a
+        marketplace of installable agent skills. As OpenClaw deployments
         grow from single agents to multi-agent pipelines, a coordination
         problem emerges: which agent gets the next task, how do you verify it
         was completed, and how do you build trust across skill types?
@@ -972,13 +1014,13 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h2>How This Helps Bitcoin</h2>
+      <h2 id="bitcoin">How This Helps Bitcoin</h2>
       <p>
         If you&apos;re in the Bitcoin ecosystem, the Lightning section above is
         where Backproto directly contributes. Here&apos;s the full picture.
       </p>
 
-      <h3>The problem: Lightning routing is unreliable</h3>
+      <h3 id="lightning-routing">The problem: Lightning routing is unreliable</h3>
       <p>
         Lightning Network payments fail more often than they should. The root
         cause is stale routing information. Nodes advertise channel capacity
@@ -994,7 +1036,7 @@ export default function ExplainerPage() {
         flowing or which channels need rebalancing.
       </p>
 
-      <h3>What Backproto adds</h3>
+      <h3 id="backproto-adds">What Backproto adds</h3>
       <p>Backproto provides three things the Lightning ecosystem currently lacks:</p>
       <p>
         <strong>1. Real-time capacity signals.</strong> The{" "}
@@ -1022,7 +1064,7 @@ export default function ExplainerPage() {
         without managing three separate integrations.
       </p>
 
-      <h3>The sidecar model</h3>
+      <h3 id="sidecar">The sidecar model</h3>
       <p>
         Critically, Backproto <strong>does not modify the Lightning
         protocol</strong>. It runs on Base (an Ethereum L2) as a sidecar,
@@ -1038,7 +1080,7 @@ export default function ExplainerPage() {
         among Lightning implementations.
       </p>
 
-      <h3>Why this matters for Bitcoin adoption</h3>
+      <h3 id="bitcoin-adoption">Why this matters for Bitcoin adoption</h3>
       <p>
         Better routing means fewer failed payments. Fewer failed payments means
         a better user experience. A better user experience means more people and
@@ -1072,7 +1114,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h2>Glossary</h2>
+      <h2 id="glossary">Glossary</h2>
 
       <h3>Core Concepts</h3>
       <table>
@@ -1132,7 +1174,7 @@ export default function ExplainerPage() {
             <td>A programmable unit of value on a blockchain, like a digital dollar that code can move</td>
           </tr>
           <tr>
-            <td><strong>ERC-20</strong></td>
+            <td><strong><a href="https://en.wikipedia.org/wiki/ERC-20">ERC-20</a></strong></td>
             <td>The most common token standard on Ethereum. Defines how tokens are transferred, approved, and tracked.</td>
           </tr>
           <tr>
@@ -1192,7 +1234,7 @@ export default function ExplainerPage() {
             <td>A two-step process where you first submit a sealed (hashed) value, then reveal the actual value later. Prevents front-running.</td>
           </tr>
           <tr>
-            <td><strong>EIP-712</strong></td>
+            <td><strong><a href="https://eips.ethereum.org/EIPS/eip-712">EIP-712</a></strong></td>
             <td>A standard for signing structured data off-chain. Used for capacity attestations and completion receipts.</td>
           </tr>
           <tr>
@@ -1252,7 +1294,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h2>Want to Go Deeper?</h2>
+      <h2 id="deeper">Want to Go Deeper?</h2>
 
       <h3>Academic &amp; Formal</h3>
       <ul className={styles.links}>
@@ -1301,6 +1343,7 @@ export default function ExplainerPage() {
           : all code, MIT licensed
         </li>
       </ul>
+    </div>
     </div>
   );
 }

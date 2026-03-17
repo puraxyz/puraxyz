@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -21,6 +22,7 @@ export default function Nav() {
       <nav className={styles.nav}>
         <div className={styles.inner}>
           <Link href="/" className={styles.logo}>
+            <Image src="/backproto.png" width={28} height={28} alt="" className={styles.logoIcon} />
             backproto<span>.io</span>
           </Link>
           <div className={styles.links}>

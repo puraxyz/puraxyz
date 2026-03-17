@@ -39,11 +39,11 @@ Fair question. If you're coming from the AI/ML world, you might wonder why any o
 
 **Streaming payments.** Agents need to pay each other continuously, not in lump sums. A translation agent pays an LLM agent a tiny amount every second the work is happening. This requires a payment system that supports real-time, per-second flows. That's what [Superfluid](https://www.superfluid.finance/) does: it's a protocol for continuous token streams, where balances update every block without requiring a transaction for each payment.
 
-**Programmable routing.** The core of BPE is a smart contract that automatically splits incoming payment streams based on capacity data. Nobody has to approve the split. Nobody can censor it. The rules are in the code, and the code runs on a public blockchain where anyone can verify it. Try getting Stripe or PayPal to programmatically reroute payments to whichever AI agent has the most spare CPU.
+**Programmable routing.** The core of BPE is a [smart contract](https://en.wikipedia.org/wiki/Smart_contract) that automatically splits incoming payment streams based on capacity data. Nobody has to approve the split. Nobody can censor it. The rules are in the code, and the code runs on a public blockchain where anyone can verify it. Try getting Stripe or PayPal to programmatically reroute payments to whichever AI agent has the most spare CPU.
 
 **No platform risk.** If your agent economy depends on a company's API, that company can change the rules, raise fees, or shut down. Smart contracts on a blockchain are permissionless: once deployed, they run exactly as written. No terms of service. No API key revocations.
 
-**Composability.** Every contract on the network can call every other contract. BPE's routing pools can plug into lending protocols, insurance contracts, or any other on-chain system without needing an integration partner. This means new domains (Nostr relays, Lightning channels, anything else) can plug into the same capacity infrastructure without anyone's permission.
+**Composability.** Every contract on the network can call every other contract. BPE's routing pools can plug into lending protocols, insurance contracts, or any other on-chain system without needing an integration partner. This means new domains (Lightning channels, Nostr relays, anything else) can plug into the same capacity infrastructure without anyone's permission.
 
 ### Key concepts (quick glossary for developers)
 
@@ -58,7 +58,7 @@ Fair question. If you're coming from the AI/ML world, you might wonder why any o
 
 ### Where does BPE run?
 
-BPE is deployed on **[Base](https://base.org)**, an Ethereum Layer 2 network built by Coinbase. Base inherits Ethereum's security guarantees while offering transaction fees under $0.01 and confirmation times around 2 seconds. This makes it practical for the frequent capacity updates, rebalancing, and attestation submissions that BPE requires.
+BPE is deployed on **[Base](https://base.org)**, an Ethereum [Layer 2](https://en.wikipedia.org/wiki/Blockchain_layer_2) network built by Coinbase. Base inherits Ethereum's security guarantees while offering transaction fees under $0.01 and confirmation times around 2 seconds. This makes it practical for the frequent capacity updates, rebalancing, and attestation submissions that BPE requires.
 
 You don't need to understand Ethereum's internals to use BPE. The [TypeScript SDK](https://github.com/backproto/backproto/tree/main/sdk) abstracts the blockchain interaction into straightforward function calls like `registerSink()`, `getPrice()`, and `rebalance()`.
 
@@ -66,7 +66,7 @@ You don't need to understand Ethereum's internals to use BPE. The [TypeScript SD
 
 ## The Solution: Backpressure Routing for Money
 
-BPE borrows a brilliant idea from how the internet works: **backpressure routing**. The core idea is simple:
+BPE borrows a brilliant idea from how the internet works: **[backpressure routing](https://en.wikipedia.org/wiki/Backpressure_routing)**. The core idea is simple:
 
 > **Send more money to the agents who have the most spare capacity.**
 
@@ -128,7 +128,7 @@ Every AI agent that wants to receive payments (**called a "sink"**) tells the ne
 
 But there's a catch: agents might lie to get more money. So declarations go through two safeguards:
 
-**Stake to play.** Every agent must put down a deposit (like a security deposit on an apartment). The more you deposit, the more capacity you're allowed to claim. This prevents someone from creating a thousand fake agents to steal payments.
+**Stake to play.** Every agent must put down a deposit (like a security deposit on an apartment). The more you deposit, the more capacity you're allowed to claim. This prevents someone from creating a thousand fake agents to steal payments (a [Sybil attack](https://en.wikipedia.org/wiki/Sybil_attack)).
 
 ```mermaid
 graph LR
@@ -143,7 +143,7 @@ graph LR
 
 Notice something? Depositing 4x more only gives you 2x more capacity. This is by design. It makes the "create fake identities" attack unprofitable.
 
-**Commit-reveal.** Agents don't just blurt out their capacity. They first submit a sealed commitment (like a sealed auction bid), then reveal the actual number later. This prevents other agents from seeing your number and gaming the system.
+**[Commit-reveal](https://en.wikipedia.org/wiki/Commitment_scheme).** Agents don't just blurt out their capacity. They first submit a sealed commitment (like a sealed auction bid), then reveal the actual number later. This prevents other agents from seeing your number and gaming the system.
 
 ---
 
@@ -174,7 +174,7 @@ Every completed task produces a **dual-signed receipt**: both the agent doing th
 
 ### 3. Price: Busy Agents Cost More
 
-Just like Uber's surge pricing, BPE makes busy agents more expensive:
+Just like Uber's [surge pricing](https://en.wikipedia.org/wiki/Dynamic_pricing), BPE makes busy agents more expensive:
 
 ```mermaid
 graph LR
@@ -310,8 +310,8 @@ graph TB
     end
 
     AI["AI Agents<br/>8 contracts"] --> CORE
-    NOSTR["Nostr Relays<br/>2 contracts"] --> CORE
     LN["Lightning<br/>3 contracts"] --> CORE
+    NOSTR["Nostr Relays<br/>2 contracts"] --> CORE
     DEM["Demurrage<br/>2 contracts"] --> CORE
     OC["OpenClaw<br/>3 contracts"] --> CORE
 
@@ -325,6 +325,55 @@ graph TB
     style OC fill:#be123c,color:#fff
     style PLAT fill:#374151,color:#e0e0e0
 ```
+
+---
+
+### Lightning Network: Better Routing Through Capacity Signals
+
+The [Lightning Network](https://en.wikipedia.org/wiki/Lightning_Network) enables instant Bitcoin payments through a network of [payment channels](https://en.wikipedia.org/wiki/Payment_channel). But routing payments through Lightning is unreliable: senders rely on stale gossip data about channel liquidity and have to probe routes by trial and error until one works.
+
+Backproto adds a **real-time capacity signaling layer** for Lightning, without modifying the Lightning protocol itself:
+
+**LightningCapacityOracle.** Node operators submit signed attestations of their aggregate outbound liquidity. These reports are smoothed using [EWMA](https://en.wikipedia.org/wiki/Exponential_smoothing) (the same technique) so a single bad report doesn't swing the data. Crucially, operators only report aggregate capacity, not individual channel balances, preserving privacy.
+
+**LightningRoutingPool.** A BPE pool where Lightning nodes are weighted by their routing capacity. Nodes with more available liquidity and balanced channels earn more streaming revenue. This creates a direct economic incentive to keep channels well-funded and balanced.
+
+**CrossProtocolRouter.** A unified routing interface that selects the best payment protocol for each transaction:
+
+| Protocol | Speed | Reliability | Best for |
+|----------|-------|-------------|----------|
+| Lightning | ~2 seconds | 95% success | Instant, small payments |
+| Superfluid | ~4 seconds | 99% success | Ongoing streaming payments |
+| On-chain | ~12 seconds | 99.99% success | Large, high-assurance settlements |
+
+```mermaid
+graph TB
+    subgraph "Lightning Nodes"
+        N1["Node A<br/>5 BTC capacity"]
+        N2["Node B<br/>2 BTC capacity"]
+        N3["Node C<br/>0.5 BTC capacity"]
+    end
+
+    N1 -->|signed attestation| ORACLE["Lightning Capacity<br/>Oracle (EWMA)"]
+    N2 -->|signed attestation| ORACLE
+    N3 -->|signed attestation| ORACLE
+
+    ORACLE --> RPOOL["Lightning Routing<br/>Pool"]
+
+    RPOOL -->|"Most incentives"| N1
+    RPOOL -->|"Some incentives"| N2
+    RPOOL -->|"Fewer incentives"| N3
+
+    ROUTER["Cross-Protocol<br/>Router"] --> LN["Lightning"]
+    ROUTER --> SF["Superfluid"]
+    ROUTER --> OC["On-chain"]
+
+    style ORACLE fill:#a16207,color:#fff
+    style RPOOL fill:#0d9488,color:#fff
+    style ROUTER fill:#2563eb,color:#fff
+```
+
+This runs on Base (L2) as a **sidecar** to Lightning. It doesn't change how Lightning works. It provides an external capacity signaling and incentive layer that pathfinding algorithms and node operators can use to make better decisions.
 
 ---
 
@@ -369,58 +418,9 @@ The result: relay operators who invest in real capacity earn proportionally more
 
 ---
 
-### Lightning Network: Better Routing Through Capacity Signals
-
-The [Lightning Network](https://lightning.network/) enables instant Bitcoin payments through a network of payment channels. But routing payments through Lightning is unreliable: senders rely on stale gossip data about channel liquidity and have to probe routes by trial and error until one works.
-
-Backproto adds a **real-time capacity signaling layer** for Lightning, without modifying the Lightning protocol itself:
-
-**LightningCapacityOracle.** Node operators submit signed attestations of their aggregate outbound liquidity. These reports are smoothed using EWMA (the same technique) so a single bad report doesn't swing the data. Crucially, operators only report aggregate capacity, not individual channel balances, preserving privacy.
-
-**LightningRoutingPool.** A BPE pool where Lightning nodes are weighted by their routing capacity. Nodes with more available liquidity and balanced channels earn more streaming revenue. This creates a direct economic incentive to keep channels well-funded and balanced.
-
-**CrossProtocolRouter.** A unified routing interface that selects the best payment protocol for each transaction:
-
-| Protocol | Speed | Reliability | Best for |
-|----------|-------|-------------|----------|
-| Lightning | ~2 seconds | 95% success | Instant, small payments |
-| Superfluid | ~4 seconds | 99% success | Ongoing streaming payments |
-| On-chain | ~12 seconds | 99.99% success | Large, high-assurance settlements |
-
-```mermaid
-graph TB
-    subgraph "Lightning Nodes"
-        N1["Node A<br/>5 BTC capacity"]
-        N2["Node B<br/>2 BTC capacity"]
-        N3["Node C<br/>0.5 BTC capacity"]
-    end
-
-    N1 -->|signed attestation| ORACLE["Lightning Capacity<br/>Oracle (EWMA)"]
-    N2 -->|signed attestation| ORACLE
-    N3 -->|signed attestation| ORACLE
-
-    ORACLE --> RPOOL["Lightning Routing<br/>Pool"]
-
-    RPOOL -->|"Most incentives"| N1
-    RPOOL -->|"Some incentives"| N2
-    RPOOL -->|"Fewer incentives"| N3
-
-    ROUTER["Cross-Protocol<br/>Router"] --> LN["Lightning"]
-    ROUTER --> SF["Superfluid"]
-    ROUTER --> OC["On-chain"]
-
-    style ORACLE fill:#a16207,color:#fff
-    style RPOOL fill:#0d9488,color:#fff
-    style ROUTER fill:#2563eb,color:#fff
-```
-
-This runs on Base (L2) as a **sidecar** to Lightning. It doesn't change how Lightning works. It provides an external capacity signaling and incentive layer that pathfinding algorithms and node operators can use to make better decisions.
-
----
-
 ### Demurrage: Tokens That Lose Value Over Time
 
-Most tokens just sit in wallets. In an agent economy, that's a problem: idle money means idle capacity. **Demurrage** is an old economic idea (proposed by Silvio Gesell in 1916) that puts a holding cost on currency, effectively encouraging people to spend it rather than hoard it.
+Most tokens just sit in wallets. In an agent economy, that's a problem: idle money means idle capacity. **[Demurrage](https://en.wikipedia.org/wiki/Demurrage_(currency))** is an old economic idea (proposed by [Silvio Gesell](https://en.wikipedia.org/wiki/Silvio_Gesell) in 1916) that puts a holding cost on currency, effectively encouraging people to spend it rather than hoard it.
 
 Backproto implements this as the **DemurrageToken**, a token whose balance continuously decays if you hold it without using it:
 
@@ -484,7 +484,7 @@ The platform layer is what turns Backproto from "a routing protocol for AI agent
 
 ### OpenClaw Agents: Coordinating Skill Networks at Scale
 
-[OpenClaw](https://openclaw.com/) is the largest open-source AI agent framework (315k+ GitHub stars) with ClawHub, a marketplace of 700+ installable agent skills. As OpenClaw deployments grow from single agents to multi-agent pipelines, a coordination problem emerges: which agent gets the next task, how do you verify it was completed, and how do you build trust across skill types?
+[OpenClaw](https://openclaw.com/) is the largest open-source AI agent framework (315k GitHub stars and growing) with ClawHub, a marketplace of installable agent skills. As OpenClaw deployments grow from single agents to multi-agent pipelines, a coordination problem emerges: which agent gets the next task, how do you verify it was completed, and how do you build trust across skill types?
 
 Backproto adds an economic coordination layer for OpenClaw agent networks using three purpose-built contracts:
 
@@ -597,7 +597,7 @@ The economic incentive layer also addresses a structural problem: Lightning rout
 | Term | Plain English |
 |------|--------------|
 | **Token** | A programmable unit of value on a blockchain, like a digital dollar that code can move |
-| **ERC-20** | The most common token standard on Ethereum. Defines how tokens are transferred, approved, and tracked. |
+| **[ERC-20](https://en.wikipedia.org/wiki/ERC-20)** | The most common token standard on Ethereum. Defines how tokens are transferred, approved, and tracked. |
 | **Super Token** | A Superfluid-compatible token that supports streaming (continuous per-second flows) and distribution |
 | **Smart contract** | A program that lives on a blockchain and executes automatically when conditions are met |
 | **Staking** | Locking up tokens as a security deposit. In BPE, agents stake to declare capacity. |
@@ -614,7 +614,7 @@ The economic incentive layer also addresses a structural problem: Lightning rout
 |------|--------------|
 | **EWMA** | Exponentially Weighted Moving Average. A smoothing method that weights recent data more than old data, preventing sudden suspicious capacity changes. |
 | **Commit-reveal** | A two-step process where you first submit a sealed (hashed) value, then reveal the actual value later. Prevents front-running. |
-| **EIP-712** | A standard for signing structured data off-chain. Used for capacity attestations and completion receipts. |
+| **[EIP-712](https://eips.ethereum.org/EIPS/eip-712)** | A standard for signing structured data off-chain. Used for capacity attestations and completion receipts. |
 | **Attestation** | A cryptographically signed statement (e.g., "I have 500 units of capacity"). Verified on-chain. |
 | **Sybil resistance** | Protection against an attacker creating many fake identities. BPE's concave stake cap (square root) makes splitting unprofitable. |
 

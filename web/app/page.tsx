@@ -26,16 +26,16 @@ const domains = [
     contracts: "2 contracts: DemurrageToken, VelocityMetrics",
   },
   {
-    title: "Nostr Relays",
-    description:
-      "NIP-compliant relay capacity signaling with anti-spam pricing. BPE-weighted payment pools make relay operation sustainable.",
-    contracts: "2 contracts: RelayCapacityRegistry, RelayPaymentPool",
-  },
-  {
     title: "Lightning",
     description:
       "EWMA-smoothed channel capacity oracles and cross-protocol routing across Superfluid, Lightning, and on-chain settlement.",
     contracts: "3 contracts: LightningCapacityOracle, LightningRoutingPool, CrossProtocolRouter",
+  },
+  {
+    title: "Nostr Relays",
+    description:
+      "NIP-compliant relay capacity signaling with anti-spam pricing. BPE-weighted payment pools make relay operation sustainable.",
+    contracts: "2 contracts: RelayCapacityRegistry, RelayPaymentPool",
   },
 ];
 

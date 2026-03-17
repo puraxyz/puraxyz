@@ -1,14 +1,40 @@
+.layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  max-width: 1040px;
+  margin: 0 auto;
+  gap: 2rem;
+  padding: 3rem 1.5rem 4rem;
+}
+
 .page {
   max-width: 760px;
-  margin: 0 auto;
-  padding: 3rem 1.5rem 4rem;
   line-height: 1.75;
+  min-width: 0;
 }
 
 .page h1 {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.page h2,
+.page h3 {
+  scroll-margin-top: calc(var(--header-height) + 1.5rem);
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 1rem 1.5rem 4rem;
+  }
 }
 
 .page h2 {
@@ -91,7 +117,7 @@
 }
 
 .diagram :global(.edgeLabel) {
-  padding: 4px 8px;
+  overflow: visible;
 }
 
 .diagram :global(.edgeLabel rect) {

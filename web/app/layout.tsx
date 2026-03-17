@@ -22,6 +22,9 @@ export const metadata: Metadata = {
   description:
     "Universal capacity-constrained flow control across AI agents, Nostr relays, Lightning routing, and streaming payments.",
   metadataBase: new URL("https://backproto.io"),
+  openGraph: {
+    images: [{ url: "/backproto.png", width: 512, height: 512 }],
+  },
 };
 
 export default function RootLayout({

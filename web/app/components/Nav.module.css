@@ -26,6 +26,13 @@
   font-size: 1.1rem;
   color: #fff;
   letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logoIcon {
+  border-radius: 6px;
 }
 
 .logo span {
