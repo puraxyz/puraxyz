@@ -118,6 +118,12 @@ contract CrossProtocolRouter is ICrossProtocolRouter, Ownable {
 
     // ──────────────────── Reads ────────────────────
 
+    /// @notice Withdraw any ETH accidentally sent to this contract.
+    function withdrawETH() external onlyOwner {
+        (bool ok,) = msg.sender.call{value: address(this).balance}("");
+        require(ok);
+    }
+
     /// @inheritdoc ICrossProtocolRouter
     function isProtocolAvailable(RouteProtocol protocol) external view returns (bool) {
         return _adapters[protocol] != address(0);
