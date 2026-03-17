@@ -1,8 +1,15 @@
 import Image from "next/image";
-import Mermaid from "../components/Mermaid";
+import AnimatedDiagram from "../components/AnimatedDiagram";
+import AnimatedSequence from "../components/AnimatedSequence";
 import TableOfContents from "../components/TableOfContents";
 import { Radio, Zap, Coins, Globe, PawPrint } from "lucide-react";
 import styles from "./page.module.css";
+import {
+  problemDiagram, solutionDiagram, pipelineDiagram, stakeDiagram,
+  verifySequence, priceDiagram, routeDiagram, bufferDiagram,
+  bigPictureDiagram, domainsDiagram, lightningDiagram, nostrDiagram,
+  demurrageDiagram, reputationDiagram, openclawSequence, bitcoinDiagram,
+} from "./diagrams";
 
 export const metadata = { title: "How It Works" };
 
@@ -97,16 +104,7 @@ export default function ExplainerPage() {
         gets too busy?
       </p>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph LR
-    A[Translation Agent<br/>Sending $10/min] -->|payment stream| B[LLM Agent<br/>At capacity!]
-    C[Chat Agent<br/>Sending $5/min] -->|payment stream| B
-    D[Writing Agent<br/>Sending $8/min] -->|payment stream| B
-
-    style B fill:#be123c,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...problemDiagram} />
 
       <p>
         The LLM agent can only handle so much work. But the money keeps flowing
@@ -242,16 +240,7 @@ export default function ExplainerPage() {
         </strong>
       </blockquote>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph LR
-    A[Translation Agent<br/>Sending $10/min] -->|$7/min| B[LLM Agent A<br/>70% free]
-    A -->|$3/min| C[LLM Agent B<br/>30% free]
-
-    style B fill:#0d9488,color:#fff
-    style C fill:#a16207,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...solutionDiagram} />
 
       <p>
         When Agent A has lots of spare capacity, it gets a bigger share of the
@@ -266,38 +255,7 @@ export default function ExplainerPage() {
         There are five key ideas, and they form a pipeline:
       </p>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph TB
-    subgraph "1 · DECLARE"
-        S1[Each agent announces<br/>how much work it can handle]
-    end
-
-    subgraph "2 · VERIFY"
-        S2[The system checks<br/>if they're telling the truth]
-    end
-
-    subgraph "3 · PRICE"
-        S4[Busy agents become<br/>more expensive]
-    end
-
-    subgraph "4 · ROUTE"
-        S3[Payments flow to agents<br/>based on their capacity]
-    end
-
-    subgraph "5 · BUFFER"
-        S5[Overflow payments are<br/>held safely until capacity frees up]
-    end
-
-    S1 --> S2 --> S4 --> S3 --> S5
-
-    style S1 fill:#2563eb,color:#fff
-    style S2 fill:#6366f1,color:#fff
-    style S4 fill:#d97706,color:#fff
-    style S3 fill:#0d9488,color:#fff
-    style S5 fill:#a16207,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...pipelineDiagram} />
 
       <p>Let&apos;s walk through each one.</p>
 
@@ -321,18 +279,7 @@ export default function ExplainerPage() {
         <a href="https://en.wikipedia.org/wiki/Sybil_attack">Sybil attack</a>).
       </p>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph LR
-    A[Agent deposits<br/>100 tokens] -->|stake| B[Allowed to claim<br/>capacity of 10]
-    C[Agent deposits<br/>400 tokens] -->|stake| D[Allowed to claim<br/>capacity of 20]
-
-    style A fill:#374151,color:#e0e0e0
-    style C fill:#374151,color:#e0e0e0
-    style B fill:#2563eb,color:#fff
-    style D fill:#2563eb,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...stakeDiagram} />
 
       <p>
         Notice something? Depositing 4x more only gives you 2x more capacity.
@@ -354,22 +301,7 @@ export default function ExplainerPage() {
         has a built-in lie detector:
       </p>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`sequenceDiagram
-    participant Source as App (Source)
-    participant Sink as AI Agent (Sink)
-    participant Chain as Blockchain
-
-    Source->>Sink: Send task request
-    Sink->>Sink: Do the work
-    Sink->>Source: Return result + sign receipt
-    Source->>Chain: Submit receipt (both signatures)
-    Chain->>Chain: Count completions vs. declared capacity
-    
-    Note over Chain: If completions < 50% of declared capacity<br/>for 3 periods in a row → slash the deposit!`}
-        />
-      </div>
+      <AnimatedSequence {...verifySequence} />
 
       <p>
         Every completed task produces a <strong>dual-signed receipt</strong>:
@@ -395,23 +327,7 @@ export default function ExplainerPage() {
         expensive:
       </p>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph LR
-    A1["Low demand<br/>Queue: 2"] --> B1["$1.00/task"]
-    B1 --> A2["Medium demand<br/>Queue: 10"]
-    A2 --> B2["$1.80/task"]
-    B2 --> A3["High demand<br/>Queue: 50"]
-    A3 --> B3["$5.00/task"]
-
-    style A1 fill:#0d9488,color:#fff
-    style B1 fill:#0d9488,color:#fff
-    style A2 fill:#a16207,color:#fff
-    style B2 fill:#a16207,color:#fff
-    style A3 fill:#be123c,color:#fff
-    style B3 fill:#be123c,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...priceDiagram} />
 
       <p>The price has two parts:</p>
       <ul>
@@ -438,27 +354,7 @@ export default function ExplainerPage() {
         and redistributes them automatically.
       </p>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph TB
-    P1[Source 1<br/>$5/min] --> Pool
-    P2[Source 2<br/>$3/min] --> Pool
-    P3[Source 3<br/>$7/min] --> Pool
-
-    Pool["Backpressure Pool<br/>$15/min total"] --> S1
-    Pool --> S2
-    Pool --> S3
-
-    S1["Agent A - 50% capacity<br/>Gets $7.50/min"]
-    S2["Agent B - 30% capacity<br/>Gets $4.50/min"]
-    S3["Agent C - 20% capacity<br/>Gets $3.00/min"]
-
-    style Pool fill:#2563eb,color:#fff
-    style S1 fill:#0d9488,color:#fff
-    style S2 fill:#0d9488,color:#fff
-    style S3 fill:#0d9488,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...routeDiagram} />
 
       <p>
         The pool divides money in proportion to each agent&apos;s verified
@@ -480,18 +376,7 @@ export default function ExplainerPage() {
         waiting room.
       </p>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph LR
-    IN["Incoming: $20/min"] --> CHECK{Any capacity<br/>available?}
-    CHECK -->|Yes| POOL["Backpressure Pool<br/>Routes to agents"]
-    CHECK -->|No| BUFFER["Escrow Buffer<br/>Holds excess safely"]
-    BUFFER -->|When capacity frees up| POOL
-
-    style BUFFER fill:#a16207,color:#fff
-    style POOL fill:#0d9488,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...bufferDiagram} />
 
       <p>
         When capacity frees up, the buffer drains automatically. If the buffer
@@ -506,36 +391,7 @@ export default function ExplainerPage() {
         Here&apos;s how all the pieces fit together in one view:
       </p>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph TB
-    subgraph "Off-chain (fast, free)"
-        ATTEST["Agents sign capacity<br/>attestations off-chain"]
-    end
-
-    subgraph "On-chain (secure, permanent)"
-        AGG["Aggregator<br/>Batches attestations"] --> REG["Capacity Registry<br/>Tracks who can do what"]
-        SM["Stake Manager<br/>Deposits & capacity caps"] --> REG
-        REG --> POOL["Backpressure Pool<br/>Routes payments"]
-        REG --> PRICE["Pricing Curve<br/>Dynamic fees"]
-        POOL --> GDA["Superfluid Streams<br/>Continuous payments"]
-        POOL --> BUF["Escrow Buffer<br/>Overflow safety"]
-        COMP["Completion Tracker<br/>Verifies actual work"] -.->|slash if lying| SM
-    end
-
-    ATTEST --> AGG
-
-    style ATTEST fill:#374151,color:#e0e0e0
-    style AGG fill:#6366f1,color:#fff
-    style REG fill:#2563eb,color:#fff
-    style SM fill:#2563eb,color:#fff
-    style POOL fill:#0d9488,color:#fff
-    style PRICE fill:#d97706,color:#fff
-    style GDA fill:#0d9488,color:#fff
-    style BUF fill:#a16207,color:#fff
-    style COMP fill:#be123c,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...bigPictureDiagram} />
 
       <hr />
 
@@ -593,30 +449,7 @@ export default function ExplainerPage() {
         allocation. Backproto extends BPE to five domains:
       </p>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph TB
-    subgraph "Core BPE"
-        CORE["Capacity Registry<br/>Stake Manager<br/>Backpressure Pool<br/>Pricing Curve<br/>Completion Tracker<br/>Escrow Buffer<br/>Pipeline<br/>Aggregator"]
-    end
-
-    AI["AI Agents<br/>8 contracts"] --> CORE
-    LN["Lightning<br/>3 contracts"] --> CORE
-    NOSTR["Nostr Relays<br/>2 contracts"] --> CORE
-    DEM["Demurrage<br/>2 contracts"] --> CORE
-    OC["OpenClaw<br/>3 contracts"] --> CORE
-
-    CORE --> PLAT["Platform Layer<br/>2 contracts<br/>Universal Adapter + Reputation"]
-
-    style CORE fill:#2563eb,color:#fff
-    style AI fill:#0d9488,color:#fff
-    style NOSTR fill:#6366f1,color:#fff
-    style LN fill:#a16207,color:#fff
-    style DEM fill:#d97706,color:#fff
-    style OC fill:#be123c,color:#fff
-    style PLAT fill:#374151,color:#e0e0e0`}
-        />
-      </div>
+      <AnimatedDiagram {...domainsDiagram} />
 
       <hr />
 
@@ -683,34 +516,7 @@ export default function ExplainerPage() {
         </tbody>
       </table>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph TB
-    subgraph "Lightning Nodes"
-        N1["Node A<br/>5 BTC capacity"]
-        N2["Node B<br/>2 BTC capacity"]
-        N3["Node C<br/>0.5 BTC capacity"]
-    end
-
-    N1 -->|signed attestation| ORACLE["Lightning Capacity<br/>Oracle (EWMA)"]
-    N2 -->|signed attestation| ORACLE
-    N3 -->|signed attestation| ORACLE
-
-    ORACLE --> RPOOL["Lightning Routing<br/>Pool"]
-
-    RPOOL -->|"Most incentives"| N1
-    RPOOL -->|"Some incentives"| N2
-    RPOOL -->|"Fewer incentives"| N3
-
-    ROUTER["Cross-Protocol<br/>Router"] --> LN["Lightning"]
-    ROUTER --> SF["Superfluid"]
-    ROUTER --> OC["On-chain"]
-
-    style ORACLE fill:#a16207,color:#fff
-    style RPOOL fill:#0d9488,color:#fff
-    style ROUTER fill:#2563eb,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...lightningDiagram} />
 
       <p>
         This runs on Base (L2) as a <strong>sidecar</strong> to Lightning. It
@@ -753,31 +559,7 @@ export default function ExplainerPage() {
         </li>
       </ol>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph LR
-    subgraph "Relay Operators"
-        R1["Relay A<br/>High capacity"]
-        R2["Relay B<br/>Medium capacity"]
-        R3["Relay C<br/>Low capacity"]
-    end
-
-    R1 -->|capacity attestations| REG["Relay Capacity<br/>Registry"]
-    R2 -->|capacity attestations| REG
-    R3 -->|capacity attestations| REG
-
-    REG --> POOL["Relay Payment Pool<br/>(Superfluid GDA)"]
-
-    POOL -->|"60% of revenue"| R1
-    POOL -->|"30% of revenue"| R2
-    POOL -->|"10% of revenue"| R3
-
-    USERS["Nostr Users<br/>Subscription streams"] --> POOL
-
-    style REG fill:#6366f1,color:#fff
-    style POOL fill:#0d9488,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...nostrDiagram} />
 
       <p>
         The result: relay operators who invest in real capacity earn
@@ -803,23 +585,7 @@ export default function ExplainerPage() {
         whose balance continuously decays if you hold it without using it:
       </p>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph LR
-    subgraph "Standard Token"
-        A1["Day 1: 1000 tokens"] --> A2["Day 30: 1000 tokens"]
-        A2 --> A3["Day 365: 1000 tokens"]
-    end
-
-    subgraph "Demurrage Token (5% annual decay)"
-        B1["Day 1: 1000 tokens"] --> B2["Day 30: ~996 tokens"]
-        B2 --> B3["Day 365: ~951 tokens"]
-    end
-
-    style A3 fill:#374151,color:#e0e0e0
-    style B3 fill:#a16207,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...demurrageDiagram} />
 
       <p><strong>Key details:</strong></p>
       <ul>
@@ -886,22 +652,7 @@ export default function ExplainerPage() {
         </li>
       </ul>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph TB
-    AI["AI Agent<br/>Reputation: 85"] --> LEDGER
-    RELAY["Relay Operator<br/>Reputation: 92"] --> LEDGER
-    LN["Lightning Node<br/>Reputation: 78"] --> LEDGER
-
-    LEDGER["Reputation Ledger<br/>Cross-domain scoring"] --> SCORE["Combined Score<br/>Weighted average<br/>3× penalty for negatives"]
-
-    SCORE --> DISCOUNT["Stake Discount<br/>Up to 50% off<br/>required deposit"]
-
-    style LEDGER fill:#2563eb,color:#fff
-    style SCORE fill:#6366f1,color:#fff
-    style DISCOUNT fill:#0d9488,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...reputationDiagram} />
 
       <p>
         The platform layer is what turns Backproto from &quot;a routing protocol
@@ -959,26 +710,7 @@ export default function ExplainerPage() {
         </li>
       </ol>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`sequenceDiagram
-    participant Requester
-    participant Agent as OpenClaw Agent
-    participant Adapter as CapacityAdapter
-    participant Verifier as CompletionVerifier
-    participant Rep as ReputationBridge
-
-    Agent->>Adapter: registerAgent(skillType, stake)
-    Requester->>Agent: Assign task via ClawHub
-    Agent->>Agent: Execute skill
-    Agent->>Adapter: updateCapacity(throughput, latency, errorRate)
-    Adapter->>Adapter: EWMA smooth, normalize score
-    Agent->>Verifier: verifyExecution(agentSig, requesterSig)
-    Verifier->>Verifier: Record completion on-chain
-    Verifier->>Rep: reportCompletion(agent)
-    Rep->>Rep: Update cross-domain reputation`}
-        />
-      </div>
+      <AnimatedSequence {...openclawSequence} />
 
       <p><strong>What this enables:</strong></p>
       <ul>
@@ -1087,21 +819,7 @@ export default function ExplainerPage() {
         businesses adopt Lightning for everyday payments.
       </p>
 
-      <div className={styles.diagram}>
-        <Mermaid
-          chart={`graph LR
-    A["Real-time<br/>capacity signals"] --> B["Smarter<br/>routing"]
-    B --> C["Fewer failed<br/>payments"]
-    C --> D["Better<br/>Lightning UX"]
-    D --> E["More Bitcoin<br/>adoption"]
-
-    style A fill:#a16207,color:#fff
-    style B fill:#a16207,color:#fff
-    style C fill:#0d9488,color:#fff
-    style D fill:#0d9488,color:#fff
-    style E fill:#d97706,color:#fff`}
-        />
-      </div>
+      <AnimatedDiagram {...bitcoinDiagram} />
 
       <p>
         The economic incentive layer also addresses a structural problem:
