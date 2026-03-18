@@ -217,8 +217,15 @@ export default function AnimatedSequence({
         ctx.fillStyle = a.color;
         ctx.fill();
         // Label
-        ctx.globalAlpha = 0.55;
         ctx.font = "500 7.5px var(--font-mono, monospace)";
+        const stm = ctx.measureText(a.label);
+        const spw = stm.width + 6;
+        const sph = 12;
+        ctx.globalAlpha = 0.75;
+        ctx.fillStyle = "rgba(9,9,11,0.82)";
+        roundRect(ctx, a.fromX + loopW + 2, a.y + 4 - sph, spw, sph, 3);
+        ctx.fill();
+        ctx.globalAlpha = 0.75;
         ctx.fillStyle = "#a1a1aa";
         ctx.textAlign = "left";
         ctx.textBaseline = "bottom";
@@ -243,8 +250,15 @@ export default function AnimatedSequence({
         ctx.fill();
         // Label
         const lx = (a.fromX + a.toX) / 2;
-        ctx.globalAlpha = 0.55;
         ctx.font = "500 7.5px var(--font-mono, monospace)";
+        const ltm = ctx.measureText(a.label);
+        const lpw = ltm.width + 6;
+        const lph = 12;
+        ctx.globalAlpha = 0.75;
+        ctx.fillStyle = "rgba(9,9,11,0.82)";
+        roundRect(ctx, lx - lpw / 2, a.y - 4 - lph, lpw, lph, 3);
+        ctx.fill();
+        ctx.globalAlpha = 0.75;
         ctx.fillStyle = "#a1a1aa";
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";

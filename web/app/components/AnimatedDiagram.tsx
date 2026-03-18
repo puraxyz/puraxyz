@@ -208,8 +208,15 @@ export default function AnimatedDiagram({
       // Edge label
       if (e.label) {
         const [lx, ly] = bezier2(fromN.px, fromN.py, cx, cy, toN.px, toN.py, 0.5);
-        ctx.globalAlpha = 0.55;
         ctx.font = "500 8px var(--font-mono, monospace)";
+        const tm = ctx.measureText(e.label);
+        const pw = tm.width + 8;
+        const ph = 13;
+        ctx.globalAlpha = 0.75;
+        ctx.fillStyle = "rgba(9,9,11,0.82)";
+        roundRect(ctx, lx - pw / 2, ly - 3 - ph, pw, ph, 4);
+        ctx.fill();
+        ctx.globalAlpha = 0.75;
         ctx.fillStyle = "#a1a1aa";
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";

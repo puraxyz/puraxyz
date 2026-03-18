@@ -8,14 +8,14 @@ import type { SequenceProps } from "../components/AnimatedSequence";
 
 // ── #1  Problem: 3 agents → 1 overloaded LLM ───────────────────
 export const problemDiagram: DiagramProps = {
-  direction: "LR",
-  height: 220,
+  direction: "TB",
+  height: 280,
   ariaLabel: "Three agents overwhelm a single LLM agent with payment streams",
   nodes: [
-    { id: "A", label: "Translation Agent\nSending $10/min", x: 0.05, y: 0.15, color: "#6366f1" },
-    { id: "C", label: "Chat Agent\nSending $5/min",        x: 0.05, y: 0.50, color: "#6366f1" },
-    { id: "D", label: "Writing Agent\nSending $8/min",     x: 0.05, y: 0.85, color: "#6366f1" },
-    { id: "B", label: "LLM Agent\nAt capacity!",           x: 0.85, y: 0.50, color: "#be123c" },
+    { id: "A", label: "Translation Agent\nSending $10/min", x: 0.15, y: 0.05, color: "#6366f1" },
+    { id: "C", label: "Chat Agent\nSending $5/min",        x: 0.50, y: 0.05, color: "#6366f1" },
+    { id: "D", label: "Writing Agent\nSending $8/min",     x: 0.85, y: 0.05, color: "#6366f1" },
+    { id: "B", label: "LLM Agent\nAt capacity!",           x: 0.50, y: 0.85, color: "#be123c" },
   ],
   edges: [
     { from: "A", to: "B", label: "payment stream" },
@@ -26,13 +26,13 @@ export const problemDiagram: DiagramProps = {
 
 // ── #2  Solution: weighted routing ──────────────────────────────
 export const solutionDiagram: DiagramProps = {
-  direction: "LR",
-  height: 200,
+  direction: "TB",
+  height: 240,
   ariaLabel: "Translation agent routes $7/min to a 70%-free agent and $3/min to a 30%-free agent",
   nodes: [
-    { id: "A", label: "Translation Agent\nSending $10/min", x: 0.05, y: 0.50, color: "#6366f1" },
-    { id: "B", label: "LLM Agent A\n70% free",              x: 0.85, y: 0.20, color: "#0d9488" },
-    { id: "C", label: "LLM Agent B\n30% free",              x: 0.85, y: 0.80, color: "#a16207" },
+    { id: "A", label: "Translation Agent\nSending $10/min", x: 0.50, y: 0.05, color: "#6366f1" },
+    { id: "B", label: "LLM Agent A\n70% free",              x: 0.25, y: 0.85, color: "#0d9488" },
+    { id: "C", label: "LLM Agent B\n30% free",              x: 0.75, y: 0.85, color: "#a16207" },
   ],
   edges: [
     { from: "A", to: "B", label: "$7/min" },
@@ -62,14 +62,14 @@ export const pipelineDiagram: DiagramProps = {
 
 // ── #4  Declare / Stake sublinearity ────────────────────────────
 export const stakeDiagram: DiagramProps = {
-  direction: "LR",
-  height: 200,
+  direction: "TB",
+  height: 280,
   ariaLabel: "Depositing 100 tokens gives capacity 10; depositing 400 tokens gives capacity 20 (sublinear)",
   nodes: [
-    { id: "A", label: "Agent deposits\n100 tokens",        x: 0.05, y: 0.25, color: "#374151" },
-    { id: "B", label: "Capacity: 10",                      x: 0.55, y: 0.25, color: "#2563eb" },
-    { id: "C", label: "Agent deposits\n400 tokens",        x: 0.05, y: 0.75, color: "#374151" },
-    { id: "D", label: "Capacity: 20",                      x: 0.55, y: 0.75, color: "#2563eb" },
+    { id: "A", label: "Agent deposits\n100 tokens",        x: 0.25, y: 0.05, color: "#374151" },
+    { id: "B", label: "Capacity: 10",                      x: 0.25, y: 0.40, color: "#2563eb" },
+    { id: "C", label: "Agent deposits\n400 tokens",        x: 0.75, y: 0.05, color: "#374151" },
+    { id: "D", label: "Capacity: 20",                      x: 0.75, y: 0.40, color: "#2563eb" },
   ],
   edges: [
     { from: "A", to: "B", label: "stake" },
@@ -100,16 +100,16 @@ export const verifySequence: SequenceProps = {
 
 // ── #6  Price: 3-tier escalation ────────────────────────────────
 export const priceDiagram: DiagramProps = {
-  direction: "LR",
-  height: 200,
+  direction: "TB",
+  height: 320,
   ariaLabel: "Pricing escalation: low demand $1/task, medium demand $1.80/task, high demand $5/task",
   nodes: [
-    { id: "A1", label: "Low demand\nQueue: 2",     x: 0.0,  y: 0.50, color: "#0d9488" },
-    { id: "B1", label: "$1.00/task",               x: 0.20, y: 0.50, color: "#0d9488", shape: "pill" },
-    { id: "A2", label: "Medium demand\nQueue: 10",  x: 0.38, y: 0.50, color: "#a16207" },
-    { id: "B2", label: "$1.80/task",               x: 0.58, y: 0.50, color: "#a16207", shape: "pill" },
-    { id: "A3", label: "High demand\nQueue: 50",    x: 0.76, y: 0.50, color: "#be123c" },
-    { id: "B3", label: "$5.00/task",               x: 0.96, y: 0.50, color: "#be123c", shape: "pill" },
+    { id: "A1", label: "Low demand\nQueue: 2",     x: 0.30, y: 0.04, color: "#0d9488" },
+    { id: "B1", label: "$1.00/task",               x: 0.70, y: 0.04, color: "#0d9488", shape: "pill" },
+    { id: "A2", label: "Medium demand\nQueue: 10",  x: 0.30, y: 0.42, color: "#a16207" },
+    { id: "B2", label: "$1.80/task",               x: 0.70, y: 0.42, color: "#a16207", shape: "pill" },
+    { id: "A3", label: "High demand\nQueue: 50",    x: 0.30, y: 0.80, color: "#be123c" },
+    { id: "B3", label: "$5.00/task",               x: 0.70, y: 0.80, color: "#be123c", shape: "pill" },
   ],
   edges: [
     { from: "A1", to: "B1" },
@@ -146,14 +146,14 @@ export const routeDiagram: DiagramProps = {
 
 // ── #8  Buffer: decision → pool or escrow ───────────────────────
 export const bufferDiagram: DiagramProps = {
-  direction: "LR",
-  height: 220,
+  direction: "TB",
+  height: 300,
   ariaLabel: "Incoming payments checked for capacity: if available route to pool, otherwise hold in escrow buffer",
   nodes: [
-    { id: "IN",     label: "Incoming\n$20/min",           x: 0.0,  y: 0.40, color: "#a1a1aa" },
-    { id: "CHECK",  label: "Any capacity\navailable?",    x: 0.30, y: 0.40, color: "#475569", shape: "diamond" },
-    { id: "POOL",   label: "Backpressure Pool\nRoutes to agents", x: 0.75, y: 0.15, color: "#0d9488" },
-    { id: "BUFFER", label: "Escrow Buffer\nHolds excess safely",  x: 0.75, y: 0.70, color: "#a16207" },
+    { id: "IN",     label: "Incoming\n$20/min",           x: 0.50, y: 0.02, color: "#a1a1aa" },
+    { id: "CHECK",  label: "Any capacity\navailable?",    x: 0.50, y: 0.35, color: "#475569", shape: "diamond" },
+    { id: "POOL",   label: "Backpressure Pool\nRoutes to agents", x: 0.25, y: 0.80, color: "#0d9488" },
+    { id: "BUFFER", label: "Escrow Buffer\nHolds excess safely",  x: 0.75, y: 0.80, color: "#a16207" },
   ],
   edges: [
     { from: "IN", to: "CHECK" },
@@ -253,47 +253,47 @@ export const lightningDiagram: DiagramProps = {
 
 // ── #12  Nostr ──────────────────────────────────────────────────
 export const nostrDiagram: DiagramProps = {
-  direction: "LR",
-  height: 260,
+  direction: "TB",
+  height: 380,
   ariaLabel: "Nostr relay operators submit capacity attestations to a registry, which feeds a Superfluid GDA payment pool funded by Nostr users",
   groups: [
-    { id: "relays", label: "Relay Operators", x: 0.0, y: 0.0, w: 0.25, h: 0.95, color: "#6366f1" },
+    { id: "relays", label: "Relay Operators", x: 0.10, y: 0.0, w: 0.80, h: 0.16, color: "#6366f1" },
   ],
   nodes: [
-    { id: "R1", label: "Relay A\nHigh capacity",    x: 0.08, y: 0.15, color: "#6366f1" },
-    { id: "R2", label: "Relay B\nMedium capacity",  x: 0.08, y: 0.50, color: "#6366f1" },
-    { id: "R3", label: "Relay C\nLow capacity",     x: 0.08, y: 0.85, color: "#6366f1" },
-    { id: "REG",  label: "Relay Capacity\nRegistry",    x: 0.48, y: 0.50, color: "#6366f1" },
-    { id: "POOL", label: "Relay Payment Pool\n(Superfluid GDA)", x: 0.82, y: 0.50, color: "#0d9488" },
-    { id: "USERS", label: "Nostr Users\nSubscription streams", x: 0.82, y: 0.92, color: "#a1a1aa" },
+    { id: "R1", label: "Relay A\nHigh capacity",    x: 0.20, y: 0.06, color: "#6366f1" },
+    { id: "R2", label: "Relay B\nMedium capacity",  x: 0.50, y: 0.06, color: "#6366f1" },
+    { id: "R3", label: "Relay C\nLow capacity",     x: 0.80, y: 0.06, color: "#6366f1" },
+    { id: "REG",  label: "Relay Capacity\nRegistry",    x: 0.50, y: 0.38, color: "#6366f1" },
+    { id: "POOL", label: "Relay Payment Pool\n(Superfluid GDA)", x: 0.50, y: 0.65, color: "#0d9488" },
+    { id: "USERS", label: "Nostr Users\nSubscription streams", x: 0.50, y: 0.92, color: "#a1a1aa" },
   ],
   edges: [
-    { from: "R1", to: "REG", label: "capacity attestations" },
+    { from: "R1", to: "REG", label: "attestations" },
     { from: "R2", to: "REG" },
     { from: "R3", to: "REG" },
     { from: "REG", to: "POOL" },
-    { from: "POOL", to: "R1", label: "60% of revenue", dashed: true },
-    { from: "POOL", to: "R3", label: "10% of revenue", dashed: true },
+    { from: "POOL", to: "R1", label: "60% revenue", dashed: true },
+    { from: "POOL", to: "R3", label: "10% revenue", dashed: true },
     { from: "USERS", to: "POOL" },
   ],
 };
 
 // ── #13  Demurrage: standard vs decaying ────────────────────────
 export const demurrageDiagram: DiagramProps = {
-  direction: "LR",
-  height: 220,
+  direction: "TB",
+  height: 340,
   ariaLabel: "Comparison: standard token stays at 1000 over time while demurrage token decays from 1000 to 951 over a year",
   groups: [
-    { id: "std", label: "Standard Token",               x: 0.0,  y: 0.0, w: 0.45, h: 0.95, color: "#374151" },
-    { id: "dem", label: "Demurrage Token (5% decay/yr)", x: 0.52, y: 0.0, w: 0.48, h: 0.95, color: "#a16207" },
+    { id: "std", label: "Standard Token",               x: 0.0, y: 0.0,  w: 0.42, h: 0.95, color: "#374151" },
+    { id: "dem", label: "Demurrage Token (5% decay/yr)", x: 0.55, y: 0.0, w: 0.45, h: 0.95, color: "#a16207" },
   ],
   nodes: [
-    { id: "A1", label: "Day 1: 1000",    x: 0.05, y: 0.25, color: "#374151", shape: "pill" },
-    { id: "A2", label: "Day 30: 1000",   x: 0.22, y: 0.55, color: "#374151", shape: "pill" },
-    { id: "A3", label: "Day 365: 1000",  x: 0.40, y: 0.85, color: "#374151", shape: "pill" },
-    { id: "B1", label: "Day 1: 1000",    x: 0.57, y: 0.25, color: "#a16207", shape: "pill" },
-    { id: "B2", label: "Day 30: ~996",   x: 0.74, y: 0.55, color: "#a16207", shape: "pill" },
-    { id: "B3", label: "Day 365: ~951",  x: 0.92, y: 0.85, color: "#d97706", shape: "pill" },
+    { id: "A1", label: "Day 1: 1000",    x: 0.20, y: 0.12, color: "#374151", shape: "pill" },
+    { id: "A2", label: "Day 30: 1000",   x: 0.20, y: 0.45, color: "#374151", shape: "pill" },
+    { id: "A3", label: "Day 365: 1000",  x: 0.20, y: 0.80, color: "#374151", shape: "pill" },
+    { id: "B1", label: "Day 1: 1000",    x: 0.78, y: 0.12, color: "#a16207", shape: "pill" },
+    { id: "B2", label: "Day 30: ~996",   x: 0.78, y: 0.45, color: "#a16207", shape: "pill" },
+    { id: "B3", label: "Day 365: ~951",  x: 0.78, y: 0.80, color: "#d97706", shape: "pill" },
   ],
   edges: [
     { from: "A1", to: "A2" },
@@ -351,15 +351,15 @@ export const openclawSequence: SequenceProps = {
 
 // ── #16  Bitcoin: 5-step adoption chain ─────────────────────────
 export const bitcoinDiagram: DiagramProps = {
-  direction: "LR",
-  height: 180,
+  direction: "TB",
+  height: 320,
   ariaLabel: "Chain: Real-time capacity signals lead to smarter routing, fewer failed payments, better Lightning UX, and more Bitcoin adoption",
   nodes: [
-    { id: "A", label: "Real-time\ncapacity signals",  x: 0.02, y: 0.50, color: "#a16207" },
-    { id: "B", label: "Smarter\nrouting",              x: 0.25, y: 0.50, color: "#a16207" },
-    { id: "C", label: "Fewer failed\npayments",        x: 0.48, y: 0.50, color: "#0d9488" },
-    { id: "D", label: "Better\nLightning UX",          x: 0.72, y: 0.50, color: "#0d9488" },
-    { id: "E", label: "More Bitcoin\nadoption",         x: 0.96, y: 0.50, color: "#d97706" },
+    { id: "A", label: "Real-time\ncapacity signals",  x: 0.50, y: 0.04, color: "#a16207" },
+    { id: "B", label: "Smarter\nrouting",              x: 0.50, y: 0.26, color: "#a16207" },
+    { id: "C", label: "Fewer failed\npayments",        x: 0.50, y: 0.48, color: "#0d9488" },
+    { id: "D", label: "Better\nLightning UX",          x: 0.50, y: 0.70, color: "#0d9488" },
+    { id: "E", label: "More Bitcoin\nadoption",         x: 0.50, y: 0.92, color: "#d97706" },
   ],
   edges: [
     { from: "A", to: "B" },
