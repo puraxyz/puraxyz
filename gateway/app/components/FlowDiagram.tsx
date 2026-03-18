@@ -305,14 +305,13 @@ export default function FlowDiagram() {
 
     let running = true;
     function loop() {
-      if (!running || !ctx || !stateRef.current) return;
-      if (visibleRef.current) {
-        if (!reducedMotion.current) updateSim(stateRef.current);
-        drawFrame(ctx, stateRef.current);
-      }
+      if (!running) return;
       frameRef.current = requestAnimationFrame(loop);
+      if (!ctx || !stateRef.current || !visibleRef.current) return;
+      if (!reducedMotion.current) updateSim(stateRef.current);
+      drawFrame(ctx, stateRef.current);
     }
-    if (stateRef.current) drawFrame(ctx, stateRef.current);
+    if (stateRef.current && ctx) drawFrame(ctx, stateRef.current);
     loop();
 
     return () => {
@@ -325,6 +324,9 @@ export default function FlowDiagram() {
 
   return (
     <div className={styles.wrap}>
+      <p className={styles.tagline}>
+        <strong>One endpoint.</strong> Every provider. Capacity-routed.
+      </p>
       <div
         className={styles.container}
         style={{ height: CANVAS_H }}
@@ -333,9 +335,6 @@ export default function FlowDiagram() {
       >
         <canvas ref={canvasRef} className={styles.canvas} />
       </div>
-      <p className={styles.tagline}>
-        <strong>One endpoint.</strong> Every provider. Capacity-routed.
-      </p>
     </div>
   );
 }
