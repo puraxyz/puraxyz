@@ -23,7 +23,7 @@ jobs:
           version: stable
 
       - name: Build
-        run: forge build --sizes
+        run: forge build
 
       - name: Test
         run: forge test -vvv
