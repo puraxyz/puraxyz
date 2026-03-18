@@ -1,5 +1,5 @@
 import Link from "next/link";
-import BackpressureFlow from "./components/BackpressureFlow";
+import PlaygroundHero from "./components/PlaygroundHero";
 import ChainStrip from "./components/ChainStrip";
 import DomainPanels from "./components/DomainPanels";
 import styles from "./page.module.css";
@@ -63,29 +63,19 @@ const comparisonRows = [
 const personas = [
   {
     label: "AI agent developer",
-    desc: "Deploy a capacity-weighted payment economy in one transaction",
+    desc: "Deploy a capacity-weighted payment economy in one transaction. Agents register, stake, and start earning.",
     href: "/docs/getting-started",
     primary: true,
   },
   {
-    label: "Nostr relay operator",
-    desc: "Earn streaming revenue proportional to declared capacity",
-    href: "/docs/getting-started-relay",
+    label: "Framework integrator",
+    desc: "Add backpressure routing to LangChain, CrewAI, or AutoGen agent pipelines via the TypeScript SDK.",
+    href: "/docs/sdk",
   },
   {
-    label: "Lightning node runner",
-    desc: "Route payments based on real-time channel liquidity",
-    href: "/docs/getting-started-lightning",
-  },
-  {
-    label: "DeFi protocol builder",
-    desc: "Time-decaying tokens, quality scoring, nested economies",
-    href: "/docs/getting-started-defi",
-  },
-  {
-    label: "Platform integrator",
-    desc: "Plug any capacity signal into BPE with cross-domain reputation",
-    href: "/docs/getting-started-platform",
+    label: "Protocol researcher",
+    desc: "Formal proofs, simulation code, and research modules extending to Lightning, Nostr, and demurrage tokens.",
+    href: "/paper",
   },
 ];
 
@@ -102,15 +92,15 @@ export default function Home() {
       {/* ─── 1. Hero ───────────────────────────────────────── */}
       <section className={styles.hero}>
         <div className={styles.heroCanvas}>
-          <BackpressureFlow />
+          <PlaygroundHero />
         </div>
         <div className={styles.heroContent}>
           <h1 className={styles.title}>
-            Capacity-aware routing for decentralized networks
+            Payment routing for AI agent economies
           </h1>
           <p className={styles.subtitle}>
-            When nodes hit capacity, payments reroute. Backproto makes
-            backpressure a protocol primitive.
+            Agents declare capacity. Payments stream to whoever has room.
+            Overloaded agents get rerouted around. Overflow goes to escrow.
           </p>
           <div className={styles.buttons}>
             <Link href="/explainer" className={styles.btnPrimary}>
@@ -144,7 +134,7 @@ export default function Home() {
         <div className={styles.problemGrid}>
           <div className={styles.problemStatement}>
             <h2 className={styles.problemTitle}>
-              Networks break when the best nodes get all the traffic
+              AI agents break when the best ones get all the traffic
             </h2>
             <p className={styles.problemSub}>
               Capacity is invisible. The most capable agents overload while
@@ -159,11 +149,11 @@ export default function Home() {
             </div>
             <div className={styles.painPoint}>
               <span className={styles.painDot} />
-              Lightning channels fail at peak routing&mdash;40% failure rates
+              Streaming payments have no congestion control&mdash;money keeps flowing to saturated providers
             </div>
             <div className={styles.painPoint}>
               <span className={styles.painDot} />
-              Nostr relays have no way to signal congestion or earn fairly
+              No price signal tells callers which agents have spare capacity
             </div>
           </div>
         </div>
@@ -263,7 +253,7 @@ export default function Home() {
 
       {/* ─── 7. Domain panels ──────────────────────────────── */}
       <section className={styles.section}>
-        <div className={styles.label}>Four domains, one protocol</div>
+        <div className={styles.label}>AI agents + research modules</div>
         <DomainPanels />
       </section>
 
@@ -322,7 +312,55 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── 10. Bottom CTA ────────────────────────────────── */}
+      {/* ─── 10. The Stack ────────────────────────────────── */}
+      <section className={styles.section}>
+        <div className={styles.label}>The Stack</div>
+        <div className={styles.stackGrid}>
+          <div className={styles.stackCard}>
+            <span className={styles.stackName}>Buildlog</span>
+            <span className={styles.stackDesc}>
+              Captures agent workflows and execution trails. What ran, what changed, what was the outcome.
+            </span>
+            <a
+              href="https://buildlog.ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.stackLink}
+            >
+              buildlog.ai &rarr;
+            </a>
+          </div>
+          <div className={styles.stackCard}>
+            <span className={styles.stackName}>VR</span>
+            <span className={styles.stackDesc}>
+              Verifies that agent-claimed outcomes reflect actual system state changes.
+            </span>
+            <a
+              href="https://vr.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.stackLink}
+            >
+              vr.dev &rarr;
+            </a>
+          </div>
+          <div className={`${styles.stackCard} ${styles.stackCurrent}`}>
+            <span className={styles.stackName}>Backproto</span>
+            <span className={styles.stackDesc}>
+              Routes payments to agents with verified spare capacity. You are here.
+            </span>
+            <Link href="/explainer" className={styles.stackLink}>
+              How it works &rarr;
+            </Link>
+          </div>
+        </div>
+        <p className={styles.stackSummary}>
+          Buildlog captures. VR verifies. Backproto pays. Each project works
+          independently. Together they close the loop.
+        </p>
+      </section>
+
+      {/* ─── 11. Bottom CTA ────────────────────────────────── */}
       <section className={styles.bottomCta}>
         <h2 className={styles.ctaTitle}>Start building</h2>
         <p className={styles.ctaSub}>

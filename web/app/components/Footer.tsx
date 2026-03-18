@@ -12,6 +12,12 @@ export default function Footer() {
             <a href="https://sepolia.basescan.org/address/0x8e999a246afea241cf3c1d400dd7786cf591fa88" target="_blank" rel="noopener noreferrer">
               Basescan
             </a>
+            <a href="https://buildlog.ai" target="_blank" rel="noopener noreferrer">
+              Buildlog
+            </a>
+            <a href="https://vr.dev" target="_blank" rel="noopener noreferrer">
+              VR
+            </a>
           </div>
           <div className={styles.socials}>
             <a href="https://x.com/backproto" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">

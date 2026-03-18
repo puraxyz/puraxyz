@@ -440,6 +440,61 @@
   color: var(--text-muted);
 }
 
+/* ─── 10. The Stack ────────────────────────────────────────────── */
+
+.stackGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.stackCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border-bright);
+  border-radius: 8px;
+}
+
+.stackCurrent {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.stackName {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.stackDesc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.stackLink {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  margin-top: 0.25rem;
+  text-decoration: none;
+}
+
+.stackLink:hover {
+  color: var(--accent-hover);
+}
+
+.stackSummary {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  max-width: 600px;
+}
+
 /* ─── 10. Bottom CTA ──────────────────────────────────────────── */
 
 .bottomCta {
@@ -506,6 +561,10 @@
 
   .heroContent {
     padding: 1.5rem 1.5rem 2rem;
+  }
+
+  .stackGrid {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -64,3 +64,16 @@ Visa's TAP~\cite{visa2025tap} extends card-network authorization to agents.
 Cha et al.~\cite{cha2025stp} study LLM inference pricing via self-play.
 \emph{None of these systems address flow control}---the dynamic rerouting of
 payment streams based on real-time capacity. BPE fills this gap.
+
+\subsection{Payment Channel Routing}
+
+Spider~\cite{sivaraman2020spider} applies multi-path transport to payment channel
+networks, achieving high throughput by splitting payments across routes and rebalancing
+channels. CelerPay~\cite{dong2020celer} generalises state channels with off-chain
+token transfers and conditional payment resolution. Malavolta et al.~\cite{malavolta2017concurrency}
+address concurrency and privacy in payment-channel networks via hash-time-locked contracts.
+These systems optimise \emph{channel-level} routing in bilateral networks. BPE operates
+at a different layer: it routes \emph{streaming payment flows} to capacity-constrained
+\emph{service providers} via on-chain pool rebalancing. The two approaches are
+complementary---BPE could use Spider-style multi-path splitting for the streaming
+layer while maintaining backpressure allocation at the service layer.

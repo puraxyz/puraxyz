@@ -11,7 +11,7 @@
 
 Backproto adapts the [Tassiulas–Ephremides backpressure routing algorithm](https://doi.org/10.1109/9.182479) from communication networks to monetary and data flows in decentralized systems. When downstream participants reach capacity, payments and messages must reroute, buffer, or throttle. Backproto makes receiver-side capacity constraints a first-class protocol primitive.
 
-The protocol spans **five domains**:
+The core protocol handles capacity-weighted payment routing for AI agents. Additional research modules extend to other domains:
 
 | Domain | What it solves |
 |--------|---------------|
@@ -61,7 +61,7 @@ Plus a **platform layer** (universal capacity adapter, cross-domain reputation l
 
 ```
 contracts/              Solidity smart contracts (Foundry)
-  src/                  22 contracts across 5 domains + platform
+  src/                  22 contracts (core + research modules)
     lightning/          LightningCapacityOracle, LightningRoutingPool, CrossProtocolRouter
     nostr/              RelayCapacityRegistry, RelayPaymentPool
     interfaces/         14 interfaces

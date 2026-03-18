@@ -28,10 +28,10 @@ const sections = [
   { id: "buffer", label: "5. Buffer", level: 3 as const },
   { id: "big-picture", label: "The Big Picture", level: 2 as const },
   { id: "why-care", label: "Why Should I Care?", level: 2 as const },
-  { id: "five-domains", label: "Five Domains", level: 2 as const },
+  { id: "five-domains", label: "Research Domains", level: 2 as const },
+  { id: "demurrage", label: "Demurrage", level: 3 as const },
   { id: "lightning", label: "Lightning Network", level: 3 as const },
   { id: "nostr", label: "Nostr Relays", level: 3 as const },
-  { id: "demurrage", label: "Demurrage", level: 3 as const },
   { id: "platform", label: "Platform Layer", level: 3 as const },
   { id: "openclaw", label: "OpenClaw Agents", level: 3 as const },
   { id: "bitcoin", label: "How This Helps Bitcoin", level: 2 as const },
@@ -441,15 +441,61 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h2 id="five-domains">Beyond AI Agents: Five Domains</h2>
+      <h2 id="five-domains">Research domains</h2>
       <p>
-        The core BPE mechanism (declare, verify, price, route, buffer) is
-        domain-agnostic. Anywhere there&apos;s a capacity-constrained service
+        The core mechanism (declare, verify, price, route, buffer) is
+        domain-agnostic. Anywhere there is a capacity-constrained service
         and a continuous payment flow, backpressure routing can improve
-        allocation. Backproto extends BPE to five domains:
+        allocation. Beyond AI agents, Backproto extends to these research domains:
       </p>
 
       <AnimatedDiagram {...domainsDiagram} />
+
+      <hr />
+
+      <h3 id="demurrage"><Coins size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Demurrage: Tokens That Lose Value Over Time</h3>
+      <p>
+        Most tokens just sit in wallets. In an agent economy, that&apos;s a
+        problem: idle money means idle capacity.{" "}
+        <strong><a href="https://en.wikipedia.org/wiki/Demurrage_(currency)">Demurrage</a></strong> is an old economic idea (proposed by{" "}
+        <a href="https://en.wikipedia.org/wiki/Silvio_Gesell">Silvio
+        Gesell</a> in 1916) that puts a holding cost on currency, effectively
+        encouraging people to spend it rather than hoard it.
+      </p>
+      <p>
+        Backproto implements this as the <strong>DemurrageToken</strong>, a token
+        whose balance continuously decays if you hold it without using it:
+      </p>
+
+      <AnimatedDiagram {...demurrageDiagram} />
+
+      <p><strong>Details:</strong></p>
+      <ul>
+        <li>
+          Decay is <strong>continuous and exponential</strong>: your balance
+          shrinks every second you hold it idle, at a configurable rate (default:
+          5% per year)
+        </li>
+        <li>
+          Decay only applies to <strong>idle holdings</strong>. Tokens locked in
+          streaming agreements or staking contracts are exempt.
+        </li>
+        <li>
+          The decayed tokens are recycled to a configurable recipient (e.g., a
+          community treasury or the protocol itself)
+        </li>
+        <li>
+          A companion contract, <strong>VelocityMetrics</strong>, tracks how fast
+          tokens circulate through the economy on an hourly basis
+        </li>
+      </ul>
+      <p>
+        <strong>Why this matters for BPE:</strong> Demurrage is the stock-side
+        complement to BPE&apos;s flow-side mechanism. BPE routes payments
+        efficiently to where capacity exists. Demurrage ensures those payments
+        actually get made, because holding tokens becomes a losing strategy. The
+        two together create stronger circulation pressure than either alone.
+      </p>
 
       <hr />
 
@@ -567,52 +613,6 @@ export default function ExplainerPage() {
         Users get a reliable discovery mechanism for quality relays. We&apos;ve
         drafted <strong>NIP-XX</strong>, a Nostr Improvement Proposal to
         standardize this.
-      </p>
-
-      <hr />
-
-      <h3 id="demurrage"><Coins size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Demurrage: Tokens That Lose Value Over Time</h3>
-      <p>
-        Most tokens just sit in wallets. In an agent economy, that&apos;s a
-        problem: idle money means idle capacity.{" "}
-        <strong><a href="https://en.wikipedia.org/wiki/Demurrage_(currency)">Demurrage</a></strong> is an old economic idea (proposed by{" "}
-        <a href="https://en.wikipedia.org/wiki/Silvio_Gesell">Silvio
-        Gesell</a> in 1916) that puts a holding cost on currency, effectively
-        encouraging people to spend it rather than hoard it.
-      </p>
-      <p>
-        Backproto implements this as the <strong>DemurrageToken</strong>, a token
-        whose balance continuously decays if you hold it without using it:
-      </p>
-
-      <AnimatedDiagram {...demurrageDiagram} />
-
-      <p><strong>Details:</strong></p>
-      <ul>
-        <li>
-          Decay is <strong>continuous and exponential</strong>: your balance
-          shrinks every second you hold it idle, at a configurable rate (default:
-          5% per year)
-        </li>
-        <li>
-          Decay only applies to <strong>idle holdings</strong>. Tokens locked in
-          streaming agreements or staking contracts are exempt.
-        </li>
-        <li>
-          The decayed tokens are recycled to a configurable recipient (e.g., a
-          community treasury or the protocol itself)
-        </li>
-        <li>
-          A companion contract, <strong>VelocityMetrics</strong>, tracks how fast
-          tokens circulate through the economy on an hourly basis
-        </li>
-      </ul>
-      <p>
-        <strong>Why this matters for BPE:</strong> Demurrage is the stock-side
-        complement to BPE&apos;s flow-side mechanism. BPE routes payments
-        efficiently to where capacity exists. Demurrage ensures those payments
-        actually get made, because holding tokens becomes a losing strategy. The
-        two together create stronger circulation pressure than either alone.
       </p>
 
       <hr />

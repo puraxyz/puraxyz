@@ -1,0 +1,75 @@
+\section{Theory to Implementation}
+\label{sec:implementation}
+
+This section maps the formal model of \Cref{sec:model,sec:pricing,sec:offchain}
+to the deployed smart contract architecture on Base Sepolia (L2).
+
+\subsection{Contract architecture}
+
+The core BPE protocol is realised by eight Solidity contracts:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Contract} & \textbf{Formal object} & \textbf{Function} \\
+\midrule
+\texttt{CapacityRegistry} & $\Craw_s, \Csmooth_s$ & Stores raw + EWMA-smoothed capacity \\
+\texttt{StakeManager} & $\sqrt{\cdot}$ cap & Concave staking, Sybil resistance \\
+\texttt{BackpressurePool} & $\mu^*_{s,\tau}$ & GDA wrapper, unit rebalancing \\
+\texttt{CompletionTracker} & Dual-signed receipts & Verifies task completions \\
+\texttt{PricingCurve} & $p_d(t)$ & EIP-1559-style dynamic pricing \\
+\texttt{EscrowBuffer} & Overflow buffer & Holds payments when all sinks saturated \\
+\texttt{OffchainAggregator} & BLS aggregation & Batch-verifies capacity attestations \\
+\texttt{Pipeline} & Cross-pool routing & Composes flows across task types \\
+\bottomrule
+\end{tabular}
+\caption{Mapping from formal model to deployed contracts.}
+\label{tab:contract-map}
+\end{table}
+
+\subsection{How theory maps to code}
+
+\paragraph{Capacity smoothing (\Cref{sec:model}).}
+The EWMA update $\Csmooth_s \leftarrow \alpha \cdot \Craw_s + (1 - \alpha) \cdot \Csmooth_s$
+is computed in \texttt{CapacityRegistry.updateCapacity()} using fixed-point arithmetic
+(18 decimals). The smoothing parameter $\alpha = 0.3$ is configurable per deployment.
+
+\paragraph{Backpressure allocation (\Cref{sec:throughput}).}
+The allocation policy $\mu^*_{s,\tau} \propto \Csmooth_s \cdot \sqrt{\text{stake}_s}$
+is implemented in \texttt{BackpressurePool.rebalance()}, which updates Superfluid GDA
+member units. Unit updates are atomic: a single transaction reads current capacities
+from the registry, computes proportional shares, and sets GDA units.
+
+\paragraph{Dynamic pricing (\Cref{sec:pricing}).}
+The per-dimension base fee adjustment
+$b_d(t+1) = b_d(t) \cdot (1 + \Delta \cdot (u_d - u^*_d))$
+runs in \texttt{PricingCurve.updateBaseFee()} on each capacity update. The
+target utilisation $u^* = 0.5$ and maximum adjustment $\Delta = 0.125$ are
+the same values used in EIP-1559. The effective price a source pays is
+$\sum_d C_{s,d} \cdot b_d(t)$.
+
+\paragraph{Off-chain aggregation (\Cref{sec:offchain}).}
+\texttt{OffchainAggregator} verifies a BLS aggregate signature over a batch of
+capacity attestations in a single \texttt{ecrecover}-equivalent operation. In
+benchmarks (Base Sepolia, 50 attestations per batch), this reduces gas cost by
+83.5\% compared to verifying each attestation individually.
+
+\paragraph{Completion verification (\Cref{sec:security}).}
+\texttt{CompletionTracker.submitCompletion()} requires two EIP-712 signatures:
+one from the agent (sink) and one from the requester (source). A completion
+missing either signature is rejected. Completed tasks update the agent's
+effective capacity and, when a QualityOracle is attached, feed into quality
+scoring.
+
+\subsection{Deployment}
+
+All 22 contracts (8 core + 14 research modules) are deployed and verified on Base
+Sepolia. The TypeScript SDK (\texttt{@backproto/sdk}) provides 18 action modules
+covering registration, staking, capacity updates, stream management, and pipeline
+composition. The test suite contains 213 passing tests spanning unit tests,
+integration tests, and gas benchmarks.
+
+Source code, deployment addresses, and ABI exports are available at
+\url{https://github.com/backproto/backproto}.

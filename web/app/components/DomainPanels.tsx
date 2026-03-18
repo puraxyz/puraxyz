@@ -64,23 +64,30 @@ export default function DomainPanels() {
     <div className={styles.panels}>
       <nav className={styles.tabs}>
         {domains.map((dom, i) => (
-          <button
-            key={dom.id}
-            className={`${styles.tab} ${i === active ? styles.tabActive : ""}`}
-            style={
-              i === active
-                ? { borderLeftColor: dom.color, color: "#fff" }
-                : undefined
-            }
-            onClick={() => setActive(i)}
-            onMouseEnter={() => setActive(i)}
-          >
-            <span
-              className={styles.tabDot}
-              style={{ background: dom.color, opacity: i === active ? 1 : 0.3 }}
-            />
-            {dom.title}
-          </button>
+          <>
+            {i === 1 && (
+              <span key="divider" className={styles.tabDivider}>
+                Research modules
+              </span>
+            )}
+            <button
+              key={dom.id}
+              className={`${styles.tab} ${i === active ? styles.tabActive : ""}`}
+              style={
+                i === active
+                  ? { borderLeftColor: dom.color, color: "#fff" }
+                  : undefined
+              }
+              onClick={() => setActive(i)}
+              onMouseEnter={() => setActive(i)}
+            >
+              <span
+                className={styles.tabDot}
+                style={{ background: dom.color, opacity: i === active ? 1 : 0.3 }}
+              />
+              {dom.title}
+            </button>
+          </>
         ))}
       </nav>
       <div className={styles.detail} key={d.id}>
