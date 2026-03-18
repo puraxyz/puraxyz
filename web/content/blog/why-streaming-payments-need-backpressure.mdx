@@ -1,0 +1,57 @@
+---
+title: Why Streaming Payments Need Backpressure
+date: "2026-03-21"
+description: Streaming payments are a UX improvement. Backpressure routing is a mechanism design improvement. They need each other.
+---
+
+Streaming payments are one of the better ideas to come out of DeFi. Instead of lump-sum transfers, money flows continuously from sender to receiver. The amount accrues per second. Either party can stop the stream at any time.
+
+Superfluid built the infrastructure for this. Their protocol handles the accounting, the flow rate management, the token wrapping. It works. Agents, DAOs, and payroll systems use it today.
+
+But streaming payments have a structural gap that shows up the moment you try to use them for work allocation.
+
+## The gap
+
+Consider an agent economy where a client streams payments to a pool of service providers. The stream distributes according to fixed weights. Maybe equal shares, maybe proportional to some initial reputation score. Provider A gets 40%, Provider B gets 35%, Provider C gets 25%.
+
+Provider B goes down. What happens?
+
+The stream keeps flowing. 35% of the payment continues accruing to an agent that is not doing work. The client does not know. The other providers do not know. There is no feedback mechanism in the payment protocol to detect that the payment is going somewhere useless.
+
+Eventually someone notices. Manually. And manually adjusts the weights. Or the client kills the stream and starts a new one. None of this is automated. None of it happens at the speed that agent economies need to operate.
+
+## What backpressure adds
+
+Backpressure routing provides the feedback mechanism that streaming payments lack.
+
+In Backproto, the weights in a Superfluid GDA pool are not static. They are dynamically computed from each agent's verified spare capacity. The protocol tracks how much capacity each agent declared, how many tasks it actually completed (via dual-signed receipts), and computes an EWMA-smoothed capacity signal that resists manipulation.
+
+When Provider B stops completing tasks, its capacity signal decays. The GDA pool rebalances. Its share of the payment stream drops. Providers A and C absorb the difference, proportional to their own spare capacity.
+
+No human intervention. No off-chain monitoring service. The mechanism is on-chain and the rebalancing happens whenever someone calls the rebalance function (which anyone can do, permissionlessly).
+
+## Dynamic pricing as a second feedback loop
+
+Capacity-weighted routing handles the allocation problem. But there is a second problem: when all providers are near capacity, how do you signal that demand needs to decrease?
+
+Backproto adds dynamic pricing. Each agent's price follows a curve based on utilization. At low utilization, the price is near the base fee. As utilization rises, the price increases along an EIP-1559-style curve. At full capacity, the price is at maximum.
+
+This creates back-pressure in the economic sense. Demand for overloaded agents becomes expensive. Rational clients shift to cheaper (less loaded) agents. The system finds an equilibrium that static pricing cannot reach.
+
+## Escrow as a buffer
+
+There is a scenario dynamic pricing does not fully handle: every agent in the pool is at capacity and new demand arrives. In a data network, you would drop the packet. In a payment network, dropping money is unacceptable.
+
+Backproto routes overflow to an escrow buffer. Payments sit there until capacity frees up. The escrow acts like a shock absorber. It smooths out demand spikes without losing funds.
+
+The buffer has a drain rate proportional to available capacity. As agents complete work and free up room, escrowed funds flow to them. If the demand spike is temporary, the buffer empties naturally. If demand persistently exceeds capacity, the buffer fills up and the pricing curve pushes back harder.
+
+## What this means in practice
+
+If you are using Superfluid for agent payments today, adding Backproto gives you three things you do not currently have:
+
+Automatic rerouting when a provider goes down or degrades. Price signals that respond to real-time congestion. A buffer for demand spikes instead of dropped or misdirected payments.
+
+The Backproto SDK works alongside the Superfluid SDK. You create a BackpressurePool (which wraps a GDA pool), register agents as sinks with their capacity, and the protocol handles rebalancing. The TypeScript for setting this up is about 20 lines.
+
+backproto.io/docs/getting-started-defi | github.com/backproto/backproto

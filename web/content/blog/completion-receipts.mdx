@@ -1,0 +1,55 @@
+---
+title: Completion Receipts
+date: "2026-03-22"
+description: How dual-signed receipts turn trust into verification
+---
+
+Agent economies run on claims. Agent A says it completed the task. The client says the results were good. A reputation system records a positive score. Payments keep flowing.
+
+Every step in that chain is soft. Nobody proved anything. Agent A's claim is self-reported. The client's rating is subjective. The reputation score is an aggregate of opinions. A clever agent can game every layer.
+
+Backproto uses dual-signed completion receipts to turn claims into verification.
+
+## How it works
+
+When Agent A completes a task for a client, both parties sign an EIP-712 typed message containing the task type, the agents involved, and the completion status. Two signatures. Agent A confirms it did the work. The client confirms it received the result.
+
+The CompletionTracker contract verifies both signatures on-chain. If either is missing or invalid, the completion is not recorded.
+
+This matters for three reasons.
+
+First: an agent cannot inflate its completion count. Every completion requires the client's signature. The client has no incentive to sign for work that was not done, because the completion record is what determines future payment allocation.
+
+Second: a client cannot falsely claim non-completion. The agent's signature proves it submitted a result. If the client refuses to sign, the dispute is visible on-chain (the agent signed, the client did not). This is not an automatic resolution, but it creates a record.
+
+Third: completions are batched and verified off-chain before submission. An off-chain aggregator collects signed receipts, validates the signatures, and submits them in batches to the contract. This reduces gas costs by 83.5% compared to individual on-chain submissions.
+
+## What the protocol does with receipts
+
+Each agent's completion rate is tracked per epoch (5-minute windows). The CompletionTracker computes the ratio of completed tasks to expected tasks for each agent.
+
+If an agent's completion rate drops below 50% for three consecutive epochs, 10% of its stake gets slashed automatically. The capacity cap (which depends on stake) shrinks accordingly, and the agent's share of the payment stream drops.
+
+This creates a direct link between doing work and getting paid. Not a reputational link. Not a scoring link. A mechanical link. Complete tasks, maintain capacity, receive payments. Fail to complete, get slashed, lose capacity, lose payments.
+
+## The edge cases
+
+Dual-signed receipts do not solve every problem.
+
+Quality is not verified. The receipt confirms the work was submitted and acknowledged, not that it was good. An agent could submit garbage, the client could sign because it did not check yet, and the completion would be recorded. Quality verification is the job of VR (vr.dev), a separate project in the stack that verifies outcomes against system state.
+
+Collusion between an agent and a client can inflate completions. If both parties agree to sign fake receipts, the protocol cannot distinguish those from real ones. The defense here is that collusion requires both parties to gain from it, and in a competitive pool, inflated completions for one agent dilute payments to others. The honest agents have an incentive to detect and report collusion (though the mechanism for that detection is not yet implemented).
+
+Offline clients cannot sign receipts. If an agent completes work and the client is unreachable, the receipt cannot be produced. Backproto does not currently have a timeout mechanism that credits the agent if the client disappears. This is a known gap.
+
+## Why not zero-knowledge proofs?
+
+ZK proofs could replace dual-signed receipts with mathematical certainty that the work was done correctly. No trust required in either party.
+
+The practical problem is that generating ZK proofs for arbitrary agent tasks (LLM calls, API requests, file processing) is not feasible today. ZK circuits need to encode the computation, and agent tasks are too varied and complex for that.
+
+Dual-signed receipts are weaker but deployable now. They turn a zero-verification system into a two-party-verified system. That is not perfect, but it is a large step from where agent payments are today.
+
+The CompletionTracker is designed to be swappable. When ZK verification for agent tasks becomes practical, the contract interface stays the same. Only the verification logic changes.
+
+backproto.io | github.com/backproto/backproto
