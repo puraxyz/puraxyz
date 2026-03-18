@@ -45,7 +45,10 @@ CompletionTracker to StakeManager.}
 \subsection{StakeManager}
 
 Sinks deposit ERC-20 tokens to stake. The capacity cap is computed as
-$\text{cap}(k) = \sqrt{\text{stake}(k) / u}$ where $u$ is the stake unit
+\begin{equation}\label{eq:capacity-cap}
+\text{cap}(k) = \sqrt{\text{stake}(k) / u}
+\end{equation}
+where $u$ is the stake unit
 parameter (set to $10^{18}$). This concave function implements Sybil resistance:
 splitting stake $S$ into $n$ sinks yields total capacity
 $n \cdot \sqrt{S/(nu)} = \sqrt{n} \cdot \sqrt{S/u} < n \cdot \sqrt{S/u}$
