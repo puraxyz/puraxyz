@@ -32,30 +32,7 @@
   color: var(--accent);
 }
 
-/* Hero */
-.hero {
-  text-align: center;
-  padding: 2rem 0 3rem;
-}
-
-.heroTitle {
-  font-size: 2.1rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  letter-spacing: -0.02em;
-}
-
-.heroTitle span {
-  color: var(--accent);
-}
-
-.heroSub {
-  color: var(--text-muted);
-  font-size: 0.92rem;
-  max-width: 480px;
-  margin: 0 auto 2rem;
-  line-height: 1.6;
-}
+/* Hero — replaced by FlowDiagram component */
 
 /* Key generation */
 .keySection {
@@ -211,6 +188,50 @@
   font-size: 0.85rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
+}
+
+.compact {
+  font-size: 0.72rem;
+  padding: 0.75rem 1rem;
+  line-height: 1.55;
+}
+
+/* FAQ */
+.faq {
+  margin-bottom: 2rem;
+}
+
+.faqTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: var(--text);
+}
+
+.faqItem {
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.faqItem:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.faqQ {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+
+.faqA {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.faqA a {
+  color: var(--accent);
 }
 
 /* Footer */
