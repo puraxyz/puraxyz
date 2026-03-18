@@ -234,27 +234,51 @@
 
 /* ─── 5. Who is this for ───────────────────────────────────────── */
 
-.audience {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
+.personaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
 }
 
-.pill {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  padding: 0.4rem 0.85rem;
+.personaCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem 1.1rem;
   border: 1px solid var(--border-bright);
-  border-radius: 999px;
-  color: var(--text-muted);
+  border-radius: 8px;
   text-decoration: none;
   transition: all 0.15s;
 }
 
-.pill:hover {
+.personaCard:hover {
   border-color: var(--accent);
-  color: #fff;
   background: var(--accent-dim);
+}
+
+.personaPrimary {
+  border-color: var(--accent);
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.personaLabel {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.personaDesc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.personaCta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  margin-top: 0.25rem;
 }
 
 /* ─── 6. Comparison table ──────────────────────────────────────── */
@@ -430,7 +454,13 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #fff;
-  margin: 0 0 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.ctaSub {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0 0 1.25rem;
 }
 
 /* ─── Responsive ───────────────────────────────────────────────── */
@@ -438,6 +468,10 @@
 @media (max-width: 768px) {
   .title {
     font-size: 2rem;
+  }
+
+  .personaGrid {
+    grid-template-columns: 1fr;
   }
 
   .problemGrid {

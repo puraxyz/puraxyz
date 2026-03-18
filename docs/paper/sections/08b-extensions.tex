@@ -1,0 +1,77 @@
+\section{V2 Extensions: Recursive Composition, Quality Oracles, and Temporal Tokens}
+\label{sec:extensions}
+
+The core BPE mechanism operates on a flat topology: sources stream to sinks within
+a single pool per task type. This section describes three extensions that generalise
+the model without breaking throughput optimality.
+
+\subsection{Recursive pool composition}
+
+\paragraph{NestedPool.}
+A \emph{NestedPool} allows a sink in one economy to be the root of a child economy.
+Formally, let $\mathcal{P}_i$ be a backpressure pool for task type $\tau_i$, and let
+sink $s \in \mathcal{P}_i$ also be the parent of child pool $\mathcal{P}_j$. The
+effective capacity of $s$ becomes
+\[
+  C_{\text{eff}}(s) = C_{\text{local}}(s) + \sum_{j \in \text{children}(s)} C_{\text{eff}}(j),
+\]
+computed bottom-up via recursive rebalance. We cap recursion depth at 8 to bound gas.
+
+\paragraph{EconomyFactory.}
+To reduce deployment friction, the \texttt{EconomyFactory} contract deploys the full
+BPE stack (StakeManager, CapacityRegistry, BackpressurePool, EscrowBuffer, PricingCurve,
+optionally Pipeline) in a single transaction. Four templates (Marketplace, Cooperative,
+Pipeline, Guild) pre-configure stake requirements and escrow parameters for common patterns.
+
+\subsection{Quality-weighted capacity}
+
+The base BPE model weights sinks by smoothed declared capacity. This ignores
+service quality: a sink that drops 50\% of tasks receives the same pool units
+as one that completes all of them.
+
+The \emph{QualityOracle} tracks four EWMA-smoothed metrics per sink:
+\begin{enumerate}
+  \item Completion rate (weight 40\%)
+  \item Average latency in milliseconds (weight 20\%)
+  \item Error rate in basis points (weight 20\%)
+  \item Consumer satisfaction score (weight 20\%)
+\end{enumerate}
+
+These combine into a composite quality score $q \in [0, 10000]$ (basis points),
+and the effective capacity becomes
+\[
+  C_{\text{eff}}(s) = \Csmooth(s) \cdot \frac{q(s)}{10000}.
+\]
+
+When $q(s) < 3000$ (30\%) with at least 5 observations, the oracle triggers an
+automatic stake slash of 5\%. This creates a direct incentive to maintain quality:
+poor service reduces both earnings (via lower pool units) and principal (via slashing).
+
+\subsection{Temporal token mechanics}
+
+Two token contracts extend BPE with time-dependent behaviour:
+
+\paragraph{VelocityToken.}
+An ERC-20 wrapper that applies linear decay only to idle balances.
+Given idle duration $\Delta t$ past a threshold $\theta$ and decay rate $r$:
+\[
+  \text{balance}_{\text{real}} = \text{balance}_{\text{nominal}} \cdot \left(1 - r \cdot \frac{\Delta t - \theta}{10^{18}}\right).
+\]
+Accounts marked as stream-exempt (those with active Superfluid flows) skip decay
+entirely. This incentivises continuous payment streaming over hoarding.
+
+\paragraph{UrgencyToken.}
+A deposit contract where each deposit carries a time-to-live (TTL) between
+60~seconds and 30~days. Authorised consumers can claim deposits before expiry;
+after expiry, anyone can burn the deposit (sending tokens to a dead address).
+This creates time pressure for task completion: urgent work carries tokens that
+self-destruct if not consumed promptly.
+
+\subsection{Composability}
+
+These extensions compose freely with the base protocol. A Guild economy
+deployed via EconomyFactory can attach a QualityOracle for quality-weighted routing,
+wrap its payment token with VelocityToken for idle decay, and register its pool as
+a child in a NestedPool hierarchy---all without modifying the core BPE contracts.
+The five v2 contracts (NestedPool, EconomyFactory, QualityOracle, VelocityToken,
+UrgencyToken) are tested with 52 additional test cases (213 total across the full suite).

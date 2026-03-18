@@ -1,10 +1,10 @@
 ---
 title: Smart Contracts
 order: 0
-description: 17 Solidity contracts across 4 domains deployed on Base Sepolia
+description: 22 Solidity contracts across 5 domains deployed on Base Sepolia
 ---
 
-Backproto is implemented as 17 Solidity smart contracts deployed on Base Sepolia (L2), spanning four domains plus a platform layer.
+Backproto is implemented as 22 Solidity smart contracts deployed on Base Sepolia (L2), spanning five domains plus a platform layer.
 
 ## Architecture
 
@@ -21,7 +21,12 @@ Backproto is implemented as 17 Solidity smart contracts deployed on Base Sepolia
   ┌─────────────┐ ┌──────────┐ ┌───────────────┐ ┌────────────────┐
   │  Core BPE   │ │Demurrage │ │ Nostr Relays  │ │   Lightning    │
   │  8 contracts│ │2 contracts│ │ 2 contracts   │ │  3 contracts   │
-  └─────────────┘ └──────────┘ └───────────────┘ └────────────────┘
+  └──────┬──────┘ └──────────┘ └───────────────┘ └────────────────┘
+         │
+  ┌──────┴──────┐
+  │ V2 Economy  │
+  │ 5 contracts │
+  └─────────────┘
 ```
 
 ## Core BPE (8 contracts)
@@ -78,6 +83,18 @@ The composition layer: universal adapter and cross-domain reputation.
 | [`UniversalCapacityAdapter`](https://github.com/backproto/backproto/blob/main/contracts/src/UniversalCapacityAdapter.sol) | Domain adapter registry, normalizes capacity 0–10000, routes to core BPE |
 | [`ReputationLedger`](https://github.com/backproto/backproto/blob/main/contracts/src/ReputationLedger.sol) | Cross-domain portable reputation, 3× negative weight, up to 50% stake discount |
 
+## V2 Economy (5 contracts)
+
+Recursive composition, quality-weighted routing, and temporal token mechanics. See [EconomyFactory deep dive](/docs/economy-factory) for template details.
+
+| Contract | Purpose |
+|----------|---------||
+| [`EconomyFactory`](https://github.com/backproto/backproto/blob/main/contracts/src/EconomyFactory.sol) | Deploy a complete BPE economy in one transaction (4 templates: Marketplace, Cooperative, Pipeline, Guild) |
+| [`NestedPool`](https://github.com/backproto/backproto/blob/main/contracts/src/NestedPool.sol) | Hierarchical backpressure pools where sinks can be child economies (max depth 8) |
+| [`QualityOracle`](https://github.com/backproto/backproto/blob/main/contracts/src/QualityOracle.sol) | EWMA-smoothed latency, error rate, satisfaction scoring; effective capacity = declared × quality |
+| [`VelocityToken`](https://github.com/backproto/backproto/blob/main/contracts/src/VelocityToken.sol) | ERC-20 wrapper with idle-only linear decay, stream-exempt accounts skip decay |
+| [`UrgencyToken`](https://github.com/backproto/backproto/blob/main/contracts/src/UrgencyToken.sol) | TTL-stamped self-destructing token deposits (min 60s, max 30 days) |
+
 ## Deployment
 
 Contracts are deployed on **Base Sepolia** (testnet). Deployment addresses are tracked in `contracts/deployments/base-sepolia.json`.
@@ -90,12 +107,13 @@ forge build
 forge test
 ```
 
-All 125 tests pass. The test suite covers:
+All 213 tests pass across 21 test suites. The test suite covers:
 
 - Core BPE: capacity registration, EWMA, staking, escrow, pricing, completion tracking
 - Demurrage: wrap/unwrap, decay mechanics, epoch advancement, velocity metrics
 - Lightning: node registration, EIP-712 batch attestation, EWMA smoothing
 - Platform: reputation scoring, cross-domain aggregation, stake discounts
+- V2 Economy: factory deployment, nested pool hierarchy, quality scoring, velocity decay, urgency token TTL
 - Fork tests against live Superfluid on Base Sepolia
 
 ## Source
@@ -104,8 +122,10 @@ Contract source code is on [GitHub](https://github.com/backproto/backproto/tree/
 
 ---
 
-## See Also
+## See also
 
-- [TypeScript SDK](/docs/sdk) — Type-safe client for interacting with all contracts
-- [Simulation](/docs/simulation) — Agent-based validation of BPE theoretical claims
+- [TypeScript SDK](/docs/sdk) — type-safe client for all 22 contracts
+- [EconomyFactory](/docs/economy-factory) — template deep dive and one-transaction deployment
+- [Simulation](/docs/simulation) — agent-based validation of BPE theoretical claims
 - [NIP-XX](/docs/nip-xx) — Nostr relay economics specification
+- [Get started](/docs/getting-started) — deploy an economy in 5 minutes

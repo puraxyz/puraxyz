@@ -1,0 +1,76 @@
+---
+title: Hosted infrastructure
+order: 2
+description: Crypto-native BaaS with Superfluid streaming payments
+---
+
+Backproto offers hosted infrastructure alongside the fully open-source self-deploy path. Both use the same contracts on Base Sepolia. The hosted option manages the oracle layer, indexing, and monitoring so you can focus on your application.
+
+## How it works
+
+You call `deployEconomy()` on the shared EconomyFactory contract (either via SDK or directly). The factory deploys your economy on-chain. The hosted layer then picks it up: indexing capacity signals, running the off-chain aggregator, maintaining rebalance cadence, and serving the router dashboard for your economy.
+
+You own the economy. The factory transfers ownership to your wallet. You can migrate off hosted infrastructure at any time by running the same contracts independently.
+
+## Payment
+
+Hosted infrastructure is paid via Superfluid streaming. You open a USDC stream to the Backproto receiver address. Cancel anytime. No invoices, no billing cycles, no Stripe.
+
+```typescript
+import { Framework } from '@superfluid-finance/sdk-core'
+import { createWalletClient, http } from 'viem'
+import { baseSepolia } from 'viem/chains'
+
+// Initialize Superfluid
+const sf = await Framework.create({ chainId: 84532, provider: /* your provider */ })
+const usdcx = await sf.loadSuperToken('USDCx')
+
+// Start streaming to Backproto hosted infra
+await usdcx.createFlow({
+  sender: yourAddress,
+  receiver: '0x...', // Backproto hosted receiver (see docs for current address)
+  flowRate: '317097919837', // ~10 USDC/month in wei/second
+}).exec(signer)
+```
+
+To stop, delete the flow. No cancellation fee, no notice period. Your on-chain economy continues to exist and function; you just lose the hosted oracle and monitoring layer.
+
+## Tiers
+
+| | Free | Growth | Scale |
+|---|---|---|---|
+| Economies | 1 | Unlimited | Unlimited |
+| Task types per economy | 1 | 10 | Unlimited |
+| Sinks per task type | 10 | 100 | Unlimited |
+| Off-chain aggregator | Shared | Dedicated | Dedicated |
+| Rebalance cadence | 60s | 15s | Custom |
+| Router dashboard | Shared | Branded subdomain | Custom domain |
+| Support | Community | Email | Direct |
+| Cost | Free | ~10 USDC/mo stream | ~100 USDC/mo stream |
+
+The free tier has no time limit. It exists so you can build, test, and demo without any payment setup.
+
+## Self-deploy comparison
+
+Everything the hosted layer does is open source. You can run it yourself:
+
+| Capability | Hosted | Self-deploy |
+|---|---|---|
+| Contract deployment | `deployEconomy()` via shared factory | `forge script Deploy.s.sol` |
+| Off-chain aggregator | Managed, batches attestations | Run your own aggregator node |
+| Rebalance triggers | Automated by hosted infra | Call `rebalance()` yourself or set up a keeper |
+| Router dashboard | Provided at `router.backproto.io/your-economy` | Fork the [router reference app](/docs/router) |
+| Monitoring | Alerts for slash events, buffer overflow | Set up your own event listeners |
+| Cost | Superfluid stream (cancel anytime) | Gas costs + your own infra |
+
+## Getting started
+
+1. Pick a persona guide: [AI agents](/docs/getting-started), [Nostr relays](/docs/getting-started-relay), [Lightning](/docs/getting-started-lightning), [DeFi](/docs/getting-started-defi), or [Platform](/docs/getting-started-platform)
+2. Deploy your economy (free tier, no payment needed)
+3. When you need higher limits, open a Superfluid stream
+
+## What to read next
+
+- [Get started: AI agents](/docs/getting-started) — deploy your first economy
+- [EconomyFactory](/docs/economy-factory) — template configuration and one-tx deployment
+- [Smart Contracts](/docs/contracts) — all 22 contracts

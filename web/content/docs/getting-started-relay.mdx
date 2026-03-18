@@ -1,0 +1,103 @@
+---
+title: "Get started: Nostr relay operators"
+order: -0.5
+description: Earn streaming revenue proportional to your relay's declared capacity
+---
+
+Backproto turns Nostr relay capacity into a revenue stream. You register your relay on-chain, declare what it can handle (throughput, storage, bandwidth), and start receiving continuous micropayments from the payment pool. Better capacity, more revenue.
+
+You need: a Nostr keypair, a wallet with Base Sepolia ETH, and test tokens for staking.
+
+## Install the SDK
+
+```bash
+npm install @backproto/sdk viem
+```
+
+## Set up your wallet
+
+```typescript
+import { createWalletClient, createPublicClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+import { baseSepolia } from 'viem/chains'
+import { getAddresses } from '@backproto/sdk'
+
+const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
+const wallet = createWalletClient({ account, chain: baseSepolia, transport: http() })
+const public_ = createPublicClient({ chain: baseSepolia, transport: http() })
+const addrs = getAddresses(84532)
+```
+
+## Register your relay
+
+Your Nostr public key (hex, 32 bytes) identifies your relay on-chain. You declare three capacity dimensions that combine into a composite score (50% throughput, 25% storage, 25% bandwidth by default).
+
+```typescript
+import { registerRelay } from '@backproto/sdk/actions/relay'
+import { stake } from '@backproto/sdk/actions/stake'
+
+// Stake first — capacity cap = sqrt(stake / unit)
+await stake(wallet, addrs, 400n * 10n ** 18n)
+
+// Your Nostr pubkey as bytes32
+const nostrPubkey = '0x...' as `0x${string}`  // 32-byte hex Nostr public key
+
+await registerRelay(wallet, addrs, nostrPubkey, {
+  eventsPerSecond: 500n,     // throughput: events/sec your relay handles
+  storageGB: 100n,           // storage: GB available for event retention
+  bandwidthMbps: 200n,       // bandwidth: Mbps for query serving
+})
+```
+
+The registry applies EWMA smoothing ($\alpha = 0.3$) to your capacity declarations. First-time registrations take the raw value; subsequent updates are dampened to resist manipulation.
+
+## Join a payment pool
+
+Three pool types exist, one per relay function. Join whichever your relay supports:
+
+```typescript
+import { joinRelayPool } from '@backproto/sdk/actions/relay'
+
+// Pool types: 0 = WRITE, 1 = READ, 2 = STORE
+await joinRelayPool(wallet, addrs, 0, nostrPubkey)  // join the WRITE pool
+```
+
+Once joined, you receive streaming payments from the Superfluid GDA pool. Your share is proportional to your verified composite capacity relative to all other relays in that pool.
+
+## Set anti-spam economics
+
+The protocol supports per-pool anti-spam minimums. Events below this threshold get rejected, protecting your relay from spam without manual moderation.
+
+```typescript
+import { setAntiSpamMinimum } from '@backproto/sdk/actions/relay'
+
+// Minimum payment of 100 units per event on the WRITE pool
+await setAntiSpamMinimum(wallet, addrs, 0, 100n)
+```
+
+Anti-spam pricing scales with congestion. At low load (under 50% capacity) the base rate applies. At medium load (50–80%) it doubles. Above 80% it quadruples. The PricingCurve contract handles this automatically.
+
+## Verify your standing
+
+```typescript
+import { getCompositeCapacity, getAntiSpamMinimum } from '@backproto/sdk/actions/relay'
+
+const composite = await getCompositeCapacity(public_, addrs, nostrPubkey)
+console.log('Composite capacity score:', composite)
+
+const minPayment = await getAntiSpamMinimum(public_, addrs, 0)
+console.log('WRITE pool anti-spam minimum:', minPayment)
+```
+
+## How capacity verification works
+
+Your declared capacity is verified through EIP-712 signed attestations. The OffchainAggregator batches these on-chain with 83.5% gas savings versus individual submissions. If your actual throughput falls below your declared capacity, the CompletionTracker can trigger automatic slashing on your stake.
+
+The full protocol is documented in the [NIP-XX specification](/docs/nip-xx), which covers capacity declaration format, composite scoring weights, anti-spam pricing curves, and payment distribution mechanics.
+
+## What to read next
+
+- [NIP-XX specification](/docs/nip-xx) — full Nostr relay economics protocol
+- [Smart Contracts](/docs/contracts) — RelayCapacityRegistry and RelayPaymentPool source
+- [TypeScript SDK](/docs/sdk) — all 18 action modules
+- [Get started: AI agents](/docs/getting-started) — deploy a full agent economy

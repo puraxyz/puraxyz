@@ -13,14 +13,17 @@ commit-reveal signals, and flow weights are set proportionally via EWMA-smoothed
 capacity. \textbf{(2)~Throughput optimality.} We prove, via Lyapunov drift analysis,
 that BPE achieves throughput-optimal allocation: every stabilisable demand vector
 is served with bounded overflow buffers, matching the classical backpressure guarantee
-in the monetary domain. \textbf{(3)~Protocol design.} We implement BPE as five
+in the monetary domain. \textbf{(3)~Protocol design.} We implement BPE as 22
 Solidity smart contracts on Superfluid's General Distribution Agreement (GDA),
 providing permissionless pool creation, concave-sqrt stake-weighted Sybil resistance,
-and multi-stage pipeline composition with upstream congestion propagation.
+multi-stage pipeline composition with upstream congestion propagation,
+and v2 extensions including recursive pool composition (NestedPool),
+one-transaction economy deployment (EconomyFactory), quality-weighted capacity
+(QualityOracle), and temporal token mechanics (VelocityToken, UrgencyToken).
 \textbf{(4)~Evaluation.} Simulations over 1{,}000-step horizons show BPE achieves
 95.7\% allocation efficiency versus 93.5\% for round-robin under steady load,
 recovers from 20\% node-kill shocks within 50 steps, and reduces buffer stall rates
 from 73\% to under 9\% with overflow escrow sized at one period of peak demand.
 A Sybil-cost analysis confirms that stake fragmentation yields strictly negative
 net profit for all split counts $n > 1$. All contracts compile on Base Sepolia
-with 40 passing unit tests.
+with 213 passing unit tests across 21 test suites.

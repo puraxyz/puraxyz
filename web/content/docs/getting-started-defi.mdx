@@ -1,0 +1,141 @@
+---
+title: "Get started: DeFi protocol builders"
+order: -0.3
+description: Wrap tokens with time-decay, quality scoring, and hierarchical economies
+---
+
+Backproto's v2 contracts give DeFi builders three mechanisms that don't exist elsewhere: tokens that decay when idle, quality-weighted capacity routing, and hierarchical nested economies. This guide walks through each.
+
+You need: a wallet with Base Sepolia ETH and test tokens.
+
+## Install the SDK
+
+```bash
+npm install @backproto/sdk viem
+```
+
+## Set up your wallet
+
+```typescript
+import { createWalletClient, createPublicClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+import { baseSepolia } from 'viem/chains'
+import { getAddresses } from '@backproto/sdk'
+
+const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
+const wallet = createWalletClient({ account, chain: baseSepolia, transport: http() })
+const public_ = createPublicClient({ chain: baseSepolia, transport: http() })
+const addrs = getAddresses(84532)
+```
+
+## Demurrage: tokens that decay over time
+
+The DemurrageToken wraps any ERC-20 with a configurable decay rate per epoch. Balances decrease over time, incentivizing holders to spend or stream rather than sit idle.
+
+```typescript
+import { wrap, realBalanceOf, nominalBalanceOf, decayRate } from '@backproto/sdk/actions/demurrage'
+
+// Wrap 1000 tokens into demurrage form
+await wrap(wallet, addrs, 1000n * 10n ** 18n)
+
+// Check balances — nominal stays fixed, real decreases over time
+const nominal = await nominalBalanceOf(public_, addrs, account.address)
+const real = await realBalanceOf(public_, addrs, account.address)
+console.log('Nominal:', nominal, 'Real:', real)
+
+// Read the decay rate
+const rate = await decayRate(public_, addrs)
+console.log('Decay rate per epoch:', rate)
+```
+
+The VelocityMetrics contract tracks epoch-based monetary velocity and turnover rate, giving you on-chain observability into how fast tokens circulate through the economy.
+
+## VelocityToken: idle-only decay with stream exemption
+
+Where DemurrageToken decays uniformly, VelocityToken only penalizes idle balances. Accounts actively streaming through Superfluid are marked as stream-exempt and skip decay entirely.
+
+```typescript
+import { wrap as wrapVelocity, realBalanceOf as velBalance, idleDuration, isStreamExempt }
+  from '@backproto/sdk/actions/velocityToken'
+
+// Wrap tokens into velocity form
+await wrapVelocity(wallet, addrs, 500n * 10n ** 18n)
+
+// After some time passes without activity...
+const idle = await idleDuration(public_, addrs, account.address)
+console.log('Seconds idle:', idle)
+
+const balance = await velBalance(public_, addrs, account.address)
+console.log('Balance after decay:', balance)
+
+// Accounts with active streams don't decay
+const exempt = await isStreamExempt(public_, addrs, account.address)
+console.log('Stream exempt:', exempt)
+```
+
+Decay is linear: `decayed = balance * decayRate * (idleTime - threshold) / WAD`. The default rate is 1% per second past the idle threshold.
+
+## Quality-weighted routing
+
+The QualityOracle tracks four metrics per sink: completion rate, latency, error rate, and consumer satisfaction. These combine into a composite score (40% completion, 20% latency, 20% error, 20% satisfaction) that scales the sink's effective capacity.
+
+A sink with 100 declared capacity and a 75% quality score has an effective capacity of 75. Payment distribution follows effective capacity, not raw declarations.
+
+```typescript
+import { reportLatency, reportSatisfaction, computeQuality, getQualityScore, getEffectiveCapacity }
+  from '@backproto/sdk/actions/quality'
+
+const taskTypeId = '0x...' as `0x${string}`
+const sinkAddr = '0x...' as `0x${string}`
+
+// Report metrics (typically called by the source after task completion)
+await reportLatency(wallet, addrs, taskTypeId, sinkAddr, 250n)  // 250ms
+await reportSatisfaction(wallet, addrs, taskTypeId, sinkAddr, 8500n)  // 85% satisfaction
+
+// Compute composite score (triggers slash if below 30% with 5+ observations)
+await computeQuality(wallet, addrs, taskTypeId, sinkAddr)
+
+const score = await getQualityScore(public_, addrs, taskTypeId, sinkAddr)
+const effective = await getEffectiveCapacity(public_, addrs, taskTypeId, sinkAddr)
+console.log('Quality score:', score, '/ 10000')
+console.log('Effective capacity:', effective)
+```
+
+## Nested economies
+
+NestedPool lets a sink in one economy be itself a child economy. This creates hierarchical topologies where backpressure propagates recursively, up to 8 levels deep.
+
+```typescript
+import { registerChild, rebalanceHierarchy, getEffectiveCapacity as nestedCapacity, getChildren }
+  from '@backproto/sdk/actions/nestedPool'
+
+const parentTask = '0x...' as `0x${string}`
+const childTask = '0x...' as `0x${string}`
+
+// Wire a child economy under a parent task type
+await registerChild(wallet, addrs, parentTask, childTask)
+
+// Rebalance bottom-up (leaf pools first, then parents)
+await rebalanceHierarchy(wallet, addrs, parentTask, 8n)
+
+// Effective capacity = local capacity + sum of child capacities
+const cap = await nestedCapacity(public_, addrs, parentTask)
+const children = await getChildren(public_, addrs, parentTask)
+console.log('Effective capacity:', cap, '| Children:', children.length)
+```
+
+## Putting it together
+
+A typical DeFi integration combines several of these:
+
+1. Deploy an economy via [EconomyFactory](/docs/economy-factory) using the GUILD template
+2. Wrap the payment token with VelocityToken so idle capital decays
+3. Attach QualityOracle so higher-quality providers earn more
+4. Use NestedPool to compose sub-economies (e.g., a lending pool sink that itself distributes to individual lenders)
+
+## What to read next
+
+- [EconomyFactory](/docs/economy-factory) — one-transaction deployment with templates
+- [Smart Contracts](/docs/contracts) — v2 contract source and architecture
+- [TypeScript SDK](/docs/sdk) — all 18 action modules
+- [Get started: AI agents](/docs/getting-started) — deploy a standard agent economy

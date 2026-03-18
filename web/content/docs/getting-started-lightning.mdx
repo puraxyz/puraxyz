@@ -1,0 +1,126 @@
+---
+title: "Get started: Lightning node runners"
+order: -0.4
+description: Route payments based on real-time channel capacity signals
+---
+
+Backproto gives Lightning nodes an on-chain capacity oracle. You register your node, declare liquidity, and the protocol routes payments toward nodes with balanced channels. Nodes that maintain good liquidity earn more from the routing pool.
+
+You need: an LND or CLN node, a wallet with Base Sepolia ETH, and test tokens for staking.
+
+## Install the SDK
+
+```bash
+npm install @backproto/sdk viem
+```
+
+## Set up your wallet
+
+```typescript
+import { createWalletClient, createPublicClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+import { baseSepolia } from 'viem/chains'
+import { getAddresses } from '@backproto/sdk'
+
+const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
+const wallet = createWalletClient({ account, chain: baseSepolia, transport: http() })
+const public_ = createPublicClient({ chain: baseSepolia, transport: http() })
+const addrs = getAddresses(84532)
+```
+
+## Register your node
+
+Your Lightning node's public key identifies it on-chain. You declare outbound liquidity in satoshis.
+
+```typescript
+import { registerNode } from '@backproto/sdk/actions/lightning'
+import { stake } from '@backproto/sdk/actions/stake'
+
+// Stake first
+await stake(wallet, addrs, 400n * 10n ** 18n)
+
+// Node public key as bytes32
+const nodePubkey = '0x...' as `0x${string}`  // 33-byte compressed pubkey, padded to bytes32
+
+await registerNode(wallet, addrs, nodePubkey, 5_000_000n)  // 5M sats outbound liquidity
+```
+
+The oracle applies EWMA smoothing ($\alpha = 0.3$) to capacity updates. Attestations that differ more than 50% from the current smoothed value are dampened.
+
+## Sign capacity attestations
+
+The LightningCapacityOracle accepts batch-signed attestations covering outbound liquidity, channel count, and pending HTLCs. You sign these off-chain using EIP-712 and submit via the OffchainAggregator.
+
+```typescript
+import { signCapacityAttestation } from '@backproto/sdk/signing'
+
+const attestation = await signCapacityAttestation(wallet, 84532, addrs.offchainAggregator, {
+  taskTypeId: nodePubkey,         // node pubkey doubles as task type
+  sink: account.address,
+  capacity: 5_000_000n,           // current outbound sats
+  timestamp: BigInt(Math.floor(Date.now() / 1000)),
+  nonce: 0n,
+})
+```
+
+For LND nodes, you can extract current channel balances with `lncli listchannels` and convert to the attestation format. CLN users can use `lightning-cli listfunds`.
+
+## Join the routing pool
+
+The routing pool weights nodes by a combined capacity and congestion score. Balanced channels (roughly equal inbound and outbound) score higher.
+
+```typescript
+import { joinRoutingPool } from '@backproto/sdk/actions/lightning'
+
+await joinRoutingPool(wallet, addrs, nodePubkey)
+```
+
+## Query optimal routes
+
+The pool computes multi-hop routes (up to 10 nodes) that minimize fees while maximizing success probability based on declared capacity.
+
+```typescript
+import { getOptimalRoute, getSmoothedCapacity, getRoutingFee }
+  from '@backproto/sdk/actions/lightning'
+
+// Find best route for 100k sats across up to 5 hops
+const route = await getOptimalRoute(public_, addrs, 100_000n, 5n)
+console.log('Route nodes:', route.nodePubkeys)
+console.log('Allocations:', route.allocations)
+console.log('Fees:', route.fees)
+
+// Check your node's standing
+const capacity = await getSmoothedCapacity(public_, addrs, nodePubkey)
+const fee = await getRoutingFee(public_, addrs, nodePubkey)
+console.log('Smoothed capacity:', capacity, 'sats')
+console.log('Current routing fee:', fee)
+```
+
+## Rebalance the pool
+
+Anyone can trigger a rebalance. This updates GDA pool member units based on current smoothed capacities.
+
+```typescript
+import { rebalanceRoutingPool } from '@backproto/sdk/actions/lightning'
+
+await rebalanceRoutingPool(wallet, addrs)
+```
+
+## Cross-protocol routing
+
+The CrossProtocolRouter can route payments across Superfluid streams (continuous), Lightning (instant), and on-chain settlement. The router picks the best protocol based on amount, speed requirements, and available liquidity.
+
+```typescript
+import { isProtocolAvailable } from '@backproto/sdk/actions/platform'
+
+// Protocol types: 0 = Superfluid, 1 = Lightning, 2 = On-chain
+const lnAvailable = await isProtocolAvailable(public_, addrs, 1)
+console.log('Lightning routing available:', lnAvailable)
+```
+
+## What to read next
+
+- [Smart Contracts](/docs/contracts) — LightningCapacityOracle, LightningRoutingPool, CrossProtocolRouter
+- [TypeScript SDK](/docs/sdk) — lightning and platform action modules
+- [Get started: AI agents](/docs/getting-started) — deploy a full agent economy
+- [Get started: Nostr relays](/docs/getting-started-relay) — relay capacity economics

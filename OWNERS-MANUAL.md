@@ -9,7 +9,7 @@ Everything you need to know to maintain, extend, and ship this project. This is 
 ```
 backproto/
 ├── contracts/          Solidity contracts (Foundry)
-│   ├── src/            17 contracts across 5 domains
+│   ├── src/            22 contracts across 5 domains
 │   ├── test/           Test suite (125 tests)
 │   ├── script/         Deploy.s.sol (full-stack deployment)
 │   ├── deployments/    Recorded addresses per network
@@ -73,7 +73,7 @@ backproto/
 
 ```bash
 cd contracts
-forge build          # Compile all 17 contracts
+forge build          # Compile all 22 contracts
 forge test           # Run 125 tests (unit + fork)
 forge test -vvv      # Verbose, show traces on failure
 forge test --mt testGas  # Gas benchmarks only
@@ -147,7 +147,7 @@ export BASE_SEPOLIA_RPC_URL="https://sepolia.base.org"
 export PRIVATE_KEY="0x..."
 export BASESCAN_API_KEY="..."
 
-# Deploy all 17 contracts
+# Deploy all 22 contracts
 cd contracts
 forge script script/Deploy.s.sol --rpc-url base_sepolia --broadcast --verify
 
@@ -451,7 +451,7 @@ grep -ri "spilt" --include="*.md" --include="*.ts" --include="*.tsx" --include="
 
 From the GTM roadmap (`gtm/ROADMAP.md`):
 
-1. **Fresh testnet deployment**: Redeploy all 17 contracts under `backproto` identity
+1. **Fresh testnet deployment**: Redeploy all 22 contracts under `backproto` identity
 2. **Nostr relay pilot**: 3-5 relay operators testing NIP-XX economics
 3. **Grant applications**: Base Builder Grant + Superfluid Ecosystem Grant
 4. **Python SDK**: pip-installable package for AI/Python developers

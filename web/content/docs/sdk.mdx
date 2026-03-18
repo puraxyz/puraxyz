@@ -4,7 +4,7 @@ order: 1
 description: Type-safe client for interacting with Backproto contracts via viem
 ---
 
-The `@backproto/sdk` package provides a TypeScript client for interacting with all 17 Backproto [smart contracts](/docs/contracts) across 4 domains.
+The `@backproto/sdk` package provides a TypeScript client for interacting with all 22 Backproto [smart contracts](/docs/contracts) across 5 domains.
 
 ## Installation
 
@@ -14,9 +14,9 @@ npm install @backproto/sdk
 
 ## Features
 
-- **Contract ABIs**: Pre-compiled ABIs for all 17 contracts
+- **Contract ABIs**: Pre-compiled ABIs for all 22 contracts
 - **Type-safe interactions**: Full TypeScript types via [viem](https://viem.sh/)
-- **13 action modules**: Core BPE + Demurrage + Relay + Lightning + Platform
+- **18 action modules**: Core BPE + Demurrage + Relay + Lightning + Platform + V2 Economy
 - **Address registry**: Deployed contract addresses for supported networks
 - **EIP-712 signing**: Helpers for attestations and completion receipts
 
@@ -70,14 +70,26 @@ const capacity = await client.readContract({
 | [`actions/lightning`](https://github.com/backproto/backproto/blob/main/sdk/src/actions/lightning.ts) | Register Lightning nodes, join routing pools, get optimal routes |
 | [`actions/platform`](https://github.com/backproto/backproto/blob/main/sdk/src/actions/platform.ts) | Aggregate reputation, stake discounts, route attestations |
 
+### V2 Economy
+
+| Module | Description |
+|--------|-------------|
+| [`actions/economy`](https://github.com/backproto/backproto/blob/main/sdk/src/actions/economy.ts) | Deploy economies via EconomyFactory, query deployments |
+| [`actions/nestedPool`](https://github.com/backproto/backproto/blob/main/sdk/src/actions/nestedPool.ts) | Register child pools, hierarchical rebalance, effective capacity |
+| [`actions/quality`](https://github.com/backproto/backproto/blob/main/sdk/src/actions/quality.ts) | Report latency/errors/satisfaction, compute quality scores |
+| [`actions/velocityToken`](https://github.com/backproto/backproto/blob/main/sdk/src/actions/velocityToken.ts) | Wrap/unwrap with idle decay, stream exemption checks |
+| [`actions/urgencyToken`](https://github.com/backproto/backproto/blob/main/sdk/src/actions/urgencyToken.ts) | TTL-stamped deposits, consume, burn, batch operations |
+
 ## Source
 
 SDK source code is on [GitHub](https://github.com/backproto/backproto/tree/main/sdk/src).
 
 ---
 
-## See Also
+## See also
 
-- [Smart Contracts](/docs/contracts) — All 17 deployed contracts with addresses and source
-- [Simulation](/docs/simulation) — Agent-based validation of BPE claims
+- [Smart Contracts](/docs/contracts) — all 22 deployed contracts with source
+- [EconomyFactory](/docs/economy-factory) — one-transaction economy deployment
+- [Simulation](/docs/simulation) — agent-based validation of BPE claims
 - [NIP-XX](/docs/nip-xx) — Nostr relay economics specification
+- [Get started](/docs/getting-started) — deploy an economy in 5 minutes

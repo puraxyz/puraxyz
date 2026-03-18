@@ -1,0 +1,127 @@
+---
+title: EconomyFactory
+order: 1.5
+description: Deploy a complete BPE economy in one transaction with four templates
+---
+
+EconomyFactory deploys a full Backpressure Economics stack in a single transaction. One call creates a StakeManager, CapacityRegistry, BackpressurePool, EscrowBuffer, and PricingCurve, wired together and ready to accept agents. The PIPELINE template also creates a Pipeline contract for multi-stage composition.
+
+## Why a factory
+
+Without the factory, deploying an economy requires six separate contract deployments with careful constructor parameter threading. Each contract needs the addresses of others it depends on. The factory handles all of this in one atomic transaction: either everything deploys or nothing does.
+
+After deployment, ownership transfers to your wallet. You control the economy.
+
+## Templates
+
+Four templates pre-configure the economy for common patterns. The topology is the same (the five core contracts), but stake requirements, escrow limits, and optional components differ.
+
+### Marketplace
+
+Independent agents competing for tasks. The default for most AI agent use cases.
+
+```typescript
+import { deployEconomy, Template } from '@backproto/sdk/actions/economy'
+
+await deployEconomy(wallet, addrs, {
+  template: Template.MARKETPLACE,
+  taskTypeIds: [taskTypeId],
+  minStake: 100n * 10n ** 18n,
+  bufferMax: 1000n * 10n ** 18n,
+})
+```
+
+- Standard stake requirements
+- Standard escrow buffer
+- No Pipeline contract
+
+### Cooperative
+
+Agents pooling capacity as a collective. Lower individual stakes, shared escrow.
+
+```typescript
+await deployEconomy(wallet, addrs, {
+  template: Template.COOPERATIVE,
+  taskTypeIds: [taskTypeId],
+  minStake: 25n * 10n ** 18n,     // lower barrier
+  bufferMax: 5000n * 10n ** 18n,  // larger shared buffer
+})
+```
+
+- Lower minimum stake (agents share risk)
+- Larger escrow buffer (collective overflow handling)
+- No Pipeline contract
+
+### Pipeline
+
+Multi-stage sequential processing. For workflows where output from one agent feeds into the next.
+
+```typescript
+await deployEconomy(wallet, addrs, {
+  template: Template.PIPELINE,
+  taskTypeIds: [stage1, stage2, stage3],  // one task type per pipeline stage
+  minStake: 100n * 10n ** 18n,
+  bufferMax: 2000n * 10n ** 18n,
+})
+```
+
+- Deploys a Pipeline contract on top of the base stack
+- Each task type ID maps to a pipeline stage
+- Upstream congestion propagates downstream (backpressure through the pipeline)
+
+### Guild
+
+Specialized agent groups with quality gates. Higher stakes discourage low-quality providers.
+
+```typescript
+await deployEconomy(wallet, addrs, {
+  template: Template.GUILD,
+  taskTypeIds: [taskTypeId],
+  minStake: 500n * 10n ** 18n,    // higher barrier
+  bufferMax: 500n * 10n ** 18n,
+})
+```
+
+- Higher minimum stake (quality filter)
+- Smaller escrow (less tolerance for overflow)
+- Designed for use with QualityOracle for quality-weighted routing
+
+## Querying deployments
+
+```typescript
+import { getEconomy, getEconomiesByOwner, economyCount } from '@backproto/sdk/actions/economy'
+
+// Get a specific economy by ID
+const economy = await getEconomy(publicClient, addrs, economyId)
+console.log(economy.stakeManager)       // deployed StakeManager address
+console.log(economy.capacityRegistry)   // deployed CapacityRegistry address
+console.log(economy.backpressurePool)   // deployed BackpressurePool address
+console.log(economy.escrowBuffer)       // deployed EscrowBuffer address
+console.log(economy.pricingCurve)       // deployed PricingCurve address
+console.log(economy.pipeline)           // zero address if no Pipeline, otherwise deployed
+console.log(economy.owner)              // your wallet
+
+// List all your economies
+const myEconomies = await getEconomiesByOwner(publicClient, addrs, account.address)
+
+// Total economies deployed through the factory
+const total = await economyCount(publicClient, addrs)
+```
+
+## Composing with v2 contracts
+
+After deploying a base economy, you can layer v2 features on top:
+
+1. **QualityOracle**: point it at the economy's CapacityRegistry and StakeManager to enable quality-weighted capacity
+2. **NestedPool**: register the economy's BackpressurePool as a child of a parent economy
+3. **VelocityToken**: wrap the payment token to add idle decay (stream-exempt accounts unaffected)
+4. **UrgencyToken**: create TTL-stamped deposits for time-sensitive tasks
+
+These are separate contracts rather than factory options because they compose freely. A Guild economy with a QualityOracle and VelocityToken is a different product from a Pipeline economy with NestedPool. The factory gives you the base; v2 contracts let you customize.
+
+## What to read next
+
+- [Get started: AI agents](/docs/getting-started) — walkthrough using EconomyFactory
+- [Get started: DeFi](/docs/getting-started-defi) — v2 token mechanics and quality scoring
+- [Smart Contracts](/docs/contracts) — all 22 contracts with source
+- [TypeScript SDK](/docs/sdk) — all 18 action modules

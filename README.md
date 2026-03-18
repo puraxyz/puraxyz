@@ -60,7 +60,7 @@ Plus a **platform layer** (universal capacity adapter, cross-domain reputation l
 
 ```
 contracts/              Solidity smart contracts (Foundry)
-  src/                  17 contracts across 4 domains + platform
+  src/                  22 contracts across 5 domains + platform
     lightning/          LightningCapacityOracle, LightningRoutingPool, CrossProtocolRouter
     nostr/              RelayCapacityRegistry, RelayPaymentPool
     interfaces/         14 interfaces

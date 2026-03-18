@@ -60,19 +60,40 @@ const comparisonRows = [
   },
 ];
 
-const audiences = [
-  { label: "AI agent platforms", href: "/docs/contracts" },
-  { label: "Protocol architects", href: "/paper" },
-  { label: "Lightning developers", href: "/explainer#lightning" },
-  { label: "Nostr relay operators", href: "/explainer#nostr" },
-  { label: "Infra teams", href: "/docs/sdk" },
+const personas = [
+  {
+    label: "AI agent developer",
+    desc: "Deploy a capacity-weighted payment economy in one transaction",
+    href: "/docs/getting-started",
+    primary: true,
+  },
+  {
+    label: "Nostr relay operator",
+    desc: "Earn streaming revenue proportional to declared capacity",
+    href: "/docs/getting-started-relay",
+  },
+  {
+    label: "Lightning node runner",
+    desc: "Route payments based on real-time channel liquidity",
+    href: "/docs/getting-started-lightning",
+  },
+  {
+    label: "DeFi protocol builder",
+    desc: "Time-decaying tokens, quality scoring, nested economies",
+    href: "/docs/getting-started-defi",
+  },
+  {
+    label: "Platform integrator",
+    desc: "Plug any capacity signal into BPE with cross-domain reputation",
+    href: "/docs/getting-started-platform",
+  },
 ];
 
 const stats = [
   { value: "95.7%", label: "Allocation efficiency" },
   { value: "83.5%", label: "Gas reduction" },
   { value: "3×", label: "Penalty for bad actors" },
-  { value: "17", label: "Deployed contracts" },
+  { value: "22", label: "Deployed contracts" },
 ];
 
 export default function Home() {
@@ -184,10 +205,20 @@ export default function Home() {
       {/* ─── 5. Who is this for ────────────────────────────── */}
       <section className={styles.section}>
         <div className={styles.label}>Who is this for</div>
-        <div className={styles.audience}>
-          {audiences.map(({ label, href }) => (
-            <Link key={label} href={href} className={styles.pill}>
-              {label}
+        <div className={styles.personaGrid}>
+          {personas.map(({ label, desc, href, primary }) => (
+            <Link
+              key={label}
+              href={href}
+              className={
+                primary
+                  ? `${styles.personaCard} ${styles.personaPrimary}`
+                  : styles.personaCard
+              }
+            >
+              <span className={styles.personaLabel}>{label}</span>
+              <span className={styles.personaDesc}>{desc}</span>
+              <span className={styles.personaCta}>Get started &rarr;</span>
             </Link>
           ))}
         </div>
@@ -286,9 +317,15 @@ export default function Home() {
       {/* ─── 10. Bottom CTA ────────────────────────────────── */}
       <section className={styles.bottomCta}>
         <h2 className={styles.ctaTitle}>Start building</h2>
+        <p className={styles.ctaSub}>
+          Deploy an economy in one transaction, or self-deploy with full control.
+        </p>
         <div className={styles.buttons}>
-          <Link href="/docs" className={styles.btnPrimary}>
-            Read the docs &rarr;
+          <Link href="/docs/getting-started" className={styles.btnPrimary}>
+            Deploy an economy &rarr;
+          </Link>
+          <Link href="/docs" className={styles.btnSecondary}>
+            All docs
           </Link>
           <Link href="/paper" className={styles.btnSecondary}>
             Paper

@@ -1,0 +1,123 @@
+---
+title: "Get started: AI agent economies"
+order: -1
+description: Deploy a capacity-weighted payment economy for your agents in one transaction
+---
+
+This guide walks you through deploying a BPE economy, registering agents as capacity sinks, and streaming payments that automatically route to agents with spare capacity.
+
+You need: a wallet with Base Sepolia ETH and some test tokens. The whole thing takes about five minutes.
+
+## Install the SDK
+
+```bash
+npm install @backproto/sdk viem
+```
+
+## Choose your path
+
+### Option A: hosted (one SDK call)
+
+Call `deployEconomy` on the shared EconomyFactory. Backproto deploys and manages the oracle layer. You own the economy.
+
+```typescript
+import { createWalletClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+import { baseSepolia } from 'viem/chains'
+import { getAddresses } from '@backproto/sdk'
+import { deployEconomy, Template } from '@backproto/sdk/actions/economy'
+
+const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
+const wallet = createWalletClient({ account, chain: baseSepolia, transport: http() })
+const addrs = getAddresses(84532)
+
+const txHash = await deployEconomy(wallet, addrs, {
+  template: Template.MARKETPLACE,
+  taskTypeIds: [
+    '0x' + Buffer.from('text-generation').toString('hex').padEnd(64, '0') as `0x${string}`,
+  ],
+  minStake: 100n * 10n ** 18n,     // 100 tokens minimum stake
+  bufferMax: 1000n * 10n ** 18n,   // escrow buffer ceiling
+})
+
+console.log('Economy deployed:', txHash)
+```
+
+That single transaction creates a StakeManager, CapacityRegistry, BackpressurePool, EscrowBuffer, and PricingCurve. If you picked the PIPELINE template, it also creates a Pipeline contract for multi-stage composition.
+
+### Option B: self-deploy (Foundry script)
+
+Clone the repo and run the deploy script directly:
+
+```bash
+git clone https://github.com/backproto/backproto.git
+cd backproto/contracts
+cp .env.example .env   # add PRIVATE_KEY and RPC_URL
+forge script script/Deploy.s.sol --broadcast --rpc-url $RPC_URL
+```
+
+This gives you full control over constructor parameters, ownership, and which contracts to deploy.
+
+## Register your agents as sinks
+
+Each AI agent that can handle work registers as a sink on the CapacityRegistry. The agent declares which task types it handles and its current capacity.
+
+```typescript
+import { createPublicClient } from 'viem'
+import { registerSink } from '@backproto/sdk/actions/sink'
+import { stake } from '@backproto/sdk/actions/stake'
+
+const public_ = createPublicClient({ chain: baseSepolia, transport: http() })
+
+// Step 1: stake tokens (capacity cap = sqrt(stake / unit))
+await stake(wallet, addrs, 400n * 10n ** 18n)
+
+// Step 2: register as a sink for text-generation tasks
+const taskTypeId = '0x' + Buffer.from('text-generation').toString('hex').padEnd(64, '0') as `0x${string}`
+await registerSink(wallet, addrs, taskTypeId)
+```
+
+Repeat for each agent. The agent with 400 tokens staked gets a capacity cap of $\sqrt{400} = 20$ units, while an agent staking 100 tokens caps at 10 units. The protocol weights payment distribution accordingly.
+
+## Stream payments into the economy
+
+A source (the entity paying for work) starts a Superfluid stream that flows into the BackpressurePool. The pool distributes to sinks in proportion to their smoothed capacity.
+
+```typescript
+import { startStream } from '@backproto/sdk/actions/source'
+
+await startStream(wallet, addrs, taskTypeId, 100n) // 100 tokens/second flow rate
+```
+
+Payments now flow continuously. Agents with more declared (and verified) capacity receive a proportionally larger share.
+
+## Verify it works
+
+```typescript
+import { getSmoothedCapacity } from '@backproto/sdk/actions/pool'
+
+const capacity = await getSmoothedCapacity(public_, addrs, taskTypeId, agentAddress)
+console.log('Smoothed capacity:', capacity)
+```
+
+Check the [Router Dashboard](/docs/router) to see your economy live: agent cards, flow distribution, and dynamic pricing in real time.
+
+## Templates
+
+EconomyFactory ships four templates. Each pre-configures the economy topology for a common pattern:
+
+| Template | Use case | What it deploys |
+|----------|----------|-----------------|
+| MARKETPLACE | Independent agents competing for tasks | Standard BPE stack |
+| COOPERATIVE | Agents pooling capacity as a collective | BPE + shared escrow settings |
+| PIPELINE | Multi-stage sequential processing | BPE + Pipeline contract |
+| GUILD | Specialized agent groups with quality gates | BPE + higher stake requirements |
+
+See [EconomyFactory deep dive](/docs/economy-factory) for full template configuration.
+
+## What to read next
+
+- [Smart Contracts](/docs/contracts) — all 22 contracts with source links
+- [TypeScript SDK](/docs/sdk) — 18 action modules across all domains
+- [EconomyFactory](/docs/economy-factory) — template details and advanced configuration
+- [Router Dashboard](/docs/router) — live agent economy running on Base Sepolia

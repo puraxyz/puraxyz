@@ -643,7 +643,7 @@ The economic incentive layer also addresses a structural problem: Lightning rout
 
 **Implementation:**
 
-- **[Smart Contracts](implementation/contracts.md)**: the Solidity code, 17 contracts deployed on Base Sepolia
+- **[Smart Contracts](implementation/contracts.md)**: the Solidity code, 22 contracts deployed on Base Sepolia
 - **[TypeScript SDK](implementation/sdk.md)**: build with BPE in TypeScript, 13 action modules
 - **[Simulation](implementation/simulation.md)**: Python simulation showing 95.7% allocation efficiency
 

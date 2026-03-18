@@ -1,0 +1,114 @@
+---
+title: "Get started: platform integrators"
+order: -0.2
+description: Plug a custom domain into Backproto's universal capacity adapter
+---
+
+Backproto's platform layer lets you connect any domain-specific capacity signal to the core BPE engine. You register a domain adapter, normalize your capacity data to a standard 0-10,000 range, and immediately gain access to cross-domain reputation scoring and multi-protocol routing.
+
+You need: a wallet with Base Sepolia ETH and test tokens.
+
+## Install the SDK
+
+```bash
+npm install @backproto/sdk viem
+```
+
+## Set up your wallet
+
+```typescript
+import { createWalletClient, createPublicClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+import { baseSepolia } from 'viem/chains'
+import { getAddresses } from '@backproto/sdk'
+
+const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
+const wallet = createWalletClient({ account, chain: baseSepolia, transport: http() })
+const public_ = createPublicClient({ chain: baseSepolia, transport: http() })
+const addrs = getAddresses(84532)
+```
+
+## Register a custom domain
+
+The UniversalCapacityAdapter accepts any domain-specific capacity signal and normalizes it to a 0-10,000 basis-point range that the core BPE engine understands. Your domain might be GPU compute capacity, file storage availability, bandwidth metering, or anything else that has variable supply.
+
+```typescript
+import { normalizeCapacity, routeAttestation } from '@backproto/sdk/actions/platform'
+
+// Your domain identifier
+const domainId = '0x' + Buffer.from('gpu-compute').toString('hex').padEnd(64, '0') as `0x${string}`
+
+// Normalize a raw capacity signal from your domain
+// The adapter converts domain-specific units to the 0-10000 BPS range
+const rawSignal = '0x...' as `0x${string}`  // your domain's raw capacity encoding
+const normalized = await normalizeCapacity(public_, addrs, domainId, rawSignal)
+console.log('Normalized capacity:', normalized, '/ 10000')
+```
+
+## Route attestations through the adapter
+
+Once your domain is registered, route EIP-712 signed attestations from your domain's participants into the core BPE system:
+
+```typescript
+// Sign an attestation in your domain's format, then route it
+const attestation = '0x...' as `0x${string}`  // signed attestation bytes
+await routeAttestation(wallet, addrs, domainId, attestation)
+```
+
+The adapter verifies the attestation signature, normalizes the capacity, and feeds it into the core CapacityRegistry where it participates in EWMA smoothing and pool distribution like any other capacity signal.
+
+## Cross-domain reputation
+
+Every participant that registers in your domain automatically accumulates reputation on the ReputationLedger. Reputation is portable across all Backproto domains with two properties:
+
+- Negative events carry 3x weight (a slash in one domain hits harder than a reward helps)
+- Accumulated reputation reduces stake requirements by up to 50%
+
+```typescript
+import { getAggregateReputation, getStakeDiscount, getAccountDomains }
+  from '@backproto/sdk/actions/platform'
+
+const rep = await getAggregateReputation(public_, addrs, account.address)
+console.log('Cross-domain reputation:', rep)
+
+const discount = await getStakeDiscount(public_, addrs, account.address, domainId)
+console.log('Stake discount from reputation:', discount, '/ 10000')
+
+const domains = await getAccountDomains(public_, addrs, account.address)
+console.log('Active in domains:', domains)
+```
+
+A participant who has earned reputation in the Lightning domain can stake less when entering your custom domain, and vice versa.
+
+## Multi-protocol routing
+
+The CrossProtocolRouter selects between Superfluid (streaming), Lightning (instant), and on-chain (settlement) based on payment amount, speed requirements, and available liquidity.
+
+```typescript
+import { isProtocolAvailable } from '@backproto/sdk/actions/platform'
+
+// Check which protocols are available for routing
+// 0 = Superfluid, 1 = Lightning, 2 = On-chain
+const sfAvailable = await isProtocolAvailable(public_, addrs, 0)
+const lnAvailable = await isProtocolAvailable(public_, addrs, 1)
+console.log('Superfluid:', sfAvailable, '| Lightning:', lnAvailable)
+```
+
+## Example: integrating a GPU compute marketplace
+
+Here is how the pieces fit together for a GPU compute platform:
+
+1. Register the `gpu-compute` domain with a capacity adapter that maps GPU TFLOPS to 0-10,000 BPS
+2. GPU providers stake tokens and submit EIP-712 signed capacity attestations (e.g., "I have 8x A100s available")
+3. The adapter normalizes this to BPE capacity units and feeds it into a BackpressurePool
+4. Users start Superfluid streams to pay for compute; the pool distributes to providers weighted by verified capacity
+5. Providers build reputation; as their score grows, their stake requirement drops by up to 50%
+6. If a provider fails to deliver (tracked by CompletionTracker), their stake gets slashed and their reputation takes a 3x hit
+
+## What to read next
+
+- [Smart Contracts](/docs/contracts) — UniversalCapacityAdapter, ReputationLedger, CrossProtocolRouter
+- [TypeScript SDK](/docs/sdk) — platform action module
+- [Get started: AI agents](/docs/getting-started) — deploy a full economy
+- [Get started: Lightning](/docs/getting-started-lightning) — Lightning node integration
+- [Get started: Nostr relays](/docs/getting-started-relay) — relay capacity economics

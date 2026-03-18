@@ -1,6 +1,6 @@
 # Backproto Smart Contracts
 
-**17 Solidity contracts across 4 domains + platform layer, deployed on Base Sepolia**
+**22 Solidity contracts across 5 domains + platform layer, deployed on Base Sepolia**
 
 ## Domains
 
