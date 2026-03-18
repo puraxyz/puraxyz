@@ -7,7 +7,7 @@
     "dev": "next dev --webpack",
     "build": "npm run sync-sdk && next build --webpack",
     "start": "next start",
-    "sync-sdk": "rm -rf node_modules/@backproto/sdk && mkdir -p node_modules/@backproto/sdk && cp -r ../sdk/dist node_modules/@backproto/sdk/dist && cp ../sdk/package.json node_modules/@backproto/sdk/package.json && sed -i '' 's/.json\";/.json\" with { type: \"json\" };/g' node_modules/@backproto/sdk/dist/abis/index.js",
+    "sync-sdk": "rm -rf node_modules/@backproto/sdk && mkdir -p node_modules/@backproto/sdk && cp -r ../sdk/dist node_modules/@backproto/sdk/dist && cp ../sdk/package.json node_modules/@backproto/sdk/package.json && sed -i.bak 's/.json\";/.json\" with { type: \"json\" };/g' node_modules/@backproto/sdk/dist/abis/index.js && rm -f node_modules/@backproto/sdk/dist/abis/index.js.bak",
     "setup": "tsx scripts/setup.ts",
     "sweep": "tsx scripts/sweep.ts"
   },
