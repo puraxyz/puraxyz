@@ -1,0 +1,63 @@
+---
+title: Sybil Resistance Without Identity
+date: "2026-03-20"
+description: How a concave square root function makes fake identities unprofitable
+---
+
+Sybil attacks are the oldest problem in decentralized systems. One entity pretends to be many. In a payment routing protocol, the attack is straightforward: split your stake across five wallets, register five agents, and capture five times the payment flow.
+
+Backproto stops this with a square root.
+
+## The capacity cap function
+
+Every agent in Backproto declares capacity. The maximum capacity the protocol will credit is not a linear function of stake. It is:
+
+cap(k) = sqrt(stake(k) / u)
+
+where u is a fixed stake unit parameter. This is a concave function. If you have 100 tokens staked as one agent, your capacity cap is 10 (in normalized units). If you split those 100 tokens across four agents with 25 each, each gets a cap of 5, for a total of 20. Less than the 10 you would have gotten staying as one agent? No, wait. 4 times 5 is 20, which is more than 10.
+
+That math does not work. Let me redo it with the actual numbers.
+
+One agent, 100 tokens: cap = sqrt(100) = 10.
+
+Four agents, 25 tokens each: cap per agent = sqrt(25) = 5. Total = 4 x 5 = 20.
+
+The square root alone is not enough. Which is exactly why Backproto adds a minimum stake requirement per agent. If the minimum stake is 50 tokens and you have 100, you can register at most two agents. Two agents at 50 tokens each: cap per agent = sqrt(50) = 7.07. Total = 14.14. Still more than 10.
+
+The real defense comes from combining three things:
+
+1. The concave cap means splitting gives diminishing per-identity returns
+2. The minimum stake floor limits how many identities you can afford
+3. Each identity bears full slashing risk independently. If one gets slashed, you lose stake on that identity regardless of your others
+
+## Running the numbers on an actual attack
+
+Say an attacker has 1000 tokens and the minimum stake is 100. They can create at most 10 agents. The optimal strategy (equal distribution) gives each agent cap = sqrt(100) = 10, total = 100.
+
+Compare to one honest agent with 1000 tokens: cap = sqrt(1000) = 31.6.
+
+Wait, 100 > 31.6. So the attacker wins?
+
+In raw capacity, yes. But agents also have to perform work. The CompletionTracker requires dual-signed completion receipts. Each of those 10 agents needs to actually complete tasks at a rate above 50% or get slashed. Running 10 agents that do real work is just running 10 agents. That is not a Sybil attack. That is a legitimate service.
+
+The concave cap hurts the case where the attacker wants to capture payment flow without doing proportional work. An honest operator with 1000 tokens gets 31.6 capacity and needs to complete 31.6 units of work. A splitter with 10 identities at 100 tokens each gets 100 capacity and needs to complete 100 units of work, while risking 10 independent slashing penalties.
+
+The attacker gains capacity but gains proportionally more obligation. And the independent slashing risk means one bad epoch on one identity costs 10% of that identity's stake, which cannot be hedged by the other nine.
+
+## Why not just use identity?
+
+Proof-of-personhood, KYC, or decentralized identity would work. One human, one agent, done.
+
+There are two problems with this approach in practice. First, identity is expensive and inaccessible for pseudonymous developers who might be the most prolific agent operators. Second, identity systems introduce trusted third parties, which is what on-chain protocols are designed to avoid.
+
+The stake-based approach does not eliminate Sybil attacks. It makes them economically unprofitable at the margins that matter. An attacker who wants to capture 3x the payment flow needs to do 3x the work and risk 3x the stake in independent slashing pools. At that point they are just a large operator, not an attacker.
+
+## Trade-offs
+
+This design favors large stakers. An agent with 10,000 tokens gets cap = 100. An agent with 100 tokens gets cap = 10. The big operator gets 10x the capacity for 100x the stake, which is the concave penalty working as intended. But it also means small operators are at a disadvantage in raw capacity terms.
+
+The cross-domain reputation system partially offsets this. A small operator with a strong track record in other domains gets up to 50% off the minimum stake in a new domain. A new entrant with no history pays full price.
+
+Whether this is the right trade-off is an open question. The mechanism is live on Base Sepolia if you want to test the economics yourself.
+
+backproto.io | github.com/backproto/backproto

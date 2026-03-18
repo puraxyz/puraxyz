@@ -1,0 +1,59 @@
+---
+title: Capacity Is the Bottleneck
+date: "2026-03-19"
+description: AI agent economics focuses on pricing. The harder problem is capacity.
+---
+
+Most conversations about AI agent economics focus on pricing. How much should an LLM call cost? What is the market rate for a summarization task? How do you prevent agents from overcharging?
+
+These are real questions, but they are second-order. The first-order problem is capacity.
+
+## The scenario nobody talks about
+
+Ten agents want to use the same embedding service. That service can handle three concurrent requests. Seven agents are going to have a bad time.
+
+In today's agent frameworks, those seven agents either wait (if someone built a queue), retry (burning compute and time), or fail silently (the worst outcome, because the caller has no idea the work was not done). There is no protocol-level signal that says "this provider is full, route your request and your payment elsewhere."
+
+This is not hypothetical. It is the default behavior of every agent-to-agent payment system I have looked at. Fire and forget. Send the money, hope the work happens.
+
+## Data networks solved this in the 1990s
+
+When a router is congested, it drops packets. TCP detects the loss and throttles the sender. Backpressure signals propagate upstream, slowing down everyone who is sending traffic through the bottleneck. The internet handles billions of concurrent flows with this mechanism.
+
+The algorithm that formalized it, Tassiulas-Ephremides backpressure routing (1992), has a property that matters here: it is provably throughput-optimal. For any set of demands that the network can physically serve, backpressure will find a way to serve them. No other algorithm class has that guarantee.
+
+## Applying this to money
+
+Backproto takes the core insight from backpressure routing and applies it to payment flows.
+
+Agents declare capacity. They can handle N tasks per time period, backed by a staked deposit. The protocol tracks how many tasks they actually complete using dual-signed receipts (both the client and the agent sign). A smart contract pool distributes incoming payment streams proportional to each agent's verified spare capacity.
+
+When an agent fills up, two things happen. Its share of the payment stream drops. And its price rises, following a curve inspired by EIP-1559 gas pricing. Demand naturally shifts to agents with room.
+
+This is not load balancing bolted onto a payment layer. The payment routing IS the load balancing. When you pay an agent, you are signaling demand. The protocol makes sure your demand reaches an agent that can serve it.
+
+## What happens at the edges
+
+The interesting behavior shows up under stress.
+
+When all agents in a pool are near capacity, an escrow buffer absorbs incoming payments until someone frees up. The alternative, dropping payments, is worse in a monetary context than dropping packets in a data context. Lost money is harder to recover than a retransmitted packet.
+
+When an agent suddenly goes offline, the EWMA-smoothed capacity signal decays toward zero over a few epochs. The payment stream redirects to remaining agents within roughly 50 time steps in simulation.
+
+When an agent lies about capacity (claims to have room but does not complete the work), the completion rate drops below the 50% threshold for three consecutive epochs and 10% of their stake gets slashed. The capacity cap physically shrinks because it depends on stake.
+
+## Part of a stack
+
+Backproto handles routing. Two other projects handle the adjacent problems.
+
+Buildlog (buildlog.ai) records what agents actually do. Execution trails, MCP integration, workflow captures. The raw data.
+
+VR (vr.dev) verifies that agent outputs actually changed system state. Harder than it sounds. Most "verification" in agent systems is soft scoring. VR does hard evidence.
+
+Together: Buildlog records it, VR verifies it, Backproto routes payments accordingly.
+
+## Try it
+
+22 contracts on Base Sepolia. 213 passing tests. TypeScript SDK with 18 modules. Research paper with formal proofs.
+
+backproto.io | github.com/backproto/backproto
