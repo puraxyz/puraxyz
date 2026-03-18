@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, type FormEvent } from "react";
+import FlowDiagram from "./components/FlowDiagram";
 import styles from "./page.module.css";
 
 interface SinkState {
@@ -99,15 +100,7 @@ export default function Home() {
         </a>
       </header>
 
-      <section className={styles.hero}>
-        <h2 className={styles.heroTitle}>
-          Capacity-routed <span>LLM gateway</span>
-        </h2>
-        <p className={styles.heroSub}>
-          Multi-provider API that routes requests based on on-chain capacity weights.
-          Powered by Backproto on Base.
-        </p>
-      </section>
+      <FlowDiagram />
 
       {/* Key generation */}
       <section className={styles.keySection}>
@@ -190,16 +183,69 @@ export default function Home() {
         </div>
       )}
 
-      {/* Usage */}
+      {/* Quick start */}
       <section className={styles.usage}>
         <h3 className={styles.usageTitle}>Quick start</h3>
-        <pre>{`curl -X POST ${typeof window !== "undefined" ? window.location.origin : "http://localhost:3100"}/api/chat \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -d '{
-    "messages": [{"role": "user", "content": "Hello!"}],
-    "stream": true
-  }'`}</pre>
+        <pre className={styles.compact}>{`curl ${typeof window !== "undefined" ? window.location.origin : "https://mandalay.dev"}/api/chat \\
+  -H "Authorization: Bearer YOUR_KEY" \\
+  -d '{"messages":[{"role":"user","content":"Hello!"}],"stream":true}'`}</pre>
+      </section>
+
+      {/* FAQ */}
+      <section className={styles.faq}>
+        <h3 className={styles.faqTitle}>Common questions</h3>
+
+        <div className={styles.faqItem}>
+          <h4 className={styles.faqQ}>How does this work?</h4>
+          <p className={styles.faqA}>
+            You send requests to Mandalay using the standard OpenAI chat format.
+            Mandalay checks real-time capacity weights from an on-chain registry
+            and routes to the provider with the most headroom. If one goes down,
+            traffic shifts automatically.
+          </p>
+        </div>
+
+        <div className={styles.faqItem}>
+          <h4 className={styles.faqQ}>Are my API keys secure?</h4>
+          <p className={styles.faqA}>
+            Your Mandalay API key is SHA-256 hashed before storage — we never
+            store it in plaintext. Provider keys (OpenAI, Anthropic) live only as
+            server-side environment variables and never leave the server.
+          </p>
+        </div>
+
+        <div className={styles.faqItem}>
+          <h4 className={styles.faqQ}>What if I only have an OpenAI key?</h4>
+          <p className={styles.faqA}>
+            That works perfectly. Configure one provider or many — Mandalay
+            routes across whatever you have. Add more anytime via env vars; no
+            code changes, no downtime.
+          </p>
+        </div>
+
+        <div className={styles.faqItem}>
+          <h4 className={styles.faqQ}>What&apos;s the catch?</h4>
+          <p className={styles.faqA}>
+            First 100 requests are free, no signup required. After that, link an
+            Ethereum wallet and open a payment stream — pennies per request on
+            Base. You can stop anytime.
+          </p>
+        </div>
+
+        <div className={styles.faqItem}>
+          <h4 className={styles.faqQ}>Can I self-host this?</h4>
+          <p className={styles.faqA}>
+            Yes — Mandalay is fully open source. Fork it, deploy it, run your own
+            gateway. See the{" "}
+            <a
+              href="https://github.com/backproto/backproto/tree/main/gateway"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              operator guide
+            </a>.
+          </p>
+        </div>
       </section>
 
       <footer className={styles.footer}>
