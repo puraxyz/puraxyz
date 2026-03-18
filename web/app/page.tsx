@@ -331,7 +331,7 @@ export default function Home() {
             </a>
           </div>
           <div className={styles.stackCard}>
-            <span className={styles.stackName}>VR</span>
+            <span className={styles.stackName}>Verifiable Rewards</span>
             <span className={styles.stackDesc}>
               Verifies that agent-claimed outcomes reflect actual system state changes.
             </span>
@@ -341,7 +341,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className={styles.stackLink}
             >
-              vr.dev &rarr;
+              Verifiable Rewards &rarr;
             </a>
           </div>
           <div className={`${styles.stackCard} ${styles.stackCurrent}`}>

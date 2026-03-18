@@ -16,7 +16,7 @@ export default function Footer() {
               Buildlog
             </a>
             <a href="https://vr.dev" target="_blank" rel="noopener noreferrer">
-              VR
+              Verifiable Rewards
             </a>
           </div>
           <div className={styles.socials}>

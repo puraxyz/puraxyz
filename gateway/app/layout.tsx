@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Backproto Gateway",
+  title: "Mandalay — Capacity-Routed LLM Gateway",
   description:
-    "Capacity-routed LLM gateway powered by Backproto on Base.",
+    "Multi-provider LLM API gateway with on-chain capacity routing. Powered by Backproto on Base.",
 };
 
 export default function RootLayout({

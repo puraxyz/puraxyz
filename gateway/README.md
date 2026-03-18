@@ -1,8 +1,10 @@
-# Backproto Gateway
+# Mandalay
 
 Capacity-routed LLM API gateway powered by [Backproto](https://backproto.io) on Base.
 
 Routes chat completions across OpenAI and Anthropic based on on-chain capacity weights from a BackpressurePool. Serves as a reference implementation — customer #1 for the protocol.
+
+See [BUSINESSPLAN.md](BUSINESSPLAN.md) for the full user journey, revenue model, and fork-and-deploy guide.
 
 ## How it works
 

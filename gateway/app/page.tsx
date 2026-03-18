@@ -87,7 +87,7 @@ export default function Home() {
     <main className={styles.main}>
       <header className={styles.header}>
         <h1 className={styles.title}>
-          <span className={styles.logo}>◆</span> Backproto Gateway
+          <span className={styles.logo}>◆</span> Mandalay
         </h1>
         <a
           href="https://github.com/backproto/backproto/tree/main/gateway"
@@ -204,7 +204,7 @@ export default function Home() {
 
       <footer className={styles.footer}>
         <p>
-          Backproto Gateway · Capacity-routed on{" "}
+          Mandalay · Capacity-routed on{" "}
           <a href={explorerBase} target="_blank" rel="noopener noreferrer">
             {state?.chainId === 8453 ? "Base" : "Base Sepolia"}
           </a>
