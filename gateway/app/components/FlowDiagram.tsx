@@ -49,6 +49,10 @@ const EDGES: EdgeDef[] = [
 ];
 
 /* ── Helpers ───────────────────────────────────────────────────── */
+/** Safely apply a 2-digit hex alpha to a #RRGGBB or #RRGGBBAA color */
+function hexAlpha(hex: string, alpha: string) {
+  return hex.slice(0, 7) + alpha;
+}
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
 function ease(t: number) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
 
@@ -161,7 +165,7 @@ export default function FlowDiagram() {
       const x0 = n.px - nw / 2;
       const y0 = n.py - nh / 2;
       roundRect(x0, y0, nw, nh, r);
-      ctx!.fillStyle = n.color + "18";
+      ctx!.fillStyle = hexAlpha(n.color, "18");
       ctx!.fill();
       ctx!.strokeStyle = n.color;
       ctx!.lineWidth = n.id === "mandalay" ? 1.5 : 1;
@@ -247,7 +251,7 @@ export default function FlowDiagram() {
         ctx!.beginPath();
         ctx!.arc(px, py, p.size * 3.5, 0, Math.PI * 2);
         const grad = ctx!.createRadialGradient(px, py, 0, px, py, p.size * 3.5);
-        grad.addColorStop(0, pColor + "40");
+        grad.addColorStop(0, hexAlpha(pColor, "40"));
         grad.addColorStop(1, "transparent");
         ctx!.fillStyle = grad;
         ctx!.fill();
