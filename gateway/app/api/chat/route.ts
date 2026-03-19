@@ -75,13 +75,23 @@ export async function POST(request: Request) {
     );
   }
 
+  // --- BYOK: optional provider key pass-through ---
+  const providerKey = request.headers.get("x-provider-key") ?? undefined;
+
   // --- Stream ---
   const wantStream = body.stream !== false; // default true
   let stream: ReadableStream<Uint8Array>;
 
   try {
-    stream = await streamChat(provider, messages, body.model);
+    stream = await streamChat(provider, messages, body.model, providerKey);
   } catch (e) {
+    // When using a BYOK key, don't fall back — the key is provider-specific
+    if (providerKey) {
+      return NextResponse.json(
+        { error: { message: (e as Error).message } },
+        { status: 502 },
+      );
+    }
     // Try fallback provider
     const fallback = provider === "openai" ? "anthropic" : "openai";
     try {

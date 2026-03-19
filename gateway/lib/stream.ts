@@ -14,8 +14,9 @@ export async function streamChat(
   provider: Provider,
   messages: ChatMessage[],
   model?: string,
+  providerKey?: string,
 ): Promise<ReadableStream<Uint8Array>> {
-  const config = getProviderConfig(provider);
+  const config = getProviderConfig(provider, providerKey);
 
   if (provider === "openai") {
     return streamOpenAI(config, messages, model);

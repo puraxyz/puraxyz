@@ -188,7 +188,13 @@ export default function Home() {
         <h3 className={styles.usageTitle}>Quick start</h3>
         <pre className={styles.compact}>{`curl ${typeof window !== "undefined" ? window.location.origin : "https://mandalay.dev"}/api/chat \\
   -H "Authorization: Bearer YOUR_KEY" \\
-  -d '{"messages":[{"role":"user","content":"Hello!"}],"stream":true}'`}</pre>
+  -d '{"messages":[{"role":"user","content":"Hello!"}],"stream":true}'
+
+# Or bring your own provider key:
+curl ${typeof window !== "undefined" ? window.location.origin : "https://mandalay.dev"}/api/chat \\
+  -H "Authorization: Bearer YOUR_KEY" \\
+  -H "X-Provider-Key: sk-your-openai-key" \\
+  -d '{"messages":[{"role":"user","content":"Hello!"}],"model":"gpt-4o"}'`}</pre>
       </section>
 
       {/* FAQ */}
@@ -209,17 +215,22 @@ export default function Home() {
           <h4 className={styles.faqQ}>Are my API keys secure?</h4>
           <p className={styles.faqA}>
             Your Mandalay API key is SHA-256 hashed before storage — we never
-            store it in plaintext. Provider keys (OpenAI, Anthropic) live only as
-            server-side environment variables and never leave the server.
+            store it in plaintext. If you bring your own provider key via the{" "}
+            <code>X-Provider-Key</code> header, it is used only for the single
+            outbound request to the provider, then discarded. It is never stored,
+            never logged, and never included in error responses.
           </p>
         </div>
 
         <div className={styles.faqItem}>
-          <h4 className={styles.faqQ}>What if I only have an OpenAI key?</h4>
+          <h4 className={styles.faqQ}>Can I use my own provider key?</h4>
           <p className={styles.faqA}>
-            That works perfectly. Configure one provider or many — Mandalay
-            routes across whatever you have. Add more anytime via env vars; no
-            code changes, no downtime.
+            Yes. Pass your OpenAI or Anthropic key via the{" "}
+            <code>X-Provider-Key</code> header and set the <code>model</code>{" "}
+            parameter to route to the right provider. Your key is used
+            pass-through for that single request — Mandalay never stores it. If
+            you don&apos;t send a provider key, Mandalay uses its own managed
+            keys.
           </p>
         </div>
 

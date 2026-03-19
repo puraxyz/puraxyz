@@ -12,8 +12,8 @@ export interface ProviderConfig {
   endpoint: string;
 }
 
-function getOpenAIConfig(): ProviderConfig {
-  const key = process.env.OPENAI_API_KEY;
+function getOpenAIConfig(apiKeyOverride?: string): ProviderConfig {
+  const key = apiKeyOverride ?? process.env.OPENAI_API_KEY;
   if (!key) throw new Error("OPENAI_API_KEY not set");
   return {
     name: "openai",
@@ -23,8 +23,8 @@ function getOpenAIConfig(): ProviderConfig {
   };
 }
 
-function getAnthropicConfig(): ProviderConfig {
-  const key = process.env.ANTHROPIC_API_KEY;
+function getAnthropicConfig(apiKeyOverride?: string): ProviderConfig {
+  const key = apiKeyOverride ?? process.env.ANTHROPIC_API_KEY;
   if (!key) throw new Error("ANTHROPIC_API_KEY not set");
   return {
     name: "anthropic",
@@ -34,9 +34,9 @@ function getAnthropicConfig(): ProviderConfig {
   };
 }
 
-export function getProviderConfig(provider: Provider): ProviderConfig {
-  if (provider === "openai") return getOpenAIConfig();
-  return getAnthropicConfig();
+export function getProviderConfig(provider: Provider, apiKeyOverride?: string): ProviderConfig {
+  if (provider === "openai") return getOpenAIConfig(apiKeyOverride);
+  return getAnthropicConfig(apiKeyOverride);
 }
 
 export function getProviderConfigs(): ProviderConfig[] {
