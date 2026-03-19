@@ -32,6 +32,38 @@
   color: var(--accent);
 }
 
+.headerNav {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.headerLink {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.headerLink:hover {
+  color: var(--accent);
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: -0.5rem 0 1.5rem;
+}
+
+.subtitle a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.subtitle a:hover {
+  text-decoration: underline;
+}
+
 /* Hero — replaced by FlowDiagram component */
 
 /* Key generation */

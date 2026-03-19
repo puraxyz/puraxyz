@@ -90,15 +90,40 @@ export default function Home() {
         <h1 className={styles.title}>
           <span className={styles.logo}>◆</span> Mandalay
         </h1>
-        <a
-          href="https://github.com/backproto/backproto/tree/main/gateway"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.githubLink}
-        >
-          GitHub
-        </a>
+        <nav className={styles.headerNav}>
+          <a
+            href="https://backproto.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.headerLink}
+          >
+            Backproto
+          </a>
+          <a
+            href="https://backproto.io/explainer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.headerLink}
+          >
+            Docs
+          </a>
+          <a
+            href="https://github.com/backproto/backproto/tree/main/gateway"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.headerLink}
+          >
+            GitHub
+          </a>
+        </nav>
       </header>
+
+      <p className={styles.subtitle}>
+        Capacity-routed LLM gateway · Built on{" "}
+        <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
+          Backproto
+        </a>
+      </p>
 
       <FlowDiagram />
 
@@ -261,7 +286,11 @@ curl ${typeof window !== "undefined" ? window.location.origin : "https://mandala
 
       <footer className={styles.footer}>
         <p>
-          Mandalay · Capacity-routed on{" "}
+          Mandalay · Powered by{" "}
+          <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
+            Backproto
+          </a>
+          {" · "}
           <a href={explorerBase} target="_blank" rel="noopener noreferrer">
             {state?.chainId === 8453 ? "Base" : "Base Sepolia"}
           </a>
@@ -277,6 +306,14 @@ curl ${typeof window !== "undefined" ? window.location.origin : "https://mandala
               </a>
             </>
           )}
+          {" · "}
+          <a
+            href="https://backproto.io/paper"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Paper
+          </a>
         </p>
       </footer>
     </main>
