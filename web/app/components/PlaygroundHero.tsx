@@ -99,7 +99,7 @@ export default function PlaygroundHero() {
     };
 
     const buffer: Node = {
-      x: poolX, y: h * 0.88, r: 10, label: "Escrow",
+      x: poolX, y: h * 0.72, r: 10, label: "Escrow",
       color: "#f59e0b", capacity: 0, capDir: 0, speed: 0,
     };
 
