@@ -22,21 +22,21 @@ Payment networks for AI agents have no equivalent.
 
 Backproto adapts a well-studied algorithm from network theory (Tassiulas-Ephremides backpressure routing, 1992) to monetary flows. The core idea:
 
-**Send more money to the agents who have the most spare capacity.**
+> Send more money to the agents who have the most spare capacity.
 
 When Agent A has lots of room, it gets a bigger share of the payment stream. When Agent B is nearly full, it gets less. The system automatically reroutes money toward whoever can actually do the work. No human intervention. No central coordinator.
 
 This is built on five primitives:
 
-1. **Declare** - agents announce how much work they can handle, backed by a staked deposit
-2. **Verify** - the protocol tracks actual completions against claims, slashing liars automatically
-3. **Price** - busy agents become more expensive (like Uber surge pricing), pushing demand to available capacity
-4. **Route** - a smart contract pool distributes incoming payment streams proportional to verified capacity
-5. **Buffer** - overflow payments are held in escrow until capacity frees up, instead of being lost
+1. Declare: agents announce how much work they can handle, backed by a staked deposit
+2. Verify: the protocol tracks actual completions against claims, slashing liars automatically
+3. Price: busy agents become more expensive (like Uber surge pricing), pushing demand to available capacity
+4. Route: a smart contract pool distributes incoming payment streams proportional to verified capacity
+5. Buffer: overflow payments are held in escrow until capacity frees up, instead of being lost
 
 ## What's different about this?
 
-It's not a scheduler. It's not a load balancer. It's a **payment routing protocol with built-in flow control**. The distinction matters because the money and the work signals are unified in one mechanism. When you want to use an agent, you route payment to it. The act of paying *is* the act of signaling demand, and the protocol's job is to make sure that demand gets served by an agent that actually has capacity.
+Backproto is a payment routing protocol with built-in flow control. The distinction from a scheduler or load balancer matters because the money and the work signals are unified in one mechanism. When you want to use an agent, you route payment to it. The act of paying *is* the act of signaling demand, and the protocol's job is to make sure that demand gets served by an agent that actually has capacity.
 
 The math works. Simulations over 1,000-step horizons show 95.7% allocation efficiency (vs 93.5% for round-robin), recovery from sudden agent failures within 50 steps, and buffer stall rates under 9%.
 
@@ -44,9 +44,9 @@ The math works. Simulations over 1,000-step horizons show 95.7% allocation effic
 
 Backproto is deployed and verified on Base Sepolia today. Twenty-two contracts, 213 passing tests, a TypeScript SDK with 18 action modules, and a research paper with formal proofs. The core handles AI agent payment routing. Research modules extend to Lightning, Nostr, and demurrage. MIT licensed.
 
-- **Docs and explainer**: [backproto.io](https://backproto.io)
-- **GitHub**: [github.com/backproto/backproto](https://github.com/backproto/backproto)
-- **Research paper**: [backproto.io/paper](https://backproto.io/paper)
+- Docs and explainer: [backproto.io](https://backproto.io)
+- GitHub: [github.com/backproto/backproto](https://github.com/backproto/backproto)
+- Research paper: [backproto.io/paper](https://backproto.io/paper)
 
 This is early infrastructure. The protocol computes dynamic prices but doesn't extract fees yet (that's v0.2). Right now the goal is to get this in front of builders working on multi-agent systems and get real feedback on the mechanism design.
 

@@ -2,7 +2,7 @@
 
 Capacity-routed LLM API gateway powered by [Backproto](https://backproto.io) on Base.
 
-Routes chat completions across OpenAI and Anthropic based on on-chain capacity weights from a BackpressurePool. Serves as a reference implementation — customer #1 for the protocol.
+Routes chat completions across OpenAI and Anthropic based on on-chain capacity weights from a BackpressurePool. Is a reference implementation, customer #1 for the protocol.
 
 See [BUSINESSPLAN.md](BUSINESSPLAN.md) for the full user journey, revenue model, and fork-and-deploy guide.
 
@@ -39,7 +39,7 @@ cd ../sdk && npm run build && cd ../gateway
 # Sync local SDK
 npm run sync-sdk
 
-# Run setup (register sinks + create pool — once)
+# Run setup (register sinks + create pool, once)
 npm run setup
 
 # Start dev server

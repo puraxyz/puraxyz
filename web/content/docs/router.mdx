@@ -10,10 +10,10 @@ The **Router** is a reference application that runs a live agent economy on Base
 
 The dashboard polls chain state every 15 seconds and renders:
 
-- **Agent cards** — stake, capacity cap, pool units, completion rate, queue load, dynamic price per agent
-- **Flow chart** — how flow distributes across agents over time
-- **Price chart** — rolling 100-block window of the base fee set by PricingCurve
-- **Status bar** — current scenario phase, tick number, block number, chain ID
+- Agent cards: stake, capacity cap, pool units, completion rate, queue load, dynamic price per agent
+- Flow chart: how flow distributes across agents over time
+- Price chart: rolling 100-block window of the base fee set by PricingCurve
+- Status bar: current scenario phase, tick number, block number, chain ID
 
 ## Scenario phases
 
@@ -43,8 +43,8 @@ During SPIKE and SHOCK, you can observe backpressure in action: prices rise, sat
 └─────────────┘
 ```
 
-- **`/api/tick`** — Vercel CRON-triggered endpoint. Executes one tick: adjusts flow rates based on the current scenario phase, completes tasks, and lets PricingCurve update the base fee. Protected by `CRON_SECRET`.
-- **`/api/state`** — Read-only endpoint. Reads all agent states, pool data, and pricing from Base Sepolia via viem.
+- **`/api/tick`**: Vercel CRON-triggered endpoint. Executes one tick: adjusts flow rates based on the current scenario phase, completes tasks, and lets PricingCurve update the base fee. Protected by `CRON_SECRET`.
+- **`/api/state`**: Read-only endpoint. Reads all agent states, pool data, and pricing from Base Sepolia via viem.
 
 ## Running locally
 
@@ -93,7 +93,7 @@ Environment variables needed: `RPC_URL`, `ATLAS_PRIVATE_KEY`, `BEACON_PRIVATE_KE
 
 - **Next.js 16** with `--webpack` flag (required for SDK resolution)
 - **viem** for chain reads and transaction signing
-- **@backproto/sdk** — uses the full SDK for staking, pool management, pricing, and completions
+- **@backproto/sdk**: uses the full SDK for staking, pool management, pricing, and completions
 - SDK is currently synced via `npm run sync-sdk` (copies local build into node_modules) until the SDK is published on npm
 
 ## Source

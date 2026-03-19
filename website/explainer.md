@@ -14,7 +14,7 @@ Imagine a world where AI agents do work for each other and pay with cryptocurren
 
 These payments flow continuously, like water through pipes.
 
-**But here's the problem:** what happens when an agent gets too busy?
+But here's the problem: what happens when an agent gets too busy?
 
 ```mermaid
 graph LR
@@ -27,7 +27,7 @@ graph LR
 
 The LLM agent can only handle so much work. But the money keeps flowing in, whether the work gets done or not. It's like paying for a restaurant meal that never arrives because the kitchen is overwhelmed.
 
-**In data networks, this is a solved problem.** Routers drop packets or reroute traffic when links are congested. But in payment networks? No one has built this. That's what BPE does.
+In data networks, this is a solved problem. Routers drop packets or reroute traffic when links are congested. But in payment networks? No one has built this. That's what BPE does.
 
 ---
 
@@ -66,9 +66,9 @@ You don't need to understand Ethereum's internals to use BPE. The [TypeScript SD
 
 ## The Solution: Backpressure Routing for Money
 
-BPE borrows a brilliant idea from how the internet works: **[backpressure routing](https://en.wikipedia.org/wiki/Backpressure_routing)**. The core idea is simple:
+BPE borrows an idea from how the internet works: [backpressure routing](https://en.wikipedia.org/wiki/Backpressure_routing). The idea is simple:
 
-> **Send more money to the agents who have the most spare capacity.**
+> Send more money to the agents who have the most spare capacity.
 
 ```mermaid
 graph LR
@@ -128,7 +128,7 @@ Every AI agent that wants to receive payments (**called a "sink"**) tells the ne
 
 But there's a catch: agents might lie to get more money. So declarations go through two safeguards:
 
-**Stake to play.** Every agent must put down a deposit (like a security deposit on an apartment). The more you deposit, the more capacity you're allowed to claim. This prevents someone from creating a thousand fake agents to steal payments (a [Sybil attack](https://en.wikipedia.org/wiki/Sybil_attack)).
+Stake to play. Every agent must put down a deposit (like a security deposit on an apartment). The more you deposit, the more capacity you're allowed to claim. This prevents someone from creating a thousand fake agents to steal payments (a [Sybil attack](https://en.wikipedia.org/wiki/Sybil_attack)).
 
 ```mermaid
 graph LR
@@ -168,7 +168,7 @@ sequenceDiagram
 
 Every completed task produces a **dual-signed receipt**: both the agent doing the work AND the agent requesting it must sign off. The blockchain counts these receipts and compares them to what the agent *claimed* it could do.
 
-**If an agent claims it can handle 100 tasks per period but only completes 40?** After three bad periods in a row, 10% of its deposit gets taken away. This makes lying about capacity a losing strategy.
+If an agent claims it can handle 100 tasks per period but only completes 40? After three bad periods in a row, 10% of its deposit gets taken away. This makes lying about capacity a losing strategy.
 
 ---
 
@@ -203,7 +203,7 @@ This naturally pushes demand toward agents that have spare capacity, because the
 
 ### 4. Route: Money Flows Where Capacity Is
 
-This is the magic step. A smart contract called the **Backpressure Pool** collects all incoming payment streams and redistributes them automatically.
+This is where routing happens. A smart contract called the Backpressure Pool collects all incoming payment streams and redistributes them automatically.
 
 ```mermaid
 graph TB
@@ -225,7 +225,7 @@ graph TB
     style S3 fill:#0d9488,color:#fff
 ```
 
-The pool divides money in proportion to each agent's verified capacity. Agents with more verified capacity get a bigger slice. This happens **automatically and continuously**, with no middleman, no manual intervention.
+The pool divides money in proportion to each agent's verified capacity. Agents with more verified capacity get a bigger slice. This happens automatically and continuously, with no middleman, no manual intervention.
 
 When capacity changes (an agent gets busier, or a new agent joins), anyone can trigger a **rebalance** to update the split.
 
@@ -383,7 +383,7 @@ This runs on Base (L2) as a **sidecar** to Lightning. It doesn't change how Ligh
 
 Backproto adds an economic layer for Nostr relays using the same BPE primitives:
 
-**How it works:**
+How it works:
 
 1. Relay operators register and declare **multi-dimensional capacity**: throughput (events/sec), storage (GB), and bandwidth (Mbps)
 2. Capacity is verified through cryptographically signed attestations, smoothed over time to prevent gaming
@@ -440,7 +440,7 @@ graph LR
     style B3 fill:#a16207,color:#fff
 ```
 
-**Details:**
+Details:
 
 - Decay is **continuous and exponential**: your balance shrinks every second you hold it idle, at a configurable rate (default: 5% per year)
 - Decay only applies to **idle holdings**. Tokens locked in streaming agreements or staking contracts are exempt.
@@ -478,7 +478,7 @@ graph TB
     style DISCOUNT fill:#0d9488,color:#fff
 ```
 
-The platform layer is what turns Backproto from "a routing protocol for AI agents" into "a universal capacity coordination layer for decentralized networks."
+The platform layer lets any capacity-constrained domain plug into the same routing, pricing, and reputation infrastructure without anyone's permission.
 
 ---
 
@@ -488,7 +488,7 @@ The platform layer is what turns Backproto from "a routing protocol for AI agent
 
 Backproto adds an economic coordination layer for OpenClaw agent networks using three purpose-built contracts:
 
-**How it works:**
+How it works:
 
 1. Agent operators register with a **skill type** (e.g., research, code review, content generation) and stake tokens to declare capacity
 2. The **OpenClawCapacityAdapter** translates multi-dimensional skill metrics into a single normalized score:
@@ -518,14 +518,14 @@ sequenceDiagram
     Rep->>Rep: Update cross-domain reputation
 ```
 
-**What this enables:**
+What this enables:
 
-- **Capacity-weighted task routing**: When a pipeline needs a research agent, Backproto routes to the agent with the most verified spare capacity, not just the cheapest or first-available
-- **Verifiable execution history**: Dual-signature completion records provide an auditable log that ClawHub can reference for dispute resolution
-- **Portable reputation**: An agent's reliability in one skill category carries over to others. Strong cross-domain reputation (OpenClaw + Lightning node + Nostr relay) earns up to 50% stake discounts
-- **Pipeline orchestration**: Multi-stage agent pipelines (research -> analysis -> report) can efficiently allocate each stage to available agents using Backproto's Pipeline contract
+- Capacity-weighted task routing: when a pipeline needs a research agent, Backproto routes to the agent with the most verified spare capacity
+- Verifiable execution history: dual-signature completion records provide an auditable log that ClawHub can reference for dispute resolution
+- Portable reputation: an agent's reliability in one skill category carries over to others. Strong cross-domain reputation (OpenClaw + Lightning node + Nostr relay) earns up to 50% stake discounts
+- Pipeline orchestration: multi-stage agent pipelines (research -> analysis -> report) can efficiently allocate each stage to available agents using Backproto's Pipeline contract
 
-**The sidecar model**: Backproto does not modify OpenClaw's core. Agents opt in by installing a Backproto coordination skill that handles staking, capacity reporting, and completion attestation. The integration lives entirely on-chain on Base L2.
+The sidecar model: Backproto does not modify OpenClaw's core. Agents opt in by installing a Backproto coordination skill that handles staking, capacity reporting, and completion attestation. The integration lives entirely on-chain on Base L2.
 
 ---
 

@@ -6,7 +6,7 @@
 
 ## What is BPE?
 
-Backpressure Economics (BPE) is a novel cryptoeconomic mechanism that adapts the Tassiulas–Ephremides backpressure routing algorithm from communication networks to monetary flows in multi-agent economies.
+Backpressure Economics (BPE) is a cryptoeconomic mechanism that adapts the Tassiulas–Ephremides backpressure routing algorithm from communication networks to monetary flows in multi-agent economies.
 
 Streaming payment protocols enable continuous monetary flows between AI agents, yet none provide **flow control**: when a downstream agent reaches capacity, payments accumulate with no mechanism to reroute, buffer, or throttle - unlike data networks where packets can be dropped or queued.
 

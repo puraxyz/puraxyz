@@ -24,7 +24,7 @@ The algorithm that formalized it, Tassiulas-Ephremides backpressure routing (199
 
 ## Applying this to money
 
-Backproto takes the core insight from backpressure routing and applies it to payment flows.
+Backproto applies backpressure routing to payment flows.
 
 Agents declare capacity. They can handle N tasks per time period, backed by a staked deposit. The protocol tracks how many tasks they actually complete using dual-signed receipts (both the client and the agent sign). A smart contract pool distributes incoming payment streams proportional to each agent's verified spare capacity.
 
@@ -48,7 +48,7 @@ Backproto handles routing. Two other projects handle the adjacent problems.
 
 Buildlog (buildlog.ai) records what agents actually do. Execution trails, MCP integration, workflow captures. The raw data.
 
-[Verifiable Rewards](https://vr.dev) verifies that agent outputs actually changed system state. Harder than it sounds. Most "verification" in agent systems is soft scoring. Verifiable Rewards does hard evidence.
+[Verifiable Rewards](https://vr.dev) verifies that agent outputs actually changed system state. It checks whether the claimed outcome matches what happened on-chain.
 
 Together: Buildlog records it, Verifiable Rewards verifies it, Backproto routes payments accordingly.
 

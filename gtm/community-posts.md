@@ -16,7 +16,7 @@ Streaming payment protocols let agents send money continuously, but there is no 
 
 Backproto makes receiver-side capacity a first-class protocol primitive. Agents stake tokens to declare capacity (with a concave sqrt cap that makes Sybil splitting unprofitable), actual performance is tracked via dual-signed completion receipts, and a smart contract pool distributes incoming payment streams proportional to verified spare capacity. Overflow goes to escrow. Dynamic pricing (EIP-1559-style) makes congested agents expensive.
 
-The math is from Lyapunov drift analysis — provably throughput-optimal for any stabilizable demand vector. Simulations show 95.7% allocation efficiency vs 93.5% for round-robin.
+The math is from Lyapunov drift analysis, provably throughput-optimal for any stabilizable demand vector. Simulations show 95.7% allocation efficiency vs 93.5% for round-robin.
 
 Part of a three-project stack: Buildlog (buildlog.ai) captures agent workflows, VR (vr.dev) verifies outcomes, Backproto routes payments to verified capacity.
 
@@ -220,7 +220,7 @@ I have been building three projects in parallel. They look separate but they are
 
 Buildlog (buildlog.ai) records what AI agents do. MCP integration, execution trails, workflow capture.
 
-VR (vr.dev) verifies that outcomes actually changed system state. Hard evidence, not soft scoring.
+VR (vr.dev) verifies that outcomes actually changed system state.
 
 Backproto (backproto.io) routes payments to agents with verified spare capacity. Overloaded agents get rerouted around. Fakers get slashed.
 
@@ -254,11 +254,11 @@ Each block below is one standalone post. Pick and choose, reorder, or adapt.
 
 ---
 
-### 1 — The reference product (Mandalay)
+### 1. The reference product (Mandalay)
 
 Built a reference product on top of Backproto.
 
-Mandalay is a single endpoint that routes your LLM calls across OpenAI, Anthropic, and others — weighted by on-chain capacity signals.
+Mandalay is a single endpoint that routes your LLM calls across OpenAI, Anthropic, and others, weighted by on-chain capacity signals.
 
 One curl. Automatic failover. No vendor lock-in.
 
@@ -266,9 +266,9 @@ mandalay.dev
 
 ---
 
-### 2 — The router, explained simply
+### 2. The router, explained simply
 
-Your app calls one API. Behind it, a router checks which LLM providers actually have capacity right now — verified on-chain, not self-reported.
+Your app calls one API. Behind it, a router checks which LLM providers actually have capacity right now, verified on-chain.
 
 Payments stream to whoever can do the work. Overloaded providers get less. Available ones get more.
 
@@ -276,7 +276,7 @@ That's Mandalay. backproto.io
 
 ---
 
-### 3 — Why capacity matters more than price
+### 3. Why capacity matters more than price
 
 Everyone optimizes LLM costs. Nobody optimizes for capacity.
 
@@ -288,13 +288,13 @@ backproto.io/explainer
 
 ---
 
-### 4 — The stack
+### 4. The stack
 
-Three projects, one system:
+The stack:
 
-- Buildlog — records what agents do
-- VR — verifies the outcomes actually happened
-- Backproto — routes payments to agents with verified spare capacity
+- Buildlog: records what agents do
+- VR: verifies the outcomes actually happened
+- Backproto: routes payments to agents with verified spare capacity
 
 Buildlog captures. VR confirms. Backproto pays.
 
@@ -302,17 +302,17 @@ Fakers get slashed. Overloaded agents get rerouted around.
 
 ---
 
-### 5 — The one-liner use case
+### 5. The one-liner use case
 
 If you're building anything that calls multiple LLM providers, you need a router that knows which ones actually have capacity.
 
-Not "which one is cheapest." Which one can serve you right now.
+Which provider actually has capacity right now? That is the question.
 
-That's the problem. mandalay.dev is the fix.
+mandalay.dev
 
 ---
 
-### 6 — What's deployed
+### 6. What's deployed
 
 Shipped on Base Sepolia:
 
@@ -326,7 +326,7 @@ All MIT. github.com/backproto/backproto
 
 ---
 
-### 7 — The internet analogy
+### 7. The internet analogy
 
 The internet works because routers know when a link is congested. Packets get rerouted. Senders get throttled. Backpressure propagates.
 
@@ -338,9 +338,9 @@ backproto.io
 
 ---
 
-### 8 — For the agent builders
+### 8. For the agent builders
 
-Building multi-agent systems? The hard part isn't orchestration — it's what happens when a downstream agent hits capacity.
+Building multi-agent systems? The hard part isn't orchestration. It's what happens when a downstream agent hits capacity.
 
 Backproto gives you protocol-level flow control. Declare capacity, verify completions, route payments to whoever has room.
 
@@ -348,7 +348,7 @@ Works with any streaming payment system. 22 contracts on Base. SDK ready.
 
 ---
 
-### 9 — Dynamic pricing angle
+### 9. Dynamic pricing angle
 
 When an LLM provider fills up, the base fee rises (EIP-1559 style). Demand naturally shifts to providers with room.
 
@@ -358,7 +358,7 @@ That's the core of Backproto's pricing curve. backproto.io/explainer
 
 ---
 
-### 10 — The Mandalay quick start
+### 10. The Mandalay quick start
 
 ```
 curl mandalay.dev/api/chat \
@@ -374,11 +374,11 @@ Get a key at mandalay.dev.
 
 ## LinkedIn posts (March 2026)
 
-Post from personal account, "I" voice. Space 2-3 days apart. Put all URLs in the first comment, not in the body (LinkedIn suppresses reach on posts with links). Hook must land in the first two lines — LinkedIn truncates after ~210 characters.
+Post from personal account, "I" voice. Space 2-3 days apart. Put all URLs in the first comment, not in the body (LinkedIn suppresses reach on posts with links). Hook must land in the first two lines. LinkedIn truncates after ~210 characters.
 
 ---
 
-### LinkedIn 1 — The reliability problem (post first)
+### LinkedIn 1. The reliability problem (post first)
 
 AI agents are starting to pay each other in real time. What nobody built is the failure mode.
 
@@ -396,11 +396,11 @@ If you are building anything where multiple services call the same downstream pr
 
 ---
 
-### LinkedIn 2 — The Mandalay product (post second)
+### LinkedIn 2. The Mandalay product (post second)
 
 I built a single API endpoint that routes LLM calls across OpenAI, Anthropic, and other providers based on which one actually has capacity right now.
 
-It is called Mandalay. You call one endpoint. Behind it, a router checks real-time capacity — verified on-chain, not self-reported. If one provider is saturated, your request goes to the next one. Automatic failover. No code changes. No vendor lock-in.
+It is called Mandalay. You call one endpoint. Behind it, a router checks real-time capacity, verified on-chain. If one provider is saturated, your request goes to the next one. Automatic failover. No code changes. No vendor lock-in.
 
 This started as a research project in network routing theory. I spent a year building the protocol layer (capacity verification, payment routing, dynamic pricing). Then I realized: nobody will use a protocol until they can see it working. So I built the reference product on top of it.
 
@@ -412,13 +412,13 @@ Looking for developers to try it and tell me what breaks.
 
 ---
 
-### LinkedIn 3 — Building in public (post third)
+### LinkedIn 3. Building in public (post third)
 
 I shipped 22 smart contracts, a TypeScript SDK, a research paper, a live gateway product, and a full documentation site. Solo.
 
 Here is what I actually learned:
 
-The hardest part was not the code. It was deciding what the product was. I started with a protocol — formal proofs, simulation framework, 213 passing tests. Academically clean. Nobody could tell me what it did in one sentence.
+The hardest part was not the code. It was deciding what the product was. I started with a protocol: formal proofs, simulation framework, 213 passing tests. Academically clean. Nobody could tell me what it did in one sentence.
 
 So I built Mandalay on top of it. One API endpoint that routes your LLM calls to whichever provider has capacity. Now the one-sentence version exists: "like a load balancer for LLMs, but the capacity signals are verified on-chain."
 
@@ -428,7 +428,7 @@ If you are building infrastructure and nobody is using it, the problem might not
 
 ---
 
-### LinkedIn 4 — The stack (post fourth)
+### LinkedIn 4. The stack (post fourth)
 
 I have been building three projects in parallel. They sound separate but they solve one problem.
 
@@ -438,7 +438,7 @@ Here is how I solved each piece:
 
 Buildlog captures what agents do. Execution trails, workflow recording, full audit log of agent actions.
 
-VR verifies that outcomes actually changed system state. Not "the agent says it did the work." Hard evidence that state changed.
+VR verifies that outcomes actually changed system state. On-chain evidence that state changed.
 
 Backproto routes payments based on verified spare capacity. Agents that do the work get paid. Agents that fake it get caught. Overloaded agents get rerouted around.
 
@@ -452,7 +452,7 @@ All open source. Looking for feedback from anyone building multi-agent systems.
 
 ## HN retry (schedule for early April 2026)
 
-Angle: lead with the product, not the protocol math. The March 2026 Show HN led with Tassiulas-Ephremides and Lyapunov proofs — too academic for HN's "show me what it does" culture.
+Angle: lead with the product, not the protocol math. The March 2026 Show HN led with Tassiulas-Ephremides and Lyapunov proofs. Too academic for HN's "show me what it does" culture.
 
 Title: Show HN: Mandalay – one API for multiple LLM providers with capacity-aware routing
 
