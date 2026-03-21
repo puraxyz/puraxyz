@@ -1,0 +1,185 @@
+.layout {
+    display: flex;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+    gap: 48px;
+}
+
+.sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    margin-bottom: 20px;
+    transition: color var(--transition-fast);
+}
+
+.backLink:hover {
+    color: var(--color-text);
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.navLink {
+    display: block;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--color-text-dim);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.navLink:hover {
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+}
+
+.navActive {
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.subNav {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-left: 12px;
+    margin: 2px 0 4px;
+    border-left: 1px solid var(--color-border);
+}
+
+.subNavLink {
+    display: block;
+    padding: 4px 12px;
+    font-size: 12.5px;
+    color: var(--color-text-dim);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast);
+}
+
+.subNavLink:hover {
+    color: var(--color-primary);
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
+}
+
+.content h1 {
+    font-size: var(--text-h1);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 32px;
+}
+
+.content h2 {
+    font-size: var(--text-h3);
+    font-weight: 700;
+    margin: 40px 0 16px;
+    letter-spacing: -0.02em;
+}
+
+.content p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-text-muted);
+    margin: 0 0 16px;
+}
+
+.content pre {
+    background: var(--color-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 20px 24px;
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 24px;
+}
+
+.content code {
+    font-family: var(--font-mono);
+}
+
+.content ul,
+.content ol {
+    color: var(--color-text-muted);
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0 0 16px;
+    padding-left: 24px;
+}
+
+.content li {
+    margin-bottom: 6px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-border);
+}
+
+.paginationLink {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast);
+}
+
+.paginationLink:hover {
+    color: var(--color-primary);
+}
+
+.paginationLink span:first-child {
+    font-size: 12px;
+    color: var(--color-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+@media (max-width: 768px) {
+    .layout {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .sidebar {
+        width: 100%;
+        position: static;
+    }
+
+    .nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .subNav {
+        display: none;
+    }
+}

@@ -1,0 +1,179 @@
+.compare {
+    min-height: calc(100vh - 60px);
+    padding: 80px 24px;
+}
+
+.content {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.content h1 {
+    font-size: var(--text-h1);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px;
+}
+
+.subtitle {
+    font-size: 17px;
+    color: var(--color-text-muted);
+    margin: 0 0 48px;
+    line-height: 1.6;
+    max-width: 640px;
+}
+
+.section {
+    margin-bottom: 48px;
+}
+
+.section h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 12px;
+}
+
+.section p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--color-text-muted);
+    margin: 0 0 12px;
+}
+
+.section strong {
+    color: var(--color-primary-hover);
+    font-weight: 600;
+}
+
+/* ── Comparison Table ── */
+.tableWrap {
+    overflow-x: auto;
+    margin: 24px 0;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+}
+
+.comparisonTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 800px;
+}
+
+.comparisonTable th,
+.comparisonTable td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.comparisonTable th {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--color-surface);
+    position: sticky;
+    top: 0;
+}
+
+.comparisonTable td {
+    color: var(--color-text-muted);
+}
+
+.comparisonTable tr:last-child td {
+    border-bottom: none;
+}
+
+.comparisonTable td:last-child {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.comparisonTable tbody tr:hover {
+    background: var(--color-surface-hover);
+}
+
+.yes {
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.no {
+    color: var(--color-text-dimmed);
+}
+
+.partial {
+    color: #f59e0b;
+    font-weight: 500;
+}
+
+/* ── Positioning Cards ── */
+.positionGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.positionCard {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    transition: border-color var(--transition-fast);
+}
+
+.positionCard:hover {
+    border-color: var(--color-border-hover);
+}
+
+.positionCard h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 8px;
+}
+
+.positionCard p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+/* ── CTA ── */
+.cta {
+    margin-top: 48px;
+    text-align: center;
+}
+
+.ctaLink {
+    display: inline-block;
+    padding: 12px 28px;
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background var(--transition-fast);
+}
+
+.ctaLink:hover {
+    background: var(--color-primary-hover);
+}
+
+.note {
+    font-size: 13px;
+    color: var(--color-text-dimmed);
+    margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+    .positionGrid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
-import { getAddresses, openclaw, platform } from "@backproto/sdk";
+import { getAddresses, openclaw, completion, platform } from "@backproto/sdk";
 import { publicClient, chainId } from "@/lib/chain";
 
 export const runtime = "nodejs";
+
+const VR_API_BASE = process.env.VR_API_URL || "https://api.vr.dev/v1";
 
 const DEMO_SKILL: `0x${string}` =
   "0x0000000000000000000000000000000000000000000000000000000000000001";
@@ -35,6 +37,21 @@ export async function GET() {
           .catch(() => reputation);
       }
 
+      // Fetch on-chain verified completions for this agent's skill
+      const verifiedCompletions = await completion
+        .getCompletions(publicClient, addrs, agent.skillTypeId as `0x${string}`, agent.operator)
+        .then((n) => n.toString())
+        .catch(() => "0");
+
+      // Fetch latest evidence hash from vr.dev API (best-effort)
+      const lastEvidenceHash = await fetch(
+        `${VR_API_BASE}/evidence/latest?operator=${agent.operator}`,
+        { signal: AbortSignal.timeout(3000) },
+      )
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => d?.evidence_hash ?? null)
+        .catch(() => null);
+
       return {
         id,
         operator: agent.operator,
@@ -48,6 +65,8 @@ export async function GET() {
               slashCount: operatorRep.slashCount.toString(),
             }
           : null,
+        verifiedCompletions,
+        lastEvidenceHash,
       };
     }),
   );

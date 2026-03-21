@@ -1,0 +1,73 @@
+{
+  "description": "Adversarial fixtures for api.http.header_present",
+  "fixtures": [
+    {
+      "name": "missing_header",
+      "description": "Expected header not present at all",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_headers": {
+            "x-custom": null
+          },
+          "pre_result": {
+            "headers": {
+              "content-type": "text/html"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_claims_header",
+      "description": "Agent claims header present but response lacks it",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_headers": {
+            "x-auth": "valid"
+          },
+          "pre_result": {
+            "headers": {}
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    },
+    {
+      "name": "agent_claims_header_variant_3",
+      "description": "Variant 3: Agent claims header present but response lacks it",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_headers": {
+            "x-auth": "valid"
+          },
+          "pre_result": {
+            "headers": {}
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "description": "Adversarial fixtures for api.http.response_matches",
+  "fixtures": [
+    {
+      "name": "empty_body",
+      "description": "Response body is empty",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_substrings": [
+            "something"
+          ],
+          "pre_result": {
+            "body": ""
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_claims_match",
+      "description": "Agent claims response matches but it does not",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_substrings": [
+            "success"
+          ],
+          "pre_result": {
+            "body": "error: internal failure"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    },
+    {
+      "name": "agent_claims_match_variant_3",
+      "description": "Variant 3: Agent claims response matches but it does not",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_substrings": [
+            "success"
+          ],
+          "pre_result": {
+            "body": "error: internal failure"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    }
+  ]
+}

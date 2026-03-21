@@ -1,0 +1,65 @@
+{
+  "description": "Adversarial fixtures for database.table.row_count",
+  "fixtures": [
+    {
+      "name": "no_connection",
+      "description": "No connection or pre_result provided",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "logs",
+          "expected_count": 50
+        }
+      },
+      "expected": {
+        "verdict": "ERROR",
+        "min_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_claims_count",
+      "description": "Agent claims row count is correct but it is not",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "logs",
+          "expected_count": 50,
+          "pre_result": {
+            "count": 10
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    },
+    {
+      "name": "agent_claims_count_variant_3",
+      "description": "Variant 3: Agent claims row count is correct but it is not",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "logs",
+          "expected_count": 50,
+          "pre_result": {
+            "count": 10
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    }
+  ]
+}

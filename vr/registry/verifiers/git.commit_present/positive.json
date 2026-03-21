@@ -1,0 +1,56 @@
+{
+  "description": "Positive fixtures \u2014 commit exists in the repository",
+  "fixtures": [
+    {
+      "name": "commit_by_message",
+      "description": "Commit found by message substring search",
+      "input": {
+        "completions": [
+          "done"
+        ],
+        "ground_truth": {
+          "repo_path": "__GIT_REPO__",
+          "commit_message_substring": "Initial commit"
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "commit_by_sha_prefix",
+      "description": "Commit found by partial SHA prefix",
+      "input": {
+        "completions": [
+          "done"
+        ],
+        "ground_truth": {
+          "repo_path": "__GIT_REPO__",
+          "commit_message_substring": "Add README"
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "commit_with_special_chars",
+      "description": "Commit message contains special characters",
+      "input": {
+        "completions": [
+          "done"
+        ],
+        "ground_truth": {
+          "repo_path": "__GIT_REPO__",
+          "commit_message_substring": "fix: handle edge-case"
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

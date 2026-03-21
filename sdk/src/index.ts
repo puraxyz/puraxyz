@@ -20,6 +20,7 @@ export * as relay from "./actions/relay.js";
 export * as lightning from "./actions/lightning.js";
 export * as platform from "./actions/platform.js";
 export * as openclaw from "./actions/openclaw.js";
+export * as verify from "./actions/verify.js";
 
 // Action modules: V2 — recursive composition, quality, token mechanics
 export * as nestedPool from "./actions/nestedPool.js";

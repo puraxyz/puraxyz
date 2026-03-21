@@ -1,0 +1,38 @@
+{
+  "description": "Positive fixtures - faithful summaries",
+  "fixtures": [
+    {
+      "name": "fully_faithful_summary",
+      "input": {
+        "completions": ["The study found a 15% increase in productivity when remote work was adopted. Key factors included flexible schedules and reduced commute time."],
+        "ground_truth": {
+          "source_text": "A recent corporate study revealed that remote work adoption led to a 15% increase in overall productivity. Researchers attributed this to two main factors: the flexibility of self-managed schedules and the elimination of daily commute time.",
+          "key_points": ["15% productivity increase", "flexible schedules", "reduced commute"]
+        }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.66 }
+    },
+    {
+      "name": "all_key_points_covered",
+      "input": {
+        "completions": ["The report highlights three risks: data breaches, phishing attacks, and insider threats. Mitigation strategies include encryption, training, and access controls."],
+        "ground_truth": {
+          "source_text": "The cybersecurity report identifies three primary risks: data breaches, phishing attacks, and insider threats. Recommended mitigation strategies are end-to-end encryption, regular employee training programs, and strict access control policies.",
+          "key_points": ["data breaches", "phishing", "insider threats", "mitigation strategies"]
+        }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.66 }
+    },
+    {
+      "name": "concise_but_accurate",
+      "input": {
+        "completions": ["Sales grew 20% year-over-year, driven by the new product line."],
+        "ground_truth": {
+          "source_text": "Annual sales figures show a 20% year-over-year growth, primarily driven by the successful launch of the new premium product line in Q2.",
+          "key_points": ["20% growth", "new product line"]
+        }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.66 }
+    }
+  ]
+}

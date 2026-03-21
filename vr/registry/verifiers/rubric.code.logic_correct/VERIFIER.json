@@ -1,0 +1,42 @@
+{
+  "id": "vr/rubric.code.logic_correct",
+  "version": "0.1.0",
+  "tier": "SOFT",
+  "domain": "rubric",
+  "task_type": "code_logic_review",
+  "description": "LLM-judge rubric verifier scoring code logic correctness on 4 criteria: algorithm, edge cases, logic errors, requirements.",
+  "ground_truth_schema": {
+    "type": "object",
+    "properties": {
+      "requirements": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "rubric_config": {
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "stochastic-judge",
+    "evidence_quality": "judge-opinion",
+    "intended_use": "eval-and-train",
+    "gating_required": true,
+    "recommended_gates": [
+      "vr/code.python.lint_ruff"
+    ],
+    "permissions_required": [],
+    "source_benchmark": null,
+    "source_citation": "tobysimonds.com/research/2025/09/29/Proofs.html"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04",
+  "source_citation": "tobysimonds.com/research/2025/09/29/Proofs.html",
+  "permissions_required": [],
+  "latency_p50_ms": 2500
+}

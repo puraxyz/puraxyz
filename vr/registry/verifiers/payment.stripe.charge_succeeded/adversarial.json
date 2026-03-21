@@ -1,0 +1,74 @@
+{
+  "description": "Adversarial fixtures for payment.stripe.charge_succeeded",
+  "fixtures": [
+    {
+      "name": "adversarial_1",
+      "description": "Adversarial test case for payment.stripe.charge_succeeded",
+      "input": {
+        "completions": [
+          "Wrong amount charged"
+        ],
+        "ground_truth": {
+          "charge_id": "ch_test",
+          "amount": 2000,
+          "pre_result": {
+            "status": "succeeded",
+            "paid": true,
+            "amount": 1000
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_2",
+      "description": "Adversarial test case 2 for payment.stripe.charge_succeeded",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "charge_id": "ch_test",
+          "amount": 2000,
+          "pre_result": {
+            "status": "succeeded",
+            "paid": true,
+            "amount": 1000
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_3",
+      "description": "Adversarial test case 3 for payment.stripe.charge_succeeded",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "charge_id": "ch_test",
+          "amount": 2000,
+          "pre_result": {
+            "status": "succeeded",
+            "paid": true,
+            "amount": 1000
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    }
+  ]
+}

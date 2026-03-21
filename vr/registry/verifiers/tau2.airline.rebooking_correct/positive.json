@@ -1,0 +1,34 @@
+{
+  "description": "Positive fixtures - rebooking matches expected state",
+  "fixtures": [
+    {
+      "name": "rebooking_all_fields_match",
+      "input": {
+        "completions": ["I've rebooked your flight to April 15, business class."],
+        "ground_truth": {
+          "booking_id": "BK-001",
+          "expected_date": "2026-04-15",
+          "expected_cabin_class": "business",
+          "expected_passengers": 2
+        }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "rebooking_date_only",
+      "input": {
+        "completions": ["Flight rebooked to March 10."],
+        "ground_truth": { "booking_id": "BK-002", "expected_date": "2026-03-10" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "rebooking_cabin_match",
+      "input": {
+        "completions": ["Upgraded to first class."],
+        "ground_truth": { "booking_id": "BK-003", "expected_cabin_class": "first" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    }
+  ]
+}

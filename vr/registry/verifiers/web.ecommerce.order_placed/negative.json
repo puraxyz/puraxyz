@@ -1,0 +1,43 @@
+{
+  "description": "Negative fixtures - order not found or wrong state",
+  "fixtures": [
+    {
+      "name": "nonexistent_order",
+      "description": "Order ID does not exist in the system",
+      "input": {
+        "completions": ["done"],
+        "ground_truth": { "order_id": "WEB-999" },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "cancelled_order",
+      "description": "Order exists but is cancelled - not placed",
+      "input": {
+        "completions": ["done"],
+        "ground_truth": {
+          "order_id": "WEB-003",
+          "expected_items": ["Widget A"],
+          "expected_total": 24.99
+        },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "wrong_items",
+      "description": "Order confirmed but items do not match expected",
+      "input": {
+        "completions": ["done"],
+        "ground_truth": {
+          "order_id": "WEB-001",
+          "expected_items": ["Nonexistent Item"],
+          "expected_total": 49.98
+        },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.99 }
+    }
+  ]
+}

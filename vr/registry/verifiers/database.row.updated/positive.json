@@ -1,0 +1,90 @@
+{
+  "description": "Positive fixtures for database.row.updated",
+  "fixtures": [
+    {
+      "name": "values_match",
+      "description": "Row updated with correct values",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "orders",
+          "match_columns": {
+            "id": 1
+          },
+          "expected_values": {
+            "status": "cancelled"
+          },
+          "pre_result": {
+            "row": {
+              "status": "cancelled"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "multi_field_update",
+      "description": "Multiple columns updated correctly",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "orders",
+          "match_columns": {
+            "id": 2
+          },
+          "expected_values": {
+            "status": "shipped",
+            "tracking": "ABC123"
+          },
+          "pre_result": {
+            "row": {
+              "status": "shipped",
+              "tracking": "ABC123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "multi_field_update_variant_3",
+      "description": "Variant 3: Multiple columns updated correctly",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "orders",
+          "match_columns": {
+            "id": 2
+          },
+          "expected_values": {
+            "status": "shipped",
+            "tracking": "ABC123"
+          },
+          "pre_result": {
+            "row": {
+              "status": "shipped",
+              "tracking": "ABC123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "description": "Positive fixtures for payment.stripe.charge_succeeded",
+  "fixtures": [
+    {
+      "name": "positive_1",
+      "description": "Positive test case for payment.stripe.charge_succeeded",
+      "input": {
+        "completions": [
+          "Charge processed"
+        ],
+        "ground_truth": {
+          "charge_id": "ch_test",
+          "pre_result": {
+            "status": "succeeded",
+            "paid": true,
+            "amount": 2000,
+            "currency": "usd"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "positive_2",
+      "description": "Positive test case 2 for payment.stripe.charge_succeeded",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "charge_id": "ch_test",
+          "pre_result": {
+            "status": "succeeded",
+            "paid": true,
+            "amount": 2000,
+            "currency": "usd"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "positive_3",
+      "description": "Positive test case 3 for payment.stripe.charge_succeeded",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "charge_id": "ch_test",
+          "pre_result": {
+            "status": "succeeded",
+            "paid": true,
+            "amount": 2000,
+            "currency": "usd"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

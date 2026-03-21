@@ -1,0 +1,74 @@
+{
+  "description": "Negative fixtures for api.http.header_present",
+  "fixtures": [
+    {
+      "name": "wrong_header_value",
+      "description": "Header present but wrong value",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_headers": {
+            "content-type": "text/html"
+          },
+          "pre_result": {
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "header_completely_absent",
+      "description": "Expected header not in response at all",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_headers": {
+            "authorization": "Bearer token"
+          },
+          "pre_result": {
+            "headers": {
+              "content-type": "text/html"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "header_completely_absent_variant_3",
+      "description": "Variant 3: Expected header not in response at all",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_headers": {
+            "authorization": "Bearer token"
+          },
+          "pre_result": {
+            "headers": {
+              "content-type": "text/html"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    }
+  ]
+}

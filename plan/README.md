@@ -26,6 +26,9 @@ This directory contains all planning documents, blueprints, and specifications f
 | [06-BIBLIOGRAPHY.md](06-BIBLIOGRAPHY.md) | Complete annotated bibliography with role of each reference |
 | [07-IMPLEMENTATION-ROADMAP.md](07-IMPLEMENTATION-ROADMAP.md) | Phased implementation plan with dependencies and verification |
 | [08-GAPS-AND-MITIGATIONS.md](08-GAPS-AND-MITIGATIONS.md) | Known gaps, risks, and their mitigations |
+| [10-CONTRACTS-V2-BLUEPRINT.md](10-CONTRACTS-V2-BLUEPRINT.md) | V2 contracts: recursive composition, quality, token mechanics |
+| [11-BITRECIPES.md](11-BITRECIPES.md) | BitRecipes product plan |
+| [12-VR-ABSORB.md](12-VR-ABSORB.md) | Absorbing vr.dev into the monorepo: rationale, integration surfaces, build sequence |
 
 ## Key Context
 

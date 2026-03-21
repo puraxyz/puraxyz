@@ -1,0 +1,71 @@
+{
+  "description": "Adversarial fixtures for database.row.exists",
+  "fixtures": [
+    {
+      "name": "no_connection",
+      "description": "No connection string or pre_result provided",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "users",
+          "match_columns": {
+            "id": 1
+          }
+        }
+      },
+      "expected": {
+        "verdict": "ERROR",
+        "min_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_claims_exists",
+      "description": "Agent claims row exists but it does not",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "users",
+          "match_columns": {
+            "id": 1
+          },
+          "pre_result": {
+            "exists": false
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    },
+    {
+      "name": "agent_claims_exists_variant_3",
+      "description": "Variant 3: Agent claims row exists but it does not",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "users",
+          "match_columns": {
+            "id": 1
+          },
+          "pre_result": {
+            "exists": false
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    }
+  ]
+}

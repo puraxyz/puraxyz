@@ -1,0 +1,60 @@
+{
+  "description": "Adversarial fixtures \u2014 agent claims incorrect rebooking state",
+  "fixtures": [
+    {
+      "name": "agent_claims_economy_actually_business",
+      "description": "Agent says economy but booking is actually business class",
+      "input": {
+        "completions": [
+          "I've changed your flight to economy class as requested."
+        ],
+        "ground_truth": {
+          "booking_id": "BK-001",
+          "expected_cabin_class": "economy"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_claims_3_passengers_actually_2",
+      "description": "Agent claims 3 passengers but booking has 2",
+      "input": {
+        "completions": [
+          "Updated to 3 passengers."
+        ],
+        "ground_truth": {
+          "booking_id": "BK-001",
+          "expected_passengers": 3
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_references_wrong_booking",
+      "description": "Agent says BK-002 was updated but verifier checks BK-001",
+      "input": {
+        "completions": [
+          "Booking BK-002 has been updated to May 1 in first class."
+        ],
+        "ground_truth": {
+          "booking_id": "BK-001",
+          "expected_date": "2026-05-01",
+          "expected_cabin_class": "first"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    }
+  ]
+}

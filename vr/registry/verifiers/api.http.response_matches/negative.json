@@ -1,0 +1,70 @@
+{
+  "description": "Negative fixtures for api.http.response_matches",
+  "fixtures": [
+    {
+      "name": "missing_substring",
+      "description": "Response missing expected text",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_substrings": [
+            "not_present"
+          ],
+          "pre_result": {
+            "body": "hello world"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "partial_match",
+      "description": "Only some substrings found in response",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_substrings": [
+            "hello",
+            "not_present"
+          ],
+          "pre_result": {
+            "body": "hello world"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "partial_match_variant_3",
+      "description": "Variant 3: Only some substrings found in response",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_substrings": [
+            "hello",
+            "not_present"
+          ],
+          "pre_result": {
+            "body": "hello world"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    }
+  ]
+}

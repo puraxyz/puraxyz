@@ -1,0 +1,65 @@
+{
+  "description": "Negative fixtures for messaging.slack.message_sent",
+  "fixtures": [
+    {
+      "name": "negative_1",
+      "description": "Negative test case for messaging.slack.message_sent",
+      "input": {
+        "completions": [
+          "Sent notification"
+        ],
+        "ground_truth": {
+          "channel_id": "C123",
+          "text_contains": "Deploy complete",
+          "pre_result": {
+            "found": false
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_2",
+      "description": "Negative test case 2 for messaging.slack.message_sent",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "channel_id": "C123",
+          "text_contains": "Deploy complete",
+          "pre_result": {
+            "found": false
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_3",
+      "description": "Negative test case 3 for messaging.slack.message_sent",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "channel_id": "C123",
+          "text_contains": "Deploy complete",
+          "pre_result": {
+            "found": false
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    }
+  ]
+}

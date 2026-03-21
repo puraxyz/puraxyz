@@ -1,0 +1,44 @@
+{
+  "description": "Adversarial fixtures - agent claims success but shell state disagrees",
+  "fixtures": [
+    {
+      "name": "agent_claims_file_written_but_empty",
+      "description": "Agent says it wrote data but the file is empty",
+      "attack_type": "state_mismatch",
+      "input": {
+        "completions": ["Successfully wrote 500 records to /tmp/output.csv"],
+        "ground_truth": {
+          "command": "wc -l /tmp/output.csv",
+          "expected_output": "500 /tmp/output.csv"
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "agent_claims_process_running_but_not",
+      "description": "Agent claims it started a process but grep finds nothing",
+      "attack_type": "state_fabrication",
+      "input": {
+        "completions": ["Started the background worker process."],
+        "ground_truth": {
+          "command": "grep -c 'worker' /tmp/pids.txt",
+          "expected_output": "1"
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "agent_claims_config_updated_but_old_value",
+      "description": "Agent says it updated config but old value persists",
+      "attack_type": "state_mismatch",
+      "input": {
+        "completions": ["Updated timeout to 60 seconds in the config."],
+        "ground_truth": {
+          "command": "grep 'timeout' /tmp/app.conf",
+          "expected_output": "timeout=60"
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    }
+  ]
+}

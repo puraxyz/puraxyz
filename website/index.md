@@ -83,7 +83,7 @@ BPE solves this by treating **receiver-side capacity constraints as first-class 
 
 ## Reference products
 
-Four products built on Backproto, each demonstrating the mechanism in a different domain.
+Five products built on Backproto, each demonstrating the mechanism in a different domain.
 
 | Product | Domain | URL |
 |---------|--------|-----|
@@ -91,3 +91,4 @@ Four products built on Backproto, each demonstrating the mechanism in a differen
 | Relay.Gold | Nostr relay capacity | [relay.gold](https://relay.gold) |
 | Lightning.Gold | Lightning routing | [lightning.gold](https://lightning.gold) |
 | DarkSource | Agent reputation | [darksource.ai](https://darksource.ai) |
+| vr.dev | Verifiable rewards | [vr.dev](https://vr.dev) |

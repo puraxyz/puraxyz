@@ -1,0 +1,35 @@
+{
+  "description": "Negative fixtures - file missing or wrong properties",
+  "fixtures": [
+    {
+      "name": "file_does_not_exist",
+      "description": "Expected file was never created",
+      "input": {
+        "completions": ["Done"],
+        "ground_truth": { "expected_path": "/tmp/nonexistent_vrdev_file.txt" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "file_too_small",
+      "description": "File exists but is too small",
+      "input": {
+        "completions": ["Saved output"],
+        "ground_truth": { "expected_path": "/tmp/tiny.txt", "min_size_bytes": 10000 }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "file_wrong_hash",
+      "description": "File exists but content hash does not match",
+      "input": {
+        "completions": ["Created file"],
+        "ground_truth": {
+          "expected_path": "/tmp/wrong_content.txt",
+          "content_hash": "expected_hash_that_wont_match"
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    }
+  ]
+}

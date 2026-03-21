@@ -1,0 +1,227 @@
+.caseStudy {
+    min-height: calc(100vh - 60px);
+    padding: 80px 24px;
+}
+
+.content {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.content h1 {
+    font-size: var(--text-h1);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px;
+}
+
+.subtitle {
+    font-size: 17px;
+    color: var(--color-text-muted);
+    margin: 0 0 48px;
+    line-height: 1.6;
+}
+
+.section {
+    margin-bottom: 40px;
+}
+
+.section h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 12px;
+}
+
+.section p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--color-text-muted);
+    margin: 0 0 12px;
+}
+
+.section strong {
+    color: var(--color-primary-hover);
+    font-weight: 600;
+}
+
+.section em {
+    font-style: italic;
+    color: var(--color-text);
+}
+
+.section code {
+    font-size: 13px;
+    background: var(--color-surface-hover);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--color-primary);
+}
+
+.section a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.section a:hover {
+    text-decoration: underline;
+}
+
+/* Results table */
+.resultsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 14px;
+}
+
+.resultsTable th,
+.resultsTable td {
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.resultsTable th {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.resultsTable td {
+    color: var(--color-text-muted);
+}
+
+/* Example block */
+.exampleBlock {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 16px 0 24px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--color-text-muted);
+    font-family: var(--font-jetbrains), monospace;
+    white-space: pre-wrap;
+}
+
+/* Code block */
+.codeBlock {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 12px 0 24px;
+    font-size: 13px;
+    line-height: 1.6;
+    font-family: var(--font-jetbrains), monospace;
+    color: var(--color-text-muted);
+    overflow-x: auto;
+}
+
+/* Highlight values */
+.pass {
+    color: #22c55e;
+    font-weight: 700;
+}
+
+.fail {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+/* ── Bar Chart ── */
+.chartSection {
+    margin: 24px 0 32px;
+}
+
+.chartTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.chartTitle:not(:first-child) {
+    margin-top: 24px;
+}
+
+.barChart {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.barRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.barLabel {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    width: 90px;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.barTrack {
+    flex: 1;
+    height: 32px;
+    background: var(--color-surface);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.bar {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 10px;
+    transition: width 0.6s ease;
+}
+
+.barValue {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.barFail {
+    background: #ef4444;
+}
+
+.barPass {
+    background: #22c55e;
+}
+
+/* CTA */
+.cta {
+    margin-top: 48px;
+    text-align: center;
+}
+
+.ctaLink {
+    display: inline-block;
+    padding: 12px 28px;
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background var(--transition-fast);
+}
+
+.ctaLink:hover {
+    background: var(--color-primary-hover);
+}

@@ -1,0 +1,54 @@
+{
+  "id": "vr/web.ecommerce.order_placed",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "web",
+  "task_type": "order_verification",
+  "description": "Verifies that an e-commerce order was placed with correct items and total via HTTP API query.",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "order_id"
+    ],
+    "properties": {
+      "order_id": {
+        "type": "string"
+      },
+      "expected_items": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "expected_total": {
+        "type": [
+          "number",
+          "null"
+        ]
+      },
+      "total_tolerance": {
+        "type": "number",
+        "default": 0.01
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "api-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "recommended_gates": [],
+    "permissions_required": [
+      "net:http"
+    ],
+    "source_benchmark": "WebArena",
+    "source_citation": "arXiv:2307.13854"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04",
+  "source_citation": "arXiv:2307.13854",
+  "permissions_required": [
+    "net:http"
+  ],
+  "latency_p50_ms": 25
+}

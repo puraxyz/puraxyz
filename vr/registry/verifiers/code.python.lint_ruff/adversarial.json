@@ -1,0 +1,35 @@
+{
+  "description": "Adversarial fixtures - code that appears clean but has lint violations",
+  "fixtures": [
+    {
+      "name": "hidden_violations_in_comments",
+      "description": "Code looks clean but has subtle lint issues masked by formatting",
+      "attack_type": "format_gaming",
+      "input": {
+        "completions": ["import os, sys\nimport json\n\ndef process(data):\n    x = 1\n    return json.dumps(data)\n"],
+        "ground_truth": { "max_violations": 0 }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.9 }
+    },
+    {
+      "name": "unused_imports_hidden",
+      "description": "Agent generates code with unused imports that should be caught",
+      "attack_type": "code_quality_bypass",
+      "input": {
+        "completions": ["import os\nimport sys\nimport json\nimport re\n\ndef hello():\n    print('hello')\n"],
+        "ground_truth": { "max_violations": 0 }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.9 }
+    },
+    {
+      "name": "syntax_tricks",
+      "description": "Code uses unusual syntax that should trigger lint warnings",
+      "attack_type": "format_gaming",
+      "input": {
+        "completions": ["x=1;y=2;z=3\nif x==1:\n  if y==2:\n    if z==3:\n      pass\n"],
+        "ground_truth": { "max_violations": 0 }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.8 }
+    }
+  ]
+}

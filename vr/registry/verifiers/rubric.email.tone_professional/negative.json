@@ -1,0 +1,32 @@
+{
+  "description": "Negative fixtures - unprofessional or incomplete emails",
+  "fixtures": [
+    {
+      "name": "no_greeting",
+      "description": "Missing greeting/salutation",
+      "input": {
+        "completions": ["Your order is cancelled. Refund coming in 3-5 days."],
+        "ground_truth": { "key_information_required": ["refund timeline"] }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.75 }
+    },
+    {
+      "name": "too_informal",
+      "description": "Overly casual tone",
+      "input": {
+        "completions": ["yo, done. cancelled ur order lol. money back soon i guess"],
+        "ground_truth": { "key_information_required": ["order status"] }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "missing_key_info",
+      "description": "Professional tone but missing required information",
+      "input": {
+        "completions": ["Dear Customer,\n\nYour request has been processed. Please let us know if you need anything else.\n\nBest regards,\nSupport"],
+        "ground_truth": { "key_information_required": ["order number", "refund amount", "processing time"] }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.75 }
+    }
+  ]
+}

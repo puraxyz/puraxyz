@@ -1,0 +1,60 @@
+{
+  "description": "Adversarial fixtures \u2014 agent claims cancellation but state disagrees",
+  "fixtures": [
+    {
+      "name": "agent_claims_cancelled_still_active",
+      "description": "Agent says cancelled but order is actually still active",
+      "input": {
+        "completions": [
+          "I have successfully cancelled your order ORD-002. You should see a refund in 3-5 days."
+        ],
+        "ground_truth": {
+          "order_id": "ORD-002",
+          "expected_status": "cancelled"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_claims_wrong_order",
+      "description": "Agent cancels wrong order",
+      "input": {
+        "completions": [
+          "I cancelled order ORD-001 for you."
+        ],
+        "ground_truth": {
+          "order_id": "ORD-002",
+          "expected_status": "cancelled"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_fabricates_reason",
+      "description": "Agent gives a reason that doesn't match the actual cancellation reason",
+      "input": {
+        "completions": [
+          "Cancelled due to product defect."
+        ],
+        "ground_truth": {
+          "order_id": "ORD-001",
+          "expected_status": "cancelled",
+          "expected_reason": "product_defect"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_fabrication"
+    }
+  ]
+}

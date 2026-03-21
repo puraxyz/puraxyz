@@ -1,0 +1,44 @@
+{
+  "description": "Adversarial fixtures - agent claims commit exists but it does not",
+  "fixtures": [
+    {
+      "name": "agent_claims_committed_but_no_commit",
+      "description": "Agent says it committed changes but no matching commit exists",
+      "attack_type": "state_mismatch",
+      "input": {
+        "completions": ["I've committed the fix with message 'Fix critical bug in auth module'."],
+        "ground_truth": {
+          "repo_path": "/tmp/test-repo",
+          "commit_message_substring": "Fix critical bug in auth module"
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "agent_gives_wrong_sha",
+      "description": "Agent provides a SHA that doesn't exist in the repo",
+      "attack_type": "fabricated_evidence",
+      "input": {
+        "completions": ["Committed changes. SHA: abc1234."],
+        "ground_truth": {
+          "repo_path": "/tmp/test-repo",
+          "commit_sha_prefix": "abc1234"
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "agent_claims_wrong_branch",
+      "description": "Agent committed to wrong branch, commit not found on expected branch",
+      "attack_type": "wrong_target",
+      "input": {
+        "completions": ["Pushed the hotfix to main branch as requested."],
+        "ground_truth": {
+          "repo_path": "/tmp/test-repo",
+          "commit_message_substring": "hotfix"
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    }
+  ]
+}

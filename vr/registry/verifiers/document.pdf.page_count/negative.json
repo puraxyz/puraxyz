@@ -1,0 +1,56 @@
+{
+  "description": "Negative fixtures for document.pdf.page_count",
+  "fixtures": [
+    {
+      "name": "wrong_page_count",
+      "description": "PDF has different page count",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/report.pdf",
+          "expected_pages": 10
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "missing_pdf",
+      "description": "PDF file does not exist",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/nonexistent.pdf",
+          "expected_pages": 1
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "missing_pdf_variant_3",
+      "description": "Variant 3: PDF file does not exist",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/nonexistent.pdf",
+          "expected_pages": 1
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "description": "Positive fixtures - email found in Sent folder",
+  "fixtures": [
+    {
+      "name": "email_found_exact_match",
+      "input": {
+        "completions": ["I've sent the cancellation confirmation email to the customer."],
+        "ground_truth": { "recipient": "customer@example.com", "subject_fragment": "cancellation" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "email_found_recipient_only",
+      "input": {
+        "completions": ["Email sent."],
+        "ground_truth": { "recipient": "customer@example.com" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "email_found_with_subject",
+      "input": {
+        "completions": ["Sent the booking update."],
+        "ground_truth": { "recipient": "traveler@example.com", "subject_fragment": "booking update" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    }
+  ]
+}

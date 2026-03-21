@@ -1,0 +1,73 @@
+{
+  "description": "Positive fixtures for database.row.exists",
+  "fixtures": [
+    {
+      "name": "row_found",
+      "description": "Row exists in the table",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "users",
+          "match_columns": {
+            "id": 1
+          },
+          "pre_result": {
+            "exists": true
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "row_found_multi_col",
+      "description": "Row found with multiple match columns",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "users",
+          "match_columns": {
+            "name": "alice",
+            "active": true
+          },
+          "pre_result": {
+            "exists": true
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "row_found_multi_col_variant_3",
+      "description": "Variant 3: Row found with multiple match columns",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "users",
+          "match_columns": {
+            "name": "alice",
+            "active": true
+          },
+          "pre_result": {
+            "exists": true
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "description": "Negative fixtures \u2014 code with lint violations fails",
+  "fixtures": [
+    {
+      "name": "unused_imports",
+      "description": "Multiple unused imports trigger violations",
+      "input": {
+        "completions": [
+          "import os\nimport sys\n\nprint('hello')\n"
+        ],
+        "ground_truth": {
+          "max_violations": 0
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.99
+      }
+    },
+    {
+      "name": "multiple_violations",
+      "description": "Code with several style violations",
+      "input": {
+        "completions": [
+          "import os\nimport sys\nimport json\n\nx=1\nprint(x)\n"
+        ],
+        "ground_truth": {
+          "max_violations": 0
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.99
+      }
+    },
+    {
+      "name": "syntax_error_present",
+      "description": "Code with syntax error is flagged",
+      "input": {
+        "completions": [
+          "def foo(\n    print('unclosed paren'\n"
+        ],
+        "ground_truth": {
+          "max_violations": 0
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.99
+      }
+    }
+  ]
+}

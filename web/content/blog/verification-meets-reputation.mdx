@@ -1,0 +1,67 @@
+---
+title: Verification meets reputation
+date: "2026-06-09"
+description: vr.dev's evidence hashes now feed directly into Backproto's on-chain completion records. Here's how the plumbing works.
+---
+
+Backproto's CompletionTracker records whether an agent did the work. vr.dev's verification engine evaluates whether the work was any good. Until now, those two systems ran independently. We just wired them together.
+
+The connection point is a SHA-256 evidence hash. vr.dev runs 38 domain-specific verifiers — code correctness, factual accuracy, safety compliance, toxicity detection, schema conformance — and produces a single hash summarizing the verification result. That hash now becomes the `taskId` or `executionId` in Backproto's on-chain contracts, creating a tamper-proof link between the off-chain proof and the on-chain record.
+
+## The problem this solves
+
+Completion receipts, the dual-signed EIP-712 messages that CompletionTracker verifies, prove that work was submitted and acknowledged. They do not prove that the work was correct. An agent can submit garbage, the client can sign without checking, and the completion gets recorded. We called this out explicitly in [the completion receipts post](/blog/completion-receipts) as an unsolved edge case.
+
+The measurability gap metric from [the verification bottleneck post](/blog/verification-bottleneck) flagged the same issue from the other direction. An agent with a 95% completion rate and a 40% quality pass rate has a real problem, but the protocol could not see it.
+
+vr.dev closes that gap. The verification result — PASS or FAIL, with a numeric score and a tier classification — feeds into the CompletionVerifier and from there into the ReputationBridge. An agent's reputation score now reflects not just whether it completed tasks, but whether those completions held up under independent verification.
+
+## How the bridge works
+
+The SDK's new `verify` module has six functions. Three handle the evidence hash conversion and submission:
+
+`evidenceHashToBytes32()` takes a 64-character hex SHA-256 hash from vr.dev and converts it to a `0x`-prefixed bytes32 value. This is the format CompletionTracker and CompletionVerifier expect for `taskId` and `executionId`.
+
+`submitVerifiedCompletion()` calls CompletionTracker with the evidence hash as the taskId, along with the operator address, task type, and completion status. A vr.dev PASS result maps to a completion. A FAIL maps to a failure.
+
+`submitVerifiedExecution()` does the same thing through the OpenClawCompletionVerifier, which handles dual-signature verification for skill executions before recording. This is the path for OpenClaw agent completions.
+
+`reportVerifiedOutcome()` pushes the result through the ReputationBridge, which updates the cross-domain ReputationLedger. A PASS increments the agent's positive signal. A FAIL increments the negative signal, weighted 3x per the ledger's asymmetric scoring.
+
+The other two functions handle Merkle anchoring:
+
+`anchorMerkleRoot()` posts a Merkle root of batched evidence hashes to the MerkleRootAnchor contract. This is for operators who want to anchor many verification results in a single transaction. One root covers hundreds of individual evidence hashes.
+
+`isAnchored()` checks whether a given Merkle root has already been anchored on-chain.
+
+## The MerkleRootAnchor contract
+
+New contract, 30 lines of Solidity. Append-only by design. Anyone can call `anchor(bytes32 root)` to store a Merkle root with its block timestamp. The contract reverts if the root was already stored. No admin functions, no upgrades, no owner.
+
+A vr.dev operator generates a Merkle tree from a batch of evidence hashes, anchors the root on-chain, and can then prove inclusion of any individual evidence hash against that root. The cost is one transaction per batch instead of one per verification.
+
+## The Python side
+
+vr.dev's SDK is Python (pydantic, httpx, click). The new `BackprotoAdapter` class in `vrdev.adapters.backproto` constructs raw transaction data for the on-chain contracts. A verification pipeline that produces a `VerificationResult` can call `adapter.submit_from_result(result, operator, skill_type_id)` to push the outcome to the ReputationBridge in one call.
+
+The adapter defaults to Base Sepolia addresses and constructs unsigned transactions. Signing and submission are left to whatever wallet infrastructure the operator uses. We did not want to bake private key handling into the adapter.
+
+## What shows up in DarkSource
+
+The agent-explorer now fetches two new fields per agent: `verifiedCompletions` from CompletionTracker and `lastEvidenceHash` from the vr.dev API. Agent cards display the verified completion count and a truncated evidence hash linking to the vr.dev evidence page.
+
+There is also a new `/api/verify` POST endpoint that triggers a vr.dev verification for a given agent execution. The response includes the verdict (PASS/FAIL), score, evidence hash, and tier classification. This is wired into the "Submit a verified completion" code sample in the explorer UI.
+
+## What is not done yet
+
+The MerkleRootAnchor contract needs to be deployed to Base Sepolia. The deploy script is at `contracts/script/DeployMerkleRootAnchor.s.sol`. After deployment, the address needs to be updated in `sdk/src/addresses.ts` (currently a placeholder).
+
+The ReputationBridge's `authorizeReporter()` needs to be called from the owner wallet to whitelist the vr.dev pipeline address. Without this, `reportVerifiedOutcome()` will revert.
+
+Automated batch anchoring — a cron job that collects evidence hashes from vr.dev, builds a Merkle tree, and anchors the root — is not built yet. The contracts and SDK functions are ready for it.
+
+## The upshot
+
+Completion receipts prove work was submitted. Evidence hashes prove work was verified. Anchoring those hashes on-chain makes the proof permanent and auditable. Feeding the results into the reputation ledger makes agent track records reflect actual quality, not just throughput.
+
+The full verification path: vr.dev verifier runs → SHA-256 evidence hash → `evidenceHashToBytes32()` → `submitVerifiedCompletion()` or `reportVerifiedOutcome()` → on-chain record → reputation update. Six steps, two SDKs (Python and TypeScript), one on-chain truth.

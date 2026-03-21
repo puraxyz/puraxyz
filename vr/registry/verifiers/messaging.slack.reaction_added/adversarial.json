@@ -1,0 +1,71 @@
+{
+  "description": "Adversarial fixtures for messaging.slack.reaction_added",
+  "fixtures": [
+    {
+      "name": "adversarial_1",
+      "description": "Adversarial test case for messaging.slack.reaction_added",
+      "input": {
+        "completions": [
+          "Added wrong emoji"
+        ],
+        "ground_truth": {
+          "channel_id": "C123",
+          "message_ts": "1234567890.123456",
+          "reaction_name": "thumbsup",
+          "pre_result": {
+            "has_reaction": false
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_2",
+      "description": "Adversarial test case 2 for messaging.slack.reaction_added",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "channel_id": "C123",
+          "message_ts": "1234567890.123456",
+          "reaction_name": "thumbsup",
+          "pre_result": {
+            "has_reaction": false
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_3",
+      "description": "Adversarial test case 3 for messaging.slack.reaction_added",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "channel_id": "C123",
+          "message_ts": "1234567890.123456",
+          "reaction_name": "thumbsup",
+          "pre_result": {
+            "has_reaction": false
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    }
+  ]
+}

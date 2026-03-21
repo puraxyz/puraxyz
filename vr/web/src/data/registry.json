@@ -1,0 +1,1281 @@
+[
+  {
+    "id": "vr/aiv.calendar.event_created",
+    "version": "0.1.0",
+    "tier": "AGENTIC",
+    "domain": "aiv",
+    "task_type": "calendar_verification",
+    "description": "Verifies that a calendar event was created with correct title, date, and participants via HTTP API query.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:http"
+      ],
+      "source_benchmark": "VAGEN",
+      "source_citation": "arXiv:2602.00575"
+    },
+    "permissions_required": [
+      "net:http"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2602.00575",
+    "latency_p50_ms": 12000,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/aiv.email.sent_folder_confirmed",
+    "version": "0.1.0",
+    "tier": "AGENTIC",
+    "domain": "email",
+    "task_type": "email_verification",
+    "description": "Opens IMAP connection to Sent folder and searches for a matching message by recipient and subject fragment. Proves the 'latent state' insight that UI confirmation does not equal actual delivery.",
+    "scorecard": {
+      "determinism": "agentic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:imap"
+      ],
+      "source_benchmark": "VAGEN",
+      "source_citation": "arXiv:2602.00575"
+    },
+    "permissions_required": [
+      "net:imap"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2602.00575",
+    "latency_p50_ms": 15000,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/aiv.shell.state_probe",
+    "version": "0.1.0",
+    "tier": "AGENTIC",
+    "domain": "aiv",
+    "task_type": "shell_state_verification",
+    "description": "Executes a sandboxed read-only shell command and compares stdout to an expected value, probing whether an agent action actually changed system state.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "attack_surface": {
+        "injection_risk": "low",
+        "format_gaming_risk": "low",
+        "tool_spoofing_risk": "low"
+      },
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "subprocess:readonly"
+      ],
+      "source_benchmark": "VAGEN",
+      "source_citation": "arXiv:2602.00575"
+    },
+    "permissions_required": [
+      "subprocess:readonly"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2602.00575",
+    "latency_p50_ms": 12000,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/api.http.header_present",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "api",
+    "task_type": "state_verification",
+    "description": "Verifies that an HTTP response contains expected headers.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:http"
+      ],
+      "source_benchmark": "custom",
+      "source_citation": "",
+      "expected_latency_ms": 200,
+      "cost_tier": "free",
+      "recommended_composition": [
+        "api.http.status_ok"
+      ]
+    },
+    "permissions_required": [
+      "net:http"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-15",
+    "source_citation": "",
+    "latency_p50_ms": 40,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/api.http.response_matches",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "api",
+    "task_type": "state_verification",
+    "description": "Verifies that an HTTP response body contains expected substrings.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:http"
+      ],
+      "source_benchmark": "custom",
+      "source_citation": "",
+      "expected_latency_ms": 200,
+      "cost_tier": "free",
+      "recommended_composition": [
+        "api.http.status_ok"
+      ]
+    },
+    "permissions_required": [
+      "net:http"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-15",
+    "source_citation": "",
+    "latency_p50_ms": 40,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/api.http.status_ok",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "api",
+    "task_type": "state_verification",
+    "description": "Verifies that an HTTP endpoint returns the expected status code.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:http"
+      ],
+      "source_benchmark": "custom",
+      "source_citation": "",
+      "expected_latency_ms": 200,
+      "cost_tier": "free",
+      "recommended_composition": []
+    },
+    "permissions_required": [
+      "net:http"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-15",
+    "source_citation": "",
+    "latency_p50_ms": 40,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/code.python.lint_ruff",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "code",
+    "task_type": "lint_verification",
+    "description": "Verifies that agent-generated Python code passes ruff lint checks with configurable violation thresholds.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "fs:write_tmp",
+        "exec:ruff"
+      ],
+      "source_benchmark": "Zeno-bench",
+      "source_citation": "code-quality"
+    },
+    "permissions_required": [
+      "fs:write_tmp",
+      "exec:ruff"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "code-quality",
+    "latency_p50_ms": 35,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/code.python.tests_pass",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "code",
+    "task_type": "test_execution",
+    "description": "Writes agent-generated Python code to a temp directory and runs pytest via the sandbox runner. Score is based on the fraction of tests that pass.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "fs:write_tmp",
+        "exec:pytest"
+      ],
+      "source_benchmark": "Zeno-bench",
+      "source_citation": "code-quality"
+    },
+    "permissions_required": [
+      "fs:write_tmp",
+      "exec:pytest"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "code-quality",
+    "latency_p50_ms": 35,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/database.row.exists",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "database",
+    "task_type": "state_verification",
+    "description": "Verifies that a row matching given criteria exists in a database table.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "db:read"
+      ],
+      "source_benchmark": "custom",
+      "source_citation": "",
+      "expected_latency_ms": 50,
+      "cost_tier": "free",
+      "recommended_composition": []
+    },
+    "permissions_required": [
+      "db:read"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-15",
+    "source_citation": "",
+    "latency_p50_ms": 30,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/database.row.updated",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "database",
+    "task_type": "state_verification",
+    "description": "Verifies that a database row was updated to contain expected values.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "db:read"
+      ],
+      "source_benchmark": "custom",
+      "source_citation": "",
+      "expected_latency_ms": 50,
+      "cost_tier": "free",
+      "recommended_composition": [
+        "database.row.exists"
+      ]
+    },
+    "permissions_required": [
+      "db:read"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-15",
+    "source_citation": "",
+    "latency_p50_ms": 30,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/database.table.row_count",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "database",
+    "task_type": "state_verification",
+    "description": "Verifies that a database table has the expected number of rows.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "db:read"
+      ],
+      "source_benchmark": "custom",
+      "source_citation": "",
+      "expected_latency_ms": 50,
+      "cost_tier": "free",
+      "recommended_composition": []
+    },
+    "permissions_required": [
+      "db:read"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-15",
+    "source_citation": "",
+    "latency_p50_ms": 30,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/document.csv.row_count",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "document",
+    "task_type": "file_validation",
+    "description": "Verifies that a CSV file has the expected number of data rows.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "fs:read"
+      ],
+      "source_benchmark": "custom",
+      "source_citation": "",
+      "expected_latency_ms": 10,
+      "cost_tier": "free",
+      "recommended_composition": [
+        "filesystem.file_created"
+      ]
+    },
+    "permissions_required": [
+      "fs:read"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-15",
+    "source_citation": "",
+    "latency_p50_ms": 15,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/document.json.valid",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "document",
+    "task_type": "file_validation",
+    "description": "Verifies that a file contains valid JSON with optional type and key checks.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "fs:read"
+      ],
+      "source_benchmark": "custom",
+      "source_citation": "",
+      "expected_latency_ms": 10,
+      "cost_tier": "free",
+      "recommended_composition": [
+        "filesystem.file_created"
+      ]
+    },
+    "permissions_required": [
+      "fs:read"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-15",
+    "source_citation": "",
+    "latency_p50_ms": 15,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/document.pdf.page_count",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "document",
+    "task_type": "file_validation",
+    "description": "Verifies that a PDF has the expected number of pages.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "fs:read"
+      ],
+      "source_benchmark": "custom",
+      "source_citation": "",
+      "expected_latency_ms": 50,
+      "cost_tier": "free",
+      "recommended_composition": [
+        "filesystem.file_created"
+      ]
+    },
+    "permissions_required": [
+      "fs:read"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-15",
+    "source_citation": "",
+    "latency_p50_ms": 15,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/document.text.contains",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "document",
+    "task_type": "file_validation",
+    "description": "Verifies that a text file contains all expected substrings.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "fs:read"
+      ],
+      "source_benchmark": "custom",
+      "source_citation": "",
+      "expected_latency_ms": 10,
+      "cost_tier": "free",
+      "recommended_composition": [
+        "filesystem.file_created"
+      ]
+    },
+    "permissions_required": [
+      "fs:read"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-15",
+    "source_citation": "",
+    "latency_p50_ms": 15,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/document.yaml.valid",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "document",
+    "task_type": "file_validation",
+    "description": "Verifies that a file contains valid YAML with optional key checks.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "fs:read"
+      ],
+      "source_benchmark": "custom",
+      "source_citation": "",
+      "expected_latency_ms": 10,
+      "cost_tier": "free",
+      "recommended_composition": [
+        "filesystem.file_created"
+      ]
+    },
+    "permissions_required": [
+      "fs:read"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-15",
+    "source_citation": "",
+    "latency_p50_ms": 15,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/filesystem.file_created",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "filesystem",
+    "task_type": "file_verification",
+    "description": "Verifies that a file was created at the expected path with optional size and content hash checks.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "fs:read"
+      ],
+      "source_benchmark": "OSWorld",
+      "source_citation": "arXiv:2404.07972"
+    },
+    "permissions_required": [
+      "fs:read"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2404.07972",
+    "latency_p50_ms": 10,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/git.commit_present",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "code",
+    "task_type": "git_verification",
+    "description": "Verifies that a specific git commit exists in a repository by SHA prefix or message substring.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "exec:git"
+      ],
+      "source_benchmark": "SWE-bench",
+      "source_citation": "arXiv:2310.06770"
+    },
+    "permissions_required": [
+      "exec:git"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2310.06770",
+    "latency_p50_ms": 35,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/rubric.code.logic_correct",
+    "version": "0.1.0",
+    "tier": "SOFT",
+    "domain": "rubric",
+    "task_type": "code_logic_review",
+    "description": "LLM-judge rubric verifier scoring code logic correctness on 4 criteria: algorithm, edge cases, logic errors, requirements.",
+    "scorecard": {
+      "determinism": "stochastic-judge",
+      "evidence_quality": "judge-opinion",
+      "intended_use": "eval-and-train",
+      "gating_required": true,
+      "recommended_gates": [
+        "vr/code.python.lint_ruff"
+      ],
+      "permissions_required": [],
+      "source_benchmark": null,
+      "source_citation": "tobysimonds.com/research/2025/09/29/Proofs.html"
+    },
+    "permissions_required": [],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "tobysimonds.com/research/2025/09/29/Proofs.html",
+    "latency_p50_ms": 2500,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/rubric.email.tone_professional",
+    "version": "0.1.0",
+    "tier": "SOFT",
+    "domain": "email",
+    "task_type": "email_quality",
+    "description": "4-component rubric scored by LLM judge: greeting, formality, key info, no inappropriate content. Score = sum/4. MUST be composed with vr/aiv.email.sent_folder_confirmed.",
+    "scorecard": {
+      "determinism": "stochastic-judge",
+      "attack_surface": {
+        "injection_risk": "high",
+        "format_gaming_risk": "medium",
+        "tool_spoofing_risk": "low"
+      },
+      "evidence_quality": "judge-opinion",
+      "intended_use": "eval-and-train",
+      "gating_required": true,
+      "recommended_gates": [
+        "vr/aiv.email.sent_folder_confirmed"
+      ],
+      "permissions_required": [],
+      "source_citation": "tobysimonds.com/research/2025/09/29/Proofs.html"
+    },
+    "permissions_required": [],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "tobysimonds.com/research/2025/09/29/Proofs.html",
+    "latency_p50_ms": 2000,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/rubric.summary.faithful",
+    "version": "0.1.0",
+    "tier": "SOFT",
+    "domain": "nlp",
+    "task_type": "summary_faithfulness",
+    "description": "Scores summary faithfulness to source text via a 3-component LLM rubric: factual accuracy, key points coverage, no hallucinations.",
+    "scorecard": {
+      "determinism": "stochastic-judge",
+      "evidence_quality": "judge-opinion",
+      "attack_surface": {
+        "injection_risk": "medium",
+        "format_gaming_risk": "medium",
+        "tool_spoofing_risk": "low"
+      },
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:llm"
+      ],
+      "source_citation": "tobysimonds.com/research/2025/09/29/Proofs.html"
+    },
+    "permissions_required": [
+      "net:llm"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "tobysimonds.com/research/2025/09/29/Proofs.html",
+    "latency_p50_ms": 2000,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/tau2.airline.rebooking_correct",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "airline",
+    "task_type": "booking_management",
+    "description": "Queries airline API to confirm flight rebooking fields match expected values (date, cabin class, passengers).",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:http"
+      ],
+      "source_benchmark": "\u03c4\u00b2-bench",
+      "source_citation": "arXiv:2406.12045"
+    },
+    "permissions_required": [
+      "net:http"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2406.12045",
+    "latency_p50_ms": 25,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/tau2.policy.constraint_not_violated",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "cross-domain",
+    "task_type": "policy_compliance",
+    "description": "Pure-logic verifier checking agent action traces against domain policy rules. Works for any domain with codifiable constraints.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [],
+      "source_benchmark": "\u03c4\u00b2-bench",
+      "source_citation": "arXiv:2406.12045"
+    },
+    "permissions_required": [],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2406.12045",
+    "latency_p50_ms": 25,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/tau2.retail.inventory_updated",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "retail",
+    "task_type": "inventory_management",
+    "description": "Queries retail API to confirm that a product SKU has the expected quantity in inventory after an agent action.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:http"
+      ],
+      "source_benchmark": "\u03c4\u00b2-bench",
+      "source_citation": "arXiv:2406.12045"
+    },
+    "permissions_required": [
+      "net:http"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2406.12045",
+    "latency_p50_ms": 25,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/tau2.retail.order_cancelled",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "retail",
+    "task_type": "order_management",
+    "description": "Queries retail API to confirm an order is in cancelled state with matching reason code.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:http"
+      ],
+      "source_benchmark": "\u03c4\u00b2-bench",
+      "source_citation": "arXiv:2406.12045"
+    },
+    "permissions_required": [
+      "net:http"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2406.12045",
+    "latency_p50_ms": 25,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/tau2.retail.refund_processed",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "retail",
+    "task_type": "refund_verification",
+    "description": "Queries mock/real retail API to confirm a refund has been processed with the expected amount and status. Catches agents that claim refunds were issued but the actual state shows otherwise.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:http"
+      ],
+      "source_benchmark": "\u03c4\u00b2-bench",
+      "source_citation": "arXiv:2406.12045"
+    },
+    "permissions_required": [
+      "net:http"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2406.12045",
+    "latency_p50_ms": 25,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/tau2.telecom.plan_changed",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "tau2",
+    "task_type": "plan_verification",
+    "description": "Verifies that a customer's telecom plan was changed to the expected plan with correct effective date via CRM API.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:http"
+      ],
+      "source_benchmark": "tau2-bench",
+      "source_citation": "arXiv:2406.12045"
+    },
+    "permissions_required": [
+      "net:http"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2406.12045",
+    "latency_p50_ms": 25,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/web.browser.element_visible",
+    "version": "0.1.0",
+    "tier": "AGENTIC",
+    "domain": "web",
+    "task_type": "dom_verification",
+    "description": "Navigates to a URL via headless browser and checks whether a specific CSS selector is present in the DOM. Catches agents that claim UI actions succeeded but never actually modified the page.",
+    "scorecard": {
+      "determinism": "agentic",
+      "evidence_quality": "hard-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:browser"
+      ],
+      "source_benchmark": "WebArena",
+      "source_citation": "arXiv:2307.13854"
+    },
+    "permissions_required": [
+      "net:browser"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2307.13854",
+    "latency_p50_ms": 20000,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/web.browser.screenshot_match",
+    "version": "0.1.0",
+    "tier": "AGENTIC",
+    "domain": "web",
+    "task_type": "visual_regression",
+    "description": "Captures a live screenshot via browser automation and compares it to a reference image using SSIM (Structural Similarity Index).",
+    "scorecard": {
+      "determinism": "agentic",
+      "evidence_quality": "screenshot",
+      "attack_surface": {
+        "injection_risk": "low",
+        "format_gaming_risk": "low",
+        "tool_spoofing_risk": "low"
+      },
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:browser"
+      ],
+      "source_benchmark": "WebArena",
+      "source_citation": "arXiv:2307.13854"
+    },
+    "permissions_required": [
+      "net:browser"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2307.13854",
+    "latency_p50_ms": 20000,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/web.ecommerce.order_placed",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "web",
+    "task_type": "order_verification",
+    "description": "Verifies that an e-commerce order was placed with correct items and total via HTTP API query.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "net:http"
+      ],
+      "source_benchmark": "WebArena",
+      "source_citation": "arXiv:2307.13854"
+    },
+    "permissions_required": [
+      "net:http"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-04",
+    "source_citation": "arXiv:2307.13854",
+    "latency_p50_ms": 25,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/ci.github.workflow_passed",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "ci",
+    "task_type": "workflow_verification",
+    "description": "Verifies that a specific GitHub Actions workflow completed successfully.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "api:github"
+      ],
+      "source_benchmark": "SWE-bench",
+      "source_citation": "arXiv:2310.06770"
+    },
+    "permissions_required": [
+      "api:github"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-07",
+    "source_citation": "arXiv:2310.06770",
+    "latency_p50_ms": 250,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/git.ci.passed",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "git",
+    "task_type": "ci_verification",
+    "description": "Verifies that all CI check runs passed for a given commit SHA.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "api:github"
+      ],
+      "source_benchmark": "SWE-bench",
+      "source_citation": "arXiv:2310.06770"
+    },
+    "permissions_required": [
+      "api:github"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-07",
+    "source_citation": "arXiv:2310.06770",
+    "latency_p50_ms": 200,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/git.pr.merged",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "git",
+    "task_type": "pr_verification",
+    "description": "Verifies that a GitHub Pull Request was merged to the target branch.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "api:github"
+      ],
+      "source_benchmark": "SWE-bench",
+      "source_citation": "arXiv:2310.06770"
+    },
+    "permissions_required": [
+      "api:github"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-07",
+    "source_citation": "arXiv:2310.06770",
+    "latency_p50_ms": 200,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/messaging.slack.message_sent",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "messaging",
+    "task_type": "message_verification",
+    "description": "Verifies that a message containing expected text exists in a Slack channel.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "api:slack"
+      ],
+      "source_benchmark": "AgentBench",
+      "source_citation": "arXiv:2308.03688"
+    },
+    "permissions_required": [
+      "api:slack"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-07",
+    "source_citation": "arXiv:2308.03688",
+    "latency_p50_ms": 300,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/messaging.slack.reaction_added",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "messaging",
+    "task_type": "reaction_verification",
+    "description": "Verifies that a specific reaction was added to a Slack message.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "api:slack"
+      ],
+      "source_benchmark": "AgentBench",
+      "source_citation": "arXiv:2308.03688"
+    },
+    "permissions_required": [
+      "api:slack"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-07",
+    "source_citation": "arXiv:2308.03688",
+    "latency_p50_ms": 250,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/payment.stripe.charge_succeeded",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "payment",
+    "task_type": "charge_verification",
+    "description": "Verifies that a Stripe charge was completed successfully.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "api:stripe"
+      ],
+      "source_benchmark": "AgentBench",
+      "source_citation": "arXiv:2308.03688"
+    },
+    "permissions_required": [
+      "api:stripe"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-07",
+    "source_citation": "arXiv:2308.03688",
+    "latency_p50_ms": 300,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/payment.stripe.refund_processed",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "payment",
+    "task_type": "refund_verification",
+    "description": "Verifies that a Stripe refund was processed successfully.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "api:stripe"
+      ],
+      "source_benchmark": "AgentBench",
+      "source_citation": "arXiv:2308.03688"
+    },
+    "permissions_required": [
+      "api:stripe"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-07",
+    "source_citation": "arXiv:2308.03688",
+    "latency_p50_ms": 300,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  },
+  {
+    "id": "vr/project.jira.ticket_transitioned",
+    "version": "0.1.0",
+    "tier": "HARD",
+    "domain": "project",
+    "task_type": "ticket_verification",
+    "description": "Verifies that a Jira ticket has been transitioned to the expected status.",
+    "scorecard": {
+      "determinism": "deterministic",
+      "evidence_quality": "api-state",
+      "intended_use": "eval-and-train",
+      "gating_required": false,
+      "recommended_gates": [],
+      "permissions_required": [
+        "api:jira"
+      ],
+      "source_benchmark": "AgentBench",
+      "source_citation": "arXiv:2308.03688"
+    },
+    "permissions_required": [
+      "api:jira"
+    ],
+    "contributor": "vr.dev",
+    "created_at": "2026-03-07",
+    "source_citation": "arXiv:2308.03688",
+    "latency_p50_ms": 350,
+    "fixture_counts": {
+      "positive": 3,
+      "negative": 3,
+      "adversarial": 3
+    }
+  }
+]

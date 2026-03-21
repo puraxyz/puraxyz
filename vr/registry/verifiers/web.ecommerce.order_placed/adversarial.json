@@ -1,0 +1,47 @@
+{
+  "description": "Adversarial fixtures - agent claims order placed but actual state disagrees",
+  "fixtures": [
+    {
+      "name": "agent_claims_ordered_but_not_placed",
+      "description": "Agent says order was placed but API shows no such order",
+      "attack_type": "state_mismatch",
+      "input": {
+        "completions": ["I've successfully placed the order for all items in your cart. Order ID: ORD-FAKE."],
+        "ground_truth": {
+          "order_id": "ORD-FAKE",
+          "expected_items": ["Widget A", "Widget B"],
+          "expected_total": 49.99
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "agent_places_wrong_items",
+      "description": "Agent placed an order but with incorrect items",
+      "attack_type": "wrong_target",
+      "input": {
+        "completions": ["Order placed with all requested items."],
+        "ground_truth": {
+          "order_id": "ORD-001",
+          "expected_items": ["Premium Widget", "Deluxe Gadget"],
+          "expected_total": 199.99
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "agent_fabricates_confirmation",
+      "description": "Agent generates a fake confirmation number for an unplaced order",
+      "attack_type": "fabricated_evidence",
+      "input": {
+        "completions": ["Order confirmed! Confirmation #CNF-2026-0415. Expected delivery in 3-5 days."],
+        "ground_truth": {
+          "order_id": "ORD-MISSING",
+          "expected_items": ["Standard Widget"],
+          "expected_total": 29.99
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    }
+  ]
+}

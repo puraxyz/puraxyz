@@ -1,0 +1,82 @@
+{
+  "description": "Negative fixtures - self-test checks correctly detect failures",
+  "fixtures": [
+    {
+      "name": "tests_fail",
+      "description": "SDK test suite has failures, should be caught by tests_pass verifier",
+      "input": {
+        "completions": ["Ran pytest on vrdev SDK: 540 passed, 4 failed, 0 errors. Exit code 1."],
+        "ground_truth": {
+          "test_command": "python -m pytest tests/ --tb=short -q",
+          "expected_exit_code": 0,
+          "working_directory": "/home/claw/repos/vr-dev/packages/vrdev"
+        },
+        "context": {
+          "python_executable": "/home/claw/.venv/bin/python",
+          "repo_path": "/home/claw/repos/vr-dev"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      }
+    },
+    {
+      "name": "lint_errors_found",
+      "description": "Ruff reports lint violations, should be caught by lint_ruff verifier",
+      "input": {
+        "completions": ["Ran ruff check on src/: Found 7 errors (3 fixable). Exit code 1."],
+        "ground_truth": {
+          "lint_command": "ruff check src/",
+          "expected_exit_code": 0,
+          "working_directory": "/home/claw/repos/vr-dev/packages/vrdev"
+        },
+        "context": {
+          "repo_path": "/home/claw/repos/vr-dev"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      }
+    },
+    {
+      "name": "frontend_500_error",
+      "description": "Frontend returns a server error, hero element not visible",
+      "input": {
+        "completions": ["Loaded https://vr.dev in browser. Page returned HTTP 500. No content rendered."],
+        "ground_truth": {
+          "url": "https://vr.dev",
+          "expected_element": "h1",
+          "expected_text_fragment": "Verifiable Rewards",
+          "timeout_ms": 10000
+        },
+        "context": {
+          "frontend_url": "https://vr.dev"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      }
+    },
+    {
+      "name": "report_file_missing",
+      "description": "Agent claims to have written report but file does not exist",
+      "input": {
+        "completions": ["Wrote self-test report to /home/claw/reports/vrdev-self-test.json"],
+        "ground_truth": {
+          "expected_path": "/home/claw/reports/vrdev-self-test-NONEXISTENT.json",
+          "min_size_bytes": 100
+        },
+        "context": {
+          "report_output_path": "/home/claw/reports/vrdev-self-test.json"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      }
+    }
+  ]
+}

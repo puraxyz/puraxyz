@@ -1,0 +1,50 @@
+{
+  "description": "Negative fixtures - event not found or details mismatch",
+  "fixtures": [
+    {
+      "name": "nonexistent_event",
+      "description": "Event ID does not exist",
+      "input": {
+        "completions": ["Created the event"],
+        "ground_truth": {
+          "event_id": "EVT-999",
+          "expected_title": "Missing Event",
+          "expected_date": "2026-04-15",
+          "expected_participants": []
+        },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "wrong_date",
+      "description": "Event exists but date does not match",
+      "input": {
+        "completions": ["Created the event"],
+        "ground_truth": {
+          "event_id": "EVT-001",
+          "expected_title": "Team Standup",
+          "expected_date": "2099-01-01",
+          "expected_participants": ["alice@example.com"]
+        },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.99 }
+    },
+    {
+      "name": "wrong_participants",
+      "description": "Event exists but participants do not match",
+      "input": {
+        "completions": ["Done"],
+        "ground_truth": {
+          "event_id": "EVT-001",
+          "expected_title": "Team Standup",
+          "expected_date": "2026-04-15",
+          "expected_participants": ["nobody@example.com"]
+        },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.99 }
+    }
+  ]
+}

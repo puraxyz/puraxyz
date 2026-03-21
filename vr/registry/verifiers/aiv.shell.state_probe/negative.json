@@ -1,0 +1,41 @@
+{
+  "description": "Negative fixtures - command output does not match expected state",
+  "fixtures": [
+    {
+      "name": "file_not_found",
+      "description": "stat fails because file does not exist",
+      "input": {
+        "completions": ["Created the file."],
+        "ground_truth": {
+          "command": "cat /tmp/nonexistent_file_abc123.txt",
+          "expected_output": "hello world"
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "wrong_content",
+      "description": "File exists but contains different content than expected",
+      "input": {
+        "completions": ["Updated the file."],
+        "ground_truth": {
+          "command": "cat /tmp/testfile.txt",
+          "expected_output": "EXPECTED_CONTENT_NOT_PRESENT"
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "wrong_line_count",
+      "description": "File has different number of lines than expected",
+      "input": {
+        "completions": ["Wrote 10 lines to file."],
+        "ground_truth": {
+          "command": "wc -l /tmp/testfile.txt",
+          "expected_output": "10 /tmp/testfile.txt"
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    }
+  ]
+}

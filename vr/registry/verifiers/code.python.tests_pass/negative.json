@@ -1,0 +1,32 @@
+{
+  "description": "Negative fixtures - tests fail",
+  "fixtures": [
+    {
+      "name": "all_tests_fail",
+      "description": "Agent code has bugs, all tests fail",
+      "input": {
+        "completions": ["def add(a, b):\n    return a - b  # bug\n\ndef test_add():\n    assert add(1, 2) == 3\n\ndef test_add_zero():\n    assert add(5, 0) == 5\n\ndef test_add_neg():\n    assert add(-1, -1) == -2\n"],
+        "ground_truth": {}
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "syntax_error",
+      "description": "Agent code has a syntax error",
+      "input": {
+        "completions": ["def add(a, b)\n    return a + b\n"],
+        "ground_truth": {}
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "no_tests_collected",
+      "description": "Code has no test functions",
+      "input": {
+        "completions": ["x = 42\nprint(x)\n"],
+        "ground_truth": {}
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    }
+  ]
+}

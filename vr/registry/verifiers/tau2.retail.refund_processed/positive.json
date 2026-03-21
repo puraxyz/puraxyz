@@ -1,0 +1,29 @@
+{
+  "description": "Positive fixtures - refund processed successfully",
+  "fixtures": [
+    {
+      "name": "refund_processed_customer_request",
+      "input": {
+        "completions": ["I've processed the refund for the customer."],
+        "ground_truth": { "refund_id": "RF-001", "expected_status": "processed" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "refund_with_amount_check",
+      "input": {
+        "completions": ["Refund of $49.99 processed."],
+        "ground_truth": { "refund_id": "RF-001", "expected_status": "processed", "expected_amount": 49.99 }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "refund_duplicate_order",
+      "input": {
+        "completions": ["Refund for duplicate order completed."],
+        "ground_truth": { "refund_id": "RF-003", "expected_status": "processed", "expected_amount": 25.50 }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    }
+  ]
+}

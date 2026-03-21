@@ -1,0 +1,90 @@
+{
+  "description": "Negative fixtures for database.row.updated",
+  "fixtures": [
+    {
+      "name": "values_mismatch",
+      "description": "Row has old values",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "orders",
+          "match_columns": {
+            "id": 1
+          },
+          "expected_values": {
+            "status": "cancelled"
+          },
+          "pre_result": {
+            "row": {
+              "status": "active"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "partial_update",
+      "description": "Only some columns updated",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "orders",
+          "match_columns": {
+            "id": 1
+          },
+          "expected_values": {
+            "status": "cancelled",
+            "reason": "user_request"
+          },
+          "pre_result": {
+            "row": {
+              "status": "cancelled",
+              "reason": ""
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "partial_update_variant_3",
+      "description": "Variant 3: Only some columns updated",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "orders",
+          "match_columns": {
+            "id": 1
+          },
+          "expected_values": {
+            "status": "cancelled",
+            "reason": "user_request"
+          },
+          "pre_result": {
+            "row": {
+              "status": "cancelled",
+              "reason": ""
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    }
+  ]
+}

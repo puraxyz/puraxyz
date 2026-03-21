@@ -1,0 +1,74 @@
+.page {
+  min-height: 100vh;
+  padding: 40px 24px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--mantine-color-dimmed);
+  font-size: 0.95rem;
+  margin-bottom: 32px;
+}
+
+/* ── Stats Row ── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .statsRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.statCard {
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  background-color: var(--mantine-color-body);
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--mantine-color-dimmed);
+  margin-bottom: 4px;
+}
+
+.statValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* ── Tables ── */
+.tableSection {
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 32px;
+  background-color: var(--mantine-color-body);
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.forbidden {
+  text-align: center;
+  padding: 120px 24px;
+  color: var(--mantine-color-dimmed);
+  font-size: 1.1rem;
+}

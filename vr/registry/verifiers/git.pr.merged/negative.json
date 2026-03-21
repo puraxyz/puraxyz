@@ -1,0 +1,71 @@
+{
+  "description": "Negative fixtures for git.pr.merged",
+  "fixtures": [
+    {
+      "name": "negative_1",
+      "description": "Negative test case for git.pr.merged",
+      "input": {
+        "completions": [
+          "PR still open"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "pr_number": 42,
+          "target_branch": "main",
+          "pre_result": {
+            "merged": false,
+            "base_branch": "main"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_2",
+      "description": "Negative test case 2 for git.pr.merged",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "pr_number": 42,
+          "target_branch": "main",
+          "pre_result": {
+            "merged": false,
+            "base_branch": "main"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_3",
+      "description": "Negative test case 3 for git.pr.merged",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "pr_number": 42,
+          "target_branch": "main",
+          "pre_result": {
+            "merged": false,
+            "base_branch": "main"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    }
+  ]
+}

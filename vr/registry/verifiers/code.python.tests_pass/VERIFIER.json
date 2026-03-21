@@ -1,0 +1,44 @@
+{
+  "id": "vr/code.python.tests_pass",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "code",
+  "task_type": "test_execution",
+  "description": "Writes agent-generated Python code to a temp directory and runs pytest via the sandbox runner. Score is based on the fraction of tests that pass.",
+  "ground_truth_schema": {
+    "type": "object",
+    "properties": {
+      "test_code": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "min_pass_ratio": {
+        "type": "number",
+        "default": 1.0
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "hard-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "recommended_gates": [],
+    "permissions_required": [
+      "fs:write_tmp",
+      "exec:pytest"
+    ],
+    "source_benchmark": "Zeno-bench",
+    "source_citation": "code-quality"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04",
+  "source_citation": "code-quality",
+  "permissions_required": [
+    "fs:write_tmp",
+    "exec:pytest"
+  ],
+  "latency_p50_ms": 35
+}

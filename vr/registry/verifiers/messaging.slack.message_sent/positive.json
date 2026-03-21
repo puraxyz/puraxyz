@@ -1,0 +1,65 @@
+{
+  "description": "Positive fixtures for messaging.slack.message_sent",
+  "fixtures": [
+    {
+      "name": "positive_1",
+      "description": "Positive test case for messaging.slack.message_sent",
+      "input": {
+        "completions": [
+          "Sent notification"
+        ],
+        "ground_truth": {
+          "channel_id": "C123",
+          "text_contains": "Deploy complete",
+          "pre_result": {
+            "found": true
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "positive_2",
+      "description": "Positive test case 2 for messaging.slack.message_sent",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "channel_id": "C123",
+          "text_contains": "Deploy complete",
+          "pre_result": {
+            "found": true
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "positive_3",
+      "description": "Positive test case 3 for messaging.slack.message_sent",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "channel_id": "C123",
+          "text_contains": "Deploy complete",
+          "pre_result": {
+            "found": true
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

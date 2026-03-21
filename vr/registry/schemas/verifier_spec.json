@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VerifierSpec",
+  "description": "Schema for VERIFIER.json files in the vr.dev registry",
+  "type": "object",
+  "required": [
+    "id", "version", "tier", "domain", "task_type", "description",
+    "source_citation", "ground_truth_schema", "scorecard",
+    "permissions_required", "contributor"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^vr/",
+      "description": "Verifier ID (e.g., vr/tau2.retail.order_cancelled)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version"
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["HARD", "SOFT", "AGENTIC"],
+      "description": "Verification tier"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Task domain (e.g., retail, email, code, filesystem)"
+    },
+    "task_type": {
+      "type": "string",
+      "description": "Task type (e.g., api_state_verification, file_check)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of what this verifier checks"
+    },
+    "source_benchmark": {
+      "type": ["string", "null"],
+      "description": "Benchmark this verifier was extracted from"
+    },
+    "source_citation": {
+      "type": "string",
+      "description": "arXiv ID, URL, or paper reference"
+    },
+    "source_repo": {
+      "type": ["string", "null"],
+      "description": "GitHub repo URL of the source benchmark"
+    },
+    "ground_truth_schema": {
+      "type": "object",
+      "description": "JSON Schema for the ground_truth parameter"
+    },
+    "scorecard": {
+      "$ref": "#/$defs/scorecard"
+    },
+    "permissions_required": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Permissions this verifier needs (e.g., net:imap, subprocess:readonly)"
+    },
+    "gating_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this verifier must be composed with a HARD gate"
+    },
+    "recommended_composition": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Verifier IDs recommended for composition"
+    },
+    "known_limitations": {
+      "type": "string",
+      "description": "Known limitations or caveats"
+    },
+    "latency_p50_ms": {
+      "type": "integer",
+      "description": "Expected p50 latency in milliseconds (e.g., 10 for HARD, 2000 for SOFT, 15000 for AGENTIC)"
+    },
+    "contributor": {
+      "type": "string",
+      "description": "Who contributed this verifier (e.g., vr-dev/core)"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date",
+      "description": "Date created (YYYY-MM-DD)"
+    }
+  },
+  "$defs": {
+    "scorecard": {
+      "type": "object",
+      "required": ["determinism", "evidence_quality", "source_citation"],
+      "properties": {
+        "determinism": {
+          "type": "string",
+          "enum": ["deterministic", "stochastic-judge", "agentic"]
+        },
+        "attack_surface": {
+          "type": "object",
+          "properties": {
+            "injection_risk": { "type": "string", "enum": ["low", "medium", "high"] },
+            "format_gaming_risk": { "type": "string", "enum": ["low", "medium", "high"] },
+            "tool_spoofing_risk": { "type": "string", "enum": ["low", "medium", "high"] }
+          }
+        },
+        "evidence_quality": {
+          "type": "string",
+          "enum": ["hard-state", "api-state", "screenshot", "judge-opinion"]
+        },
+        "intended_use": {
+          "type": "string",
+          "enum": ["eval-and-train", "eval-only"],
+          "default": "eval-and-train"
+        },
+        "gating_required": { "type": "boolean" },
+        "recommended_gates": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "permissions_required": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "source_benchmark": { "type": ["string", "null"] },
+        "source_citation": { "type": "string" }
+      }
+    }
+  }
+}

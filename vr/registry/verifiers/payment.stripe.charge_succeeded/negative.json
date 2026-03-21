@@ -1,0 +1,68 @@
+{
+  "description": "Negative fixtures for payment.stripe.charge_succeeded",
+  "fixtures": [
+    {
+      "name": "negative_1",
+      "description": "Negative test case for payment.stripe.charge_succeeded",
+      "input": {
+        "completions": [
+          "Charge failed"
+        ],
+        "ground_truth": {
+          "charge_id": "ch_test",
+          "pre_result": {
+            "status": "failed",
+            "paid": false,
+            "amount": 2000
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_2",
+      "description": "Negative test case 2 for payment.stripe.charge_succeeded",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "charge_id": "ch_test",
+          "pre_result": {
+            "status": "failed",
+            "paid": false,
+            "amount": 2000
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_3",
+      "description": "Negative test case 3 for payment.stripe.charge_succeeded",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "charge_id": "ch_test",
+          "pre_result": {
+            "status": "failed",
+            "paid": false,
+            "amount": 2000
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "description": "Positive fixtures - professional emails scoring >= 0.75",
+  "fixtures": [
+    {
+      "name": "professional_email_full_score",
+      "input": {
+        "completions": ["Dear Ms. Johnson,\n\nThank you for contacting our support team. I have processed the cancellation of your order #12345 as requested. A full refund of $49.99 will be issued to your original payment method within 3-5 business days.\n\nPlease don't hesitate to reach out if you have any further questions.\n\nBest regards,\nCustomer Support"],
+        "ground_truth": { "key_information_required": ["order number", "refund amount", "processing time"] }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.75 }
+    },
+    {
+      "name": "professional_email_adequate",
+      "input": {
+        "completions": ["Hi there,\n\nYour order has been cancelled and you'll receive a refund of $49.99 in 3-5 days.\n\nThanks,\nSupport Team"],
+        "ground_truth": { "key_information_required": ["refund amount", "processing time"] }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.75 }
+    },
+    {
+      "name": "formal_booking_confirmation",
+      "input": {
+        "completions": ["Dear Mr. Smith,\n\nI'm pleased to confirm that your flight has been rebooked to April 15, 2026 in business class for 2 passengers. Your new booking reference is BK-001.\n\nIf you need anything else, please let me know.\n\nKind regards,\nAirline Support"],
+        "ground_truth": { "key_information_required": ["date", "cabin class", "passengers"] }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.75 }
+    }
+  ]
+}

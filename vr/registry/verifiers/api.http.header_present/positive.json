@@ -1,0 +1,74 @@
+{
+  "description": "Positive fixtures for api.http.header_present",
+  "fixtures": [
+    {
+      "name": "headers_present",
+      "description": "Response has expected headers",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_headers": {
+            "content-type": "application/json"
+          },
+          "pre_result": {
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "header_exists_any_value",
+      "description": "Header present with any value (null check)",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_headers": {
+            "x-request-id": null
+          },
+          "pre_result": {
+            "headers": {
+              "x-request-id": "abc-123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "header_exists_any_value_variant_3",
+      "description": "Variant 3: Header present with any value (null check)",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_headers": {
+            "x-request-id": null
+          },
+          "pre_result": {
+            "headers": {
+              "x-request-id": "abc-123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

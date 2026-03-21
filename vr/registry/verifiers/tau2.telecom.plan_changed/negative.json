@@ -1,0 +1,66 @@
+{
+  "description": "Negative fixtures \u2014 plan not changed or customer not found",
+  "fixtures": [
+    {
+      "name": "customer_not_found",
+      "description": "Customer ID does not exist in the system",
+      "input": {
+        "completions": [
+          "done"
+        ],
+        "ground_truth": {
+          "customer_id": "TEL-999",
+          "expected_plan": "Premium Unlimited"
+        },
+        "context": {
+          "api_base_url": "__MOCK_SERVER__"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      }
+    },
+    {
+      "name": "wrong_plan",
+      "description": "Customer exists but current plan does not match expected",
+      "input": {
+        "completions": [
+          "done"
+        ],
+        "ground_truth": {
+          "customer_id": "TEL-002",
+          "expected_plan": "Premium Unlimited"
+        },
+        "context": {
+          "api_base_url": "__MOCK_SERVER__"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "wrong_effective_date",
+      "description": "Plan matches but effective date is wrong",
+      "input": {
+        "completions": [
+          "Plan changed effective March 1."
+        ],
+        "ground_truth": {
+          "customer_id": "TEL-001",
+          "expected_plan": "Premium Unlimited",
+          "expected_effective_date": "2099-01-01"
+        },
+        "context": {
+          "api_base_url": "__MOCK_SERVER__"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    }
+  ]
+}

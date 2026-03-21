@@ -1,0 +1,32 @@
+{
+  "description": "Negative fixtures - refund not processed or not found",
+  "fixtures": [
+    {
+      "name": "refund_still_pending",
+      "description": "Agent claims refund was processed but it's still pending",
+      "input": {
+        "completions": ["The refund has been processed successfully."],
+        "ground_truth": { "refund_id": "RF-002", "expected_status": "processed" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "refund_denied",
+      "description": "Refund was denied due to policy violation",
+      "input": {
+        "completions": ["Refund completed."],
+        "ground_truth": { "refund_id": "RF-004", "expected_status": "processed" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "refund_not_found",
+      "description": "Refund ID does not exist in the system",
+      "input": {
+        "completions": ["Processed the refund."],
+        "ground_truth": { "refund_id": "RF-999", "expected_status": "processed" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    }
+  ]
+}

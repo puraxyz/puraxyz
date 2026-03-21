@@ -55,6 +55,12 @@ research/RESEARCH-1.md
 # GTM drafts (private)
 gtm/
 
+# vr.dev (absorbed subtree)
+vr/web/.env.local
+vr/sdk/*.egg-info/
+vr/sdk/dist/
+vr/api/*.egg-info/
+
 # Secrets
 .env
 contracts/.env

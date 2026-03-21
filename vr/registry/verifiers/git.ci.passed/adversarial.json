@@ -1,0 +1,98 @@
+{
+  "description": "Adversarial fixtures for git.ci.passed",
+  "fixtures": [
+    {
+      "name": "adversarial_1",
+      "description": "Adversarial test case for git.ci.passed",
+      "input": {
+        "completions": [
+          "All checks passed (but one was skipped)"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "commit_sha": "abc123",
+          "pre_result": {
+            "all_passed": false,
+            "check_runs": [
+              {
+                "name": "test",
+                "conclusion": "success"
+              },
+              {
+                "name": "lint",
+                "conclusion": "skipped"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_2",
+      "description": "Adversarial test case 2 for git.ci.passed",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "commit_sha": "abc123",
+          "pre_result": {
+            "all_passed": false,
+            "check_runs": [
+              {
+                "name": "test",
+                "conclusion": "success"
+              },
+              {
+                "name": "lint",
+                "conclusion": "skipped"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_3",
+      "description": "Adversarial test case 3 for git.ci.passed",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "commit_sha": "abc123",
+          "pre_result": {
+            "all_passed": false,
+            "check_runs": [
+              {
+                "name": "test",
+                "conclusion": "success"
+              },
+              {
+                "name": "lint",
+                "conclusion": "skipped"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    }
+  ]
+}

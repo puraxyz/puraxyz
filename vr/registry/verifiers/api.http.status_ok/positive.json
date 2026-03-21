@@ -1,0 +1,62 @@
+{
+  "description": "Positive fixtures for api.http.status_ok",
+  "fixtures": [
+    {
+      "name": "status_200",
+      "description": "Endpoint returns 200 OK",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_status": 200,
+          "pre_result": {
+            "status_code": 200
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "status_201",
+      "description": "Endpoint returns 201 Created as expected",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_status": 201,
+          "pre_result": {
+            "status_code": 201
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "status_201_variant_3",
+      "description": "Variant 3: Endpoint returns 201 Created as expected",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_status": 201,
+          "pre_result": {
+            "status_code": 201
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

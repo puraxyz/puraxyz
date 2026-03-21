@@ -1,0 +1,65 @@
+{
+  "description": "Negative fixtures for payment.stripe.refund_processed",
+  "fixtures": [
+    {
+      "name": "negative_1",
+      "description": "Negative test case for payment.stripe.refund_processed",
+      "input": {
+        "completions": [
+          "Refund pending"
+        ],
+        "ground_truth": {
+          "refund_id": "re_test",
+          "pre_result": {
+            "status": "pending",
+            "amount": 2000
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_2",
+      "description": "Negative test case 2 for payment.stripe.refund_processed",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "refund_id": "re_test",
+          "pre_result": {
+            "status": "pending",
+            "amount": 2000
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_3",
+      "description": "Negative test case 3 for payment.stripe.refund_processed",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "refund_id": "re_test",
+          "pre_result": {
+            "status": "pending",
+            "amount": 2000
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    }
+  ]
+}

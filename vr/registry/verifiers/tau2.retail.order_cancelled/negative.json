@@ -1,0 +1,29 @@
+{
+  "description": "Negative fixtures - order not cancelled or wrong reason",
+  "fixtures": [
+    {
+      "name": "order_still_active",
+      "input": {
+        "completions": ["I'll cancel that for you right away."],
+        "ground_truth": { "order_id": "ORD-002", "expected_status": "cancelled" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "order_wrong_reason",
+      "input": {
+        "completions": ["Cancelled as duplicate."],
+        "ground_truth": { "order_id": "ORD-001", "expected_status": "cancelled", "expected_reason": "duplicate_order" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "order_not_found",
+      "input": {
+        "completions": ["Order cancelled."],
+        "ground_truth": { "order_id": "ORD-999", "expected_status": "cancelled" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    }
+  ]
+}

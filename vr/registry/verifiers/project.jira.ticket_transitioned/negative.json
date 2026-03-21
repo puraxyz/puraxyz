@@ -1,0 +1,65 @@
+{
+  "description": "Negative fixtures for project.jira.ticket_transitioned",
+  "fixtures": [
+    {
+      "name": "negative_1",
+      "description": "Negative test case for project.jira.ticket_transitioned",
+      "input": {
+        "completions": [
+          "Ticket still open"
+        ],
+        "ground_truth": {
+          "ticket_key": "PROJ-42",
+          "expected_status": "Done",
+          "pre_result": {
+            "status": "In Progress"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_2",
+      "description": "Negative test case 2 for project.jira.ticket_transitioned",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "ticket_key": "PROJ-42",
+          "expected_status": "Done",
+          "pre_result": {
+            "status": "In Progress"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_3",
+      "description": "Negative test case 3 for project.jira.ticket_transitioned",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "ticket_key": "PROJ-42",
+          "expected_status": "Done",
+          "pre_result": {
+            "status": "In Progress"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    }
+  ]
+}

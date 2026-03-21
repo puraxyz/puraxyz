@@ -1,0 +1,65 @@
+{
+  "description": "Positive fixtures for document.text.contains",
+  "fixtures": [
+    {
+      "name": "all_substrings_found",
+      "description": "File contains all expected text",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/output.txt",
+          "expected_substrings": [
+            "hello",
+            "world"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "case_insensitive_match",
+      "description": "File contains text when case_sensitive is false",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/output.txt",
+          "expected_substrings": [
+            "HELLO"
+          ],
+          "case_sensitive": false
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "case_insensitive_match_variant_3",
+      "description": "Variant 3: File contains text when case_sensitive is false",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/output.txt",
+          "expected_substrings": [
+            "HELLO"
+          ],
+          "case_sensitive": false
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

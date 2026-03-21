@@ -1,0 +1,56 @@
+{
+  "id": "vr/tau2.airline.rebooking_correct",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "airline",
+  "task_type": "booking_management",
+  "description": "Queries airline API to confirm flight rebooking fields match expected values (date, cabin class, passengers).",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "booking_id"
+    ],
+    "properties": {
+      "booking_id": {
+        "type": "string"
+      },
+      "expected_date": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "expected_cabin_class": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "expected_passengers": {
+        "type": [
+          "integer",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "api-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "recommended_gates": [],
+    "permissions_required": [
+      "net:http"
+    ],
+    "source_benchmark": "\u03c4\u00b2-bench",
+    "source_citation": "arXiv:2406.12045"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04",
+  "source_citation": "arXiv:2406.12045",
+  "permissions_required": [
+    "net:http"
+  ],
+  "latency_p50_ms": 25
+}

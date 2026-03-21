@@ -1,0 +1,85 @@
+.pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: stretch;
+}
+
+.stageWrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 0;
+}
+
+.arrow svg {
+    transform: rotate(90deg);
+}
+
+.gateLabel {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+    padding: 1px 8px;
+    border-radius: 3px;
+}
+
+.stage {
+    width: 100%;
+    max-width: 480px;
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    border-left: 3px solid;
+}
+
+.stage.fixture {
+    background: rgba(255, 255, 255, 0.02);
+    border-left-color: var(--color-text-dim);
+}
+
+.stage.hard {
+    background: rgba(34, 197, 94, 0.04);
+    border-left-color: #22c55e;
+}
+
+.stage.agentic {
+    background: rgba(139, 92, 246, 0.04);
+    border-left-color: #8b5cf6;
+}
+
+.stage.soft {
+    background: rgba(245, 158, 11, 0.04);
+    border-left-color: #f59e0b;
+}
+
+.stage.aggregate {
+    background: rgba(255, 255, 255, 0.03);
+    border-left-color: var(--color-text-muted);
+}
+
+.stage.reward {
+    background: rgba(139, 92, 246, 0.06);
+    border-left-color: var(--color-primary);
+}
+
+.stageLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 4px;
+}
+
+.stageDetail {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+}

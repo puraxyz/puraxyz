@@ -1,0 +1,32 @@
+{
+  "description": "Negative fixtures - email not found in Sent folder",
+  "fixtures": [
+    {
+      "name": "email_never_sent",
+      "description": "Agent claims to have sent email but nothing in Sent folder",
+      "input": {
+        "completions": ["I've sent the email to the customer."],
+        "ground_truth": { "recipient": "nobody@example.com", "subject_fragment": "cancellation" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "wrong_recipient",
+      "description": "Email sent to wrong recipient",
+      "input": {
+        "completions": ["Sent confirmation."],
+        "ground_truth": { "recipient": "wrong@example.com" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "wrong_subject",
+      "description": "Email exists but subject doesn't match",
+      "input": {
+        "completions": ["Sent email about returns."],
+        "ground_truth": { "recipient": "customer@example.com", "subject_fragment": "nonexistent_subject_xyz" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    }
+  ]
+}

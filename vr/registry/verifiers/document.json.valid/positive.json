@@ -1,0 +1,32 @@
+{
+  "description": "Positive fixtures - valid JSON files",
+  "fixtures": [
+    {
+      "name": "valid_json_object",
+      "description": "File contains a valid JSON object",
+      "input": {
+        "completions": ["Created config.json"],
+        "ground_truth": { "file_path": "/tmp/test.json", "expected_type": "object" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "valid_json_with_keys",
+      "description": "File contains JSON with expected keys",
+      "input": {
+        "completions": ["Generated output.json"],
+        "ground_truth": { "file_path": "/tmp/test.json", "expected_keys": ["name", "version"] }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "valid_json_array",
+      "description": "File contains a valid JSON array",
+      "input": {
+        "completions": ["Output saved"],
+        "ground_truth": { "file_path": "/tmp/test.json", "expected_type": "array" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    }
+  ]
+}

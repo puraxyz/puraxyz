@@ -26,4 +26,5 @@ export declare const abis: {
     readonly QualityOracle: Abi;
     readonly VelocityToken: Abi;
     readonly UrgencyToken: Abi;
+    readonly MerkleRootAnchor: Abi;
 };

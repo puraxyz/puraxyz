@@ -1,0 +1,29 @@
+{
+  "description": "Positive fixtures - element found on page",
+  "fixtures": [
+    {
+      "name": "product_title_visible",
+      "input": {
+        "completions": ["I added the Widget Pro to the cart."],
+        "ground_truth": { "url": "http://shop.test/products/1", "selector": "h1.product-title" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "add_to_cart_button_visible",
+      "input": {
+        "completions": ["Product page loaded successfully."],
+        "ground_truth": { "url": "http://shop.test/products/1", "selector": "#add-to-cart" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "element_with_text_match",
+      "input": {
+        "completions": ["Navigated to the product page."],
+        "ground_truth": { "url": "http://shop.test/products/1", "selector": "h1.product-title", "expected_text": "Widget Pro" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    }
+  ]
+}

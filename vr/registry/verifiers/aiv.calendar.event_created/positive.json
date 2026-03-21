@@ -1,0 +1,50 @@
+{
+  "description": "Positive fixtures - calendar events found with correct details",
+  "fixtures": [
+    {
+      "name": "event_by_id",
+      "description": "Event found by direct ID lookup with matching details",
+      "input": {
+        "completions": ["Created the event"],
+        "ground_truth": {
+          "event_id": "EVT-001",
+          "expected_title": "Team Standup",
+          "expected_date": "2026-04-15",
+          "expected_participants": ["alice@example.com", "bob@example.com"]
+        },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.9 }
+    },
+    {
+      "name": "event_by_title_search",
+      "description": "Event found by title search when event_id is null",
+      "input": {
+        "completions": ["Created sprint planning event"],
+        "ground_truth": {
+          "event_id": null,
+          "expected_title": "Sprint Planning",
+          "expected_date": "2026-04-16",
+          "expected_participants": ["alice@example.com", "carol@example.com", "dave@example.com"]
+        },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.9 }
+    },
+    {
+      "name": "event_no_participants_check",
+      "description": "Event matches when no participants are expected",
+      "input": {
+        "completions": ["Booked the review"],
+        "ground_truth": {
+          "event_id": "EVT-003",
+          "expected_title": "Client Review",
+          "expected_date": "2026-04-17",
+          "expected_participants": []
+        },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.9 }
+    }
+  ]
+}

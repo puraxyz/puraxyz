@@ -31,6 +31,7 @@ export type ChainAddresses = {
     qualityOracle: `0x${string}`;
     velocityToken: `0x${string}`;
     urgencyToken: `0x${string}`;
+    merkleRootAnchor: `0x${string}`;
 };
 /**
  * Deployed contract addresses per chain.

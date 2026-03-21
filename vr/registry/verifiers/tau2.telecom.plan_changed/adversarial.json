@@ -1,0 +1,69 @@
+{
+  "description": "Adversarial fixtures \u2014 agent claims success but CRM state disagrees",
+  "fixtures": [
+    {
+      "name": "claims_wrong_plan_changed",
+      "description": "Agent claims plan changed to Premium Unlimited but customer TEL-002 is still on Basic 5GB",
+      "input": {
+        "completions": [
+          "I've successfully changed the plan to Premium Unlimited."
+        ],
+        "ground_truth": {
+          "customer_id": "TEL-002",
+          "expected_plan": "Premium Unlimited"
+        },
+        "context": {
+          "api_base_url": "__MOCK_SERVER__"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "claims_success_for_suspended_customer",
+      "description": "Agent claims plan changed for suspended customer TEL-004 whose plan doesn't match",
+      "input": {
+        "completions": [
+          "Plan changed to Family Share 20GB for the customer."
+        ],
+        "ground_truth": {
+          "customer_id": "TEL-004",
+          "expected_plan": "Family Share 20GB"
+        },
+        "context": {
+          "api_base_url": "__MOCK_SERVER__"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "claims_correct_date_but_api_disagrees",
+      "description": "Agent claims effective date is 2026-03-01 but TEL-003's actual date is 2026-02-20",
+      "input": {
+        "completions": [
+          "Plan changed with effective date March 1, 2026."
+        ],
+        "ground_truth": {
+          "customer_id": "TEL-003",
+          "expected_plan": "Family Share 20GB",
+          "expected_effective_date": "2026-03-01"
+        },
+        "context": {
+          "api_base_url": "__MOCK_SERVER__"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.7
+      },
+      "attack_type": "state_mismatch"
+    }
+  ]
+}

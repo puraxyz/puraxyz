@@ -1,0 +1,15 @@
+.body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+.main {
+  min-height: 100vh;
+  padding-top: 60px;
+}
+
+

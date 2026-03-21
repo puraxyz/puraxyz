@@ -1,0 +1,68 @@
+{
+  "description": "Positive fixtures \u2014 plan changed correctly",
+  "fixtures": [
+    {
+      "name": "plan_changed_with_date",
+      "description": "Customer plan and effective date match expected values",
+      "input": {
+        "completions": [
+          "Changed plan to Premium Unlimited"
+        ],
+        "ground_truth": {
+          "customer_id": "TEL-001",
+          "expected_plan": "Premium Unlimited",
+          "expected_effective_date": "2026-03-01"
+        },
+        "context": {
+          "api_base_url": "__MOCK_SERVER__"
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 0.9
+      }
+    },
+    {
+      "name": "plan_changed_no_date_check",
+      "description": "Plan matches, effective date check skipped",
+      "input": {
+        "completions": [
+          "done"
+        ],
+        "ground_truth": {
+          "customer_id": "TEL-003",
+          "expected_plan": "Family Share 20GB",
+          "expected_effective_date": null
+        },
+        "context": {
+          "api_base_url": "__MOCK_SERVER__"
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 0.9
+      }
+    },
+    {
+      "name": "plan_downgrade_confirmed",
+      "description": "Downgrade from premium to basic confirmed",
+      "input": {
+        "completions": [
+          "Downgraded to Basic 5GB."
+        ],
+        "ground_truth": {
+          "customer_id": "TEL-005",
+          "expected_plan": "Basic 5GB",
+          "expected_effective_date": null
+        },
+        "context": {
+          "api_base_url": "__MOCK_SERVER__"
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 0.9
+      }
+    }
+  ]
+}

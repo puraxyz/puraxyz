@@ -1,0 +1,61 @@
+{
+  "description": "Positive fixtures for document.yaml.valid",
+  "fixtures": [
+    {
+      "name": "valid_yaml",
+      "description": "Well-formed YAML config file",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/config.yaml"
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "valid_yaml_with_keys",
+      "description": "YAML file with expected top-level keys",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/config.yaml",
+          "expected_keys": [
+            "name",
+            "version"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "valid_yaml_with_keys_variant_3",
+      "description": "Variant 3: YAML file with expected top-level keys",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/config.yaml",
+          "expected_keys": [
+            "name",
+            "version"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "description": "Negative fixtures - policy constraints violated",
+  "fixtures": [
+    {
+      "name": "refund_past_window",
+      "description": "Refund requested after the 24-hour window",
+      "input": {
+        "completions": ["Processed refund."],
+        "ground_truth": {
+          "policies": [
+            { "rule_id": "refund_window", "field": "hours_since_purchase", "operator": "lte", "value": 24 }
+          ],
+          "actions": [
+            { "type": "refund", "hours_since_purchase": 48 }
+          ]
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "discount_exceeds_limit",
+      "description": "Discount amount exceeds authorized maximum",
+      "input": {
+        "completions": ["Applied 30% discount."],
+        "ground_truth": {
+          "policies": [
+            { "rule_id": "max_discount", "field": "discount_percent", "operator": "lte", "value": 20 }
+          ],
+          "actions": [
+            { "type": "discount", "discount_percent": 30 }
+          ]
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "invalid_category",
+      "description": "Action uses an unauthorized category",
+      "input": {
+        "completions": ["Purchased item."],
+        "ground_truth": {
+          "policies": [
+            { "rule_id": "valid_category", "field": "category", "operator": "in", "value": ["electronics", "clothing"] }
+          ],
+          "actions": [
+            { "type": "purchase", "category": "weapons" }
+          ]
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    }
+  ]
+}

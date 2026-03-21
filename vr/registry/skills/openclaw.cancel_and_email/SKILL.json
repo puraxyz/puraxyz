@@ -1,0 +1,28 @@
+{
+  "skill_id": "skills/openclaw.cancel_and_email@0.1.0",
+  "version": "0.1.0",
+  "description": "Cancel an order and send a professional confirmation email. Demonstrates the full verify → explain → retry loop with composed HARD + AGENTIC + SOFT verification.",
+  "triggers": ["cancel order", "cancellation request", "order cancellation with confirmation"],
+  "preconditions": [
+    "Access to retail order API",
+    "Access to email sending capability",
+    "IMAP credentials for sent-folder verification"
+  ],
+  "exit_criteria": [
+    "Order status is 'cancelled' with correct reason",
+    "Confirmation email appears in IMAP Sent folder",
+    "Email tone meets professional rubric (>= 0.75)"
+  ],
+  "verifier_chain": [
+    "vr/tau2.retail.order_cancelled",
+    "vr/aiv.email.sent_folder_confirmed",
+    "vr/rubric.email.tone_professional"
+  ],
+  "composition": {
+    "require_hard": true,
+    "policy_mode": "fail_closed"
+  },
+  "compatible_harnesses": ["openclaw", "trl", "verl"],
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "vr/project.jira.ticket_transitioned",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "project",
+  "task_type": "ticket_verification",
+  "description": "Verifies that a Jira ticket has been transitioned to the expected status.",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "ticket_key",
+      "expected_status"
+    ],
+    "properties": {
+      "ticket_key": {
+        "type": "string"
+      },
+      "expected_status": {
+        "type": "string"
+      },
+      "pre_result": {
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "api-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "permissions_required": [
+      "api:jira"
+    ],
+    "source_benchmark": "AgentBench",
+    "source_citation": "arXiv:2308.03688"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-07",
+  "latency_p50_ms": 350,
+  "source_citation": "arXiv:2308.03688",
+  "permissions_required": [
+    "api:jira"
+  ]
+}

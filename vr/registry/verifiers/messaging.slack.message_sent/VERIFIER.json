@@ -1,0 +1,53 @@
+{
+  "id": "vr/messaging.slack.message_sent",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "messaging",
+  "task_type": "message_verification",
+  "description": "Verifies that a message containing expected text exists in a Slack channel.",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "channel_id",
+      "text_contains"
+    ],
+    "properties": {
+      "channel_id": {
+        "type": "string"
+      },
+      "text_contains": {
+        "type": "string"
+      },
+      "after_ts": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "pre_result": {
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "api-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "permissions_required": [
+      "api:slack"
+    ],
+    "source_benchmark": "AgentBench",
+    "source_citation": "arXiv:2308.03688"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-07",
+  "latency_p50_ms": 300,
+  "source_citation": "arXiv:2308.03688",
+  "permissions_required": [
+    "api:slack"
+  ]
+}

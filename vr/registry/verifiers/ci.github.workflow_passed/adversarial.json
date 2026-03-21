@@ -1,0 +1,71 @@
+{
+  "description": "Adversarial fixtures for ci.github.workflow_passed",
+  "fixtures": [
+    {
+      "name": "adversarial_1",
+      "description": "Adversarial test case for ci.github.workflow_passed",
+      "input": {
+        "completions": [
+          "Workflow success (actually cancelled)"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "workflow_name": "Deploy",
+          "ref": "main",
+          "pre_result": {
+            "conclusion": "cancelled"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_2",
+      "description": "Adversarial test case 2 for ci.github.workflow_passed",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "workflow_name": "Deploy",
+          "ref": "main",
+          "pre_result": {
+            "conclusion": "cancelled"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_3",
+      "description": "Adversarial test case 3 for ci.github.workflow_passed",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "workflow_name": "Deploy",
+          "ref": "main",
+          "pre_result": {
+            "conclusion": "cancelled"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    }
+  ]
+}

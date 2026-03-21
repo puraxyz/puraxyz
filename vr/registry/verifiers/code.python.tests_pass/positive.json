@@ -1,0 +1,29 @@
+{
+  "description": "Positive fixtures - all tests pass",
+  "fixtures": [
+    {
+      "name": "simple_add_all_pass",
+      "input": {
+        "completions": ["def add(a, b):\n    return a + b\n\ndef test_add():\n    assert add(1, 2) == 3\n\ndef test_add_zero():\n    assert add(0, 0) == 0\n\ndef test_add_negative():\n    assert add(-1, -1) == -2\n"],
+        "ground_truth": {}
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "separate_test_file",
+      "input": {
+        "completions": ["def multiply(a, b):\n    return a * b\n"],
+        "ground_truth": { "test_code": "from solution import multiply\n\ndef test_mul():\n    assert multiply(3, 4) == 12\n\ndef test_mul_zero():\n    assert multiply(0, 5) == 0\n\ndef test_mul_neg():\n    assert multiply(-2, 3) == -6\n" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "partial_pass_with_low_threshold",
+      "input": {
+        "completions": ["def add(a, b):\n    return a + b\n\ndef test_pass():\n    assert add(1, 1) == 2\n\ndef test_fail():\n    assert add(1, 1) == 999\n"],
+        "ground_truth": { "min_pass_ratio": 0.4 }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.4 }
+    }
+  ]
+}

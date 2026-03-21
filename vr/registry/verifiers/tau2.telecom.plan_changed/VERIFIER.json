@@ -1,0 +1,48 @@
+{
+  "id": "vr/tau2.telecom.plan_changed",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "tau2",
+  "task_type": "plan_verification",
+  "description": "Verifies that a customer's telecom plan was changed to the expected plan with correct effective date via CRM API.",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "customer_id",
+      "expected_plan"
+    ],
+    "properties": {
+      "customer_id": {
+        "type": "string"
+      },
+      "expected_plan": {
+        "type": "string"
+      },
+      "expected_effective_date": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "api-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "recommended_gates": [],
+    "permissions_required": [
+      "net:http"
+    ],
+    "source_benchmark": "tau2-bench",
+    "source_citation": "arXiv:2406.12045"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04",
+  "source_citation": "arXiv:2406.12045",
+  "permissions_required": [
+    "net:http"
+  ],
+  "latency_p50_ms": 25
+}

@@ -1,0 +1,50 @@
+{
+  "id": "vr/ci.github.workflow_passed",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "ci",
+  "task_type": "workflow_verification",
+  "description": "Verifies that a specific GitHub Actions workflow completed successfully.",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "repo",
+      "workflow_name"
+    ],
+    "properties": {
+      "repo": {
+        "type": "string"
+      },
+      "workflow_name": {
+        "type": "string"
+      },
+      "ref": {
+        "type": "string"
+      },
+      "pre_result": {
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "api-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "permissions_required": [
+      "api:github"
+    ],
+    "source_benchmark": "SWE-bench",
+    "source_citation": "arXiv:2310.06770"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-07",
+  "latency_p50_ms": 250,
+  "source_citation": "arXiv:2310.06770",
+  "permissions_required": [
+    "api:github"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "description": "Adversarial fixtures for document.pdf.page_count",
+  "fixtures": [
+    {
+      "name": "not_a_pdf",
+      "description": "File is not a valid PDF",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/notapdf.txt",
+          "expected_pages": 1
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_claims_pages",
+      "description": "Agent claims correct page count but file is missing",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/phantom.pdf",
+          "expected_pages": 5
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    },
+    {
+      "name": "agent_claims_pages_variant_3",
+      "description": "Variant 3: Agent claims correct page count but file is missing",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/phantom.pdf",
+          "expected_pages": 5
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "id": "vr/web.browser.element_visible",
+  "version": "0.1.0",
+  "tier": "AGENTIC",
+  "domain": "web",
+  "task_type": "dom_verification",
+  "description": "Navigates to a URL via headless browser and checks whether a specific CSS selector is present in the DOM. Catches agents that claim UI actions succeeded but never actually modified the page.",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "url",
+      "selector"
+    ],
+    "properties": {
+      "url": {
+        "type": "string"
+      },
+      "selector": {
+        "type": "string"
+      },
+      "expected_text": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "agentic",
+    "evidence_quality": "hard-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "recommended_gates": [],
+    "permissions_required": [
+      "net:browser"
+    ],
+    "source_benchmark": "WebArena",
+    "source_citation": "arXiv:2307.13854"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04",
+  "source_citation": "arXiv:2307.13854",
+  "permissions_required": [
+    "net:browser"
+  ],
+  "latency_p50_ms": 20000
+}

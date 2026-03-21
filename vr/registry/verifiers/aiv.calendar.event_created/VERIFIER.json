@@ -1,0 +1,55 @@
+{
+  "id": "vr/aiv.calendar.event_created",
+  "version": "0.1.0",
+  "tier": "AGENTIC",
+  "domain": "aiv",
+  "task_type": "calendar_verification",
+  "description": "Verifies that a calendar event was created with correct title, date, and participants via HTTP API query.",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "expected_title",
+      "expected_date"
+    ],
+    "properties": {
+      "event_id": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "expected_title": {
+        "type": "string"
+      },
+      "expected_date": {
+        "type": "string",
+        "description": "ISO date YYYY-MM-DD"
+      },
+      "expected_participants": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "api-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "recommended_gates": [],
+    "permissions_required": [
+      "net:http"
+    ],
+    "source_benchmark": "VAGEN",
+    "source_citation": "arXiv:2602.00575"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04",
+  "source_citation": "arXiv:2602.00575",
+  "permissions_required": [
+    "net:http"
+  ],
+  "latency_p50_ms": 12000
+}

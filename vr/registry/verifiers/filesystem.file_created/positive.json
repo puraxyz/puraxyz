@@ -1,0 +1,35 @@
+{
+  "description": "Positive fixtures - file exists with expected properties",
+  "fixtures": [
+    {
+      "name": "file_exists_basic",
+      "description": "File exists at expected path",
+      "input": {
+        "completions": ["I created the file at /tmp/test_output.txt"],
+        "ground_truth": { "expected_path": "/tmp/test_output.txt" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "file_exists_with_size",
+      "description": "File exists and meets minimum size",
+      "input": {
+        "completions": ["Output saved to /tmp/report.csv"],
+        "ground_truth": { "expected_path": "/tmp/report.csv", "min_size_bytes": 100 }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "file_exists_with_hash",
+      "description": "File exists with matching content hash",
+      "input": {
+        "completions": ["Generated config.json"],
+        "ground_truth": {
+          "expected_path": "/tmp/config.json",
+          "content_hash": "abc123def456"
+        }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    }
+  ]
+}

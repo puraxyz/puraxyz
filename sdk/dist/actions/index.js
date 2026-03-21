@@ -6,3 +6,4 @@ export * from "./buffer.js";
 export * from "./pricing.js";
 export * from "./completion.js";
 export * from "./aggregator.js";
+export * from "./verify.js";

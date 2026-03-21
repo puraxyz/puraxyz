@@ -1,0 +1,58 @@
+{
+  "description": "Positive fixtures for document.csv.row_count",
+  "fixtures": [
+    {
+      "name": "exact_row_count",
+      "description": "CSV with exactly 10 data rows",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/data.csv",
+          "expected_rows": 10
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "within_tolerance",
+      "description": "CSV row count within tolerance",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/data.csv",
+          "expected_rows": 10,
+          "tolerance": 2
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "within_tolerance_variant_3",
+      "description": "Variant 3: CSV row count within tolerance",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/data.csv",
+          "expected_rows": 10,
+          "tolerance": 2
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

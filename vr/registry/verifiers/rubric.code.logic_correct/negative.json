@@ -1,0 +1,59 @@
+{
+  "description": "Negative fixtures \u2014 code logic judged incorrect (requires StubJudge in tests)",
+  "fixtures": [
+    {
+      "name": "all_criteria_fail",
+      "description": "All 4 rubric criteria failed",
+      "input": {
+        "completions": [
+          "x = 1"
+        ],
+        "ground_truth": {
+          "requirements": [
+            "implement sorting algorithm"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      }
+    },
+    {
+      "name": "partial_criteria_met",
+      "description": "Two of four criteria met \u2014 partial failure",
+      "input": {
+        "completions": [
+          "def sort_list(lst):\n    return sorted(lst)\n"
+        ],
+        "ground_truth": {
+          "requirements": [
+            "implement sorting from scratch without built-ins"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "empty_function_body",
+      "description": "Function defined but body is pass",
+      "input": {
+        "completions": [
+          "def fibonacci(n):\n    pass\n"
+        ],
+        "ground_truth": {
+          "requirements": [
+            "implement fibonacci recursively"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.25
+      }
+    }
+  ]
+}

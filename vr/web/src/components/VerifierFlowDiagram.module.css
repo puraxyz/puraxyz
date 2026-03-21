@@ -1,0 +1,421 @@
+/* ========================================
+   Verifier Flow Diagram — Animated Pipeline
+   Pure CSS animations, no external deps
+   ======================================== */
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 0;
+  overflow: hidden;
+}
+
+.stepText {
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Connector Lines ── */
+.connectors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Flow Row ── */
+.flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Individual Step Node ── */
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  flex: 0 0 180px;
+  opacity: 0.3;
+  transform: scale(0.95);
+  transition: opacity 1.0s ease, transform 1.0s ease;
+}
+
+.step.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.step.done {
+  opacity: 0.7;
+  transform: scale(0.97);
+}
+
+/* ── Node Circle ── */
+.node {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  position: relative;
+  background: rgba(139, 92, 246, 0.1);
+  border: 2px solid rgba(139, 92, 246, 0.25);
+  transition: border-color 1.0s ease, background 1.0s ease, box-shadow 1.0s ease;
+}
+
+.step.active .node {
+  border-color: var(--color-primary);
+  background: rgba(139, 92, 246, 0.18);
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(139, 92, 246, 0.1);
+}
+
+.step.done .node {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+/* Pulse ring on active node */
+.pulseRing {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+  opacity: 0;
+}
+
+.step.active .pulseRing {
+  animation: pulseExpand 3.0s ease-out infinite;
+}
+
+@keyframes pulseExpand {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ── Labels ── */
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-align: center;
+  transition: color 1.0s ease;
+  white-space: nowrap;
+}
+
+.step.active .label {
+  color: var(--color-text);
+}
+
+.sublabel {
+  font-size: 12px;
+  color: var(--color-text-dim);
+  text-align: center;
+  min-height: 18px;
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.8s ease;
+}
+
+.step.active .sublabel {
+  color: var(--color-text-muted);
+}
+
+/* ── Arrow Connector ── */
+.arrow {
+  flex: 0 0 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 80px;
+  margin-top: -24px;
+}
+
+.arrowLine {
+  width: 100%;
+  height: 2px;
+  background: rgba(139, 92, 246, 0.15);
+  position: relative;
+  overflow: visible;
+}
+
+.arrowLine::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid rgba(139, 92, 246, 0.3);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+.arrow.lit .arrowLine {
+  background: rgba(139, 92, 246, 0.4);
+}
+
+.arrow.lit .arrowLine::after {
+  border-left-color: var(--color-primary);
+}
+
+/* Traveling dot */
+.dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 12px var(--color-primary-glow);
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  opacity: 0;
+}
+
+.arrow.traveling .dot {
+  animation: travelDot 1.5s ease-in-out forwards;
+}
+
+@keyframes travelDot {
+  0% {
+    left: 0;
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% - 8px);
+    opacity: 0;
+  }
+}
+
+/* ── Tier Badge ── */
+.tier {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+.tierHard {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.tierSoft {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.tierAgentic {
+  background: rgba(168, 85, 247, 0.12);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+/* ── Result Display ── */
+.result {
+  margin-top: 8px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 22px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.result.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.resultPass {
+  color: #22c55e;
+}
+
+.resultEvidence {
+  font-size: 11px;
+  color: var(--color-text-dim);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  margin-top: 4px;
+  min-height: 16px;
+}
+
+/* ── Scenario Selector ── */
+.scenarios {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 36px;
+  flex-wrap: wrap;
+}
+
+.scenarioBtn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.scenarioBtn:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.scenarioBtn.activeScenario {
+  border-color: var(--color-primary);
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--color-text);
+}
+
+/* ── Responsive: Mobile ── */
+@media (max-width: 900px) {
+  .flow {
+    flex-direction: column;
+    gap: 0;
+    align-items: center;
+  }
+
+  .step {
+    flex: none;
+    flex-direction: row;
+    gap: 16px;
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .node {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .stepText {
+    text-align: left;
+    min-height: auto;
+    align-items: flex-start;
+  }
+
+  .sublabel {
+    max-width: 220px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .arrow {
+    flex: none;
+    width: 26px;
+    height: 36px;
+    margin: -4px 0;
+    transform: none;
+  }
+
+  .arrowLine {
+    width: 2px;
+    height: 100%;
+  }
+
+  .arrowLine::after {
+    right: auto;
+    top: auto;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 8px solid rgba(139, 92, 246, 0.3);
+    border-bottom: none;
+  }
+
+  .arrow.lit .arrowLine::after {
+    border-top-color: var(--color-primary);
+    border-left-color: transparent;
+  }
+
+  .dot {
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+  }
+
+  .arrow.traveling .dot {
+    animation: travelDotVertical 1.5s ease-in-out forwards;
+  }
+
+  .scenarios {
+    margin-top: 28px;
+  }
+}
+
+@keyframes travelDotVertical {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    top: calc(100% - 8px);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 24px 0;
+  }
+
+  .node {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .step {
+    max-width: 280px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+}

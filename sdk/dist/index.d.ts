@@ -14,6 +14,7 @@ export * as relay from "./actions/relay.js";
 export * as lightning from "./actions/lightning.js";
 export * as platform from "./actions/platform.js";
 export * as openclaw from "./actions/openclaw.js";
+export * as verify from "./actions/verify.js";
 export * as nestedPool from "./actions/nestedPool.js";
 export * as economy from "./actions/economy.js";
 export * as quality from "./actions/quality.js";

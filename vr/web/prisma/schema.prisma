@@ -1,0 +1,211 @@
+// Prisma schema for vr.dev
+// Note: migrations are not applied automatically in this repository.
+// Keep this schema aligned with the Neon/Postgres structures managed elsewhere.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    Int       @id @default(autoincrement())
+  name                  String?
+  email                 String?   @unique
+  emailVerified         DateTime? @map("email_verified")
+  image                 String?   @map("image_url")
+  neonId                String?   @map("neon_id")
+  handle                String?   @map("username")
+  isAdmin               Boolean   @default(false) @map("is_admin")
+  paymentTier           String    @default("free") @map("payment_tier") @db.VarChar(16)
+  totalKeysCreated      Int       @default(0) @map("total_keys_created")
+  lifetimeVerifications Int       @default(0) @map("lifetime_verifications")
+  createdAt             DateTime? @map("date_created")
+  updatedAt             DateTime? @map("date_updated")
+  apiKeys               ApiKey[]
+
+  @@map("users")
+}
+
+// ============================================
+// API Key Management
+// ============================================
+
+model ApiKey {
+  id         String    @id @default(uuid())
+  userId     Int       @map("user_id")
+  keyHash    String    @unique @map("key_hash") @db.VarChar(64)
+  prefix     String    @db.VarChar(16)
+  name       String    @default("Default") @db.VarChar(100)
+  createdAt  DateTime  @default(now()) @map("created_at")
+  revokedAt  DateTime? @map("revoked_at")
+  lastUsedAt DateTime? @map("last_used_at")
+
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verificationLogs  VerificationLog[]
+  usageRecords      UsageRecord[]
+  quota             QuotaRecord?
+
+  @@map("api_keys")
+  @@index([userId])
+  @@index([prefix])
+}
+
+// ============================================
+// AI Chat / RAG Models
+// ============================================
+
+model ChatConversation {
+  id        String   @id @default(uuid())
+  userId    Int      @map("user_id")
+  title     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  messages  ChatMessage[]
+
+  @@map("chat_conversations")
+  @@index([userId])
+  @@index([updatedAt])
+}
+
+model ChatMessage {
+  id             String   @id @default(uuid())
+  conversationId String   @map("conversation_id")
+  role           String   // 'user' | 'assistant'
+  content        String   @db.Text
+  sourcesJson    Json?    @map("sources_json")
+  feedback       Int?     // 1 = thumbs up, -1 = thumbs down
+  createdAt      DateTime @default(now()) @map("created_at")
+  
+  conversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+model ChatUsage {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique @map("user_id")
+  queryCount    Int      @default(0) @map("query_count")
+  lastResetDate DateTime @default(now()) @map("last_reset_date")
+  
+  @@map("chat_usage")
+}
+
+model RagDocSource {
+  id          String   @id @default(uuid())
+  name        String
+  url         String
+  platform    String   // quest, unity, openxr, visionos, webxr, unreal, android, etc.
+  priority    Int      @default(1)
+  isActive    Boolean  @default(true) @map("is_active")
+  lastIndexed DateTime? @map("last_indexed")
+  chunkCount  Int      @default(0) @map("chunk_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  chunks RagDocChunk[]
+
+  @@map("rag_doc_sources")
+  @@index([platform])
+  @@index([isActive])
+}
+
+model RagDocChunk {
+  id          String   @id @default(uuid())
+  sourceId    String   @map("source_id")
+  content     String   @db.Text
+  embedding   Float[]  @db.DoublePrecision
+  metadata    Json?    @map("metadata_json")
+  tokenCount  Int      @default(0) @map("token_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  source RagDocSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@map("rag_doc_chunks")
+  @@index([sourceId])
+}
+
+// ============================================
+// Verification Observability (Phase C)
+// ============================================
+
+model VerificationLog {
+  id             String   @id @default(uuid())
+  userId         Int      @map("user_id")
+  apiKeyId       String?  @map("api_key_id")
+  verifierId     String   @map("verifier_id") @db.VarChar(128)
+  verdict        String   @db.VarChar(16)
+  score          Float
+  tier           String   @db.VarChar(16)
+  evidenceHash   String?  @map("evidence_hash") @db.VarChar(71)
+  agentName      String?  @map("agent_name") @db.VarChar(128)
+  agentFramework String?  @map("agent_framework") @db.VarChar(64)
+  sessionId      String?  @map("session_id") @db.VarChar(128)
+  stepIndex      Int?     @map("step_index")
+  isTerminal     Boolean? @map("is_terminal")
+  latencyMs      Int      @default(0) @map("latency_ms")
+  costUsd        Float?   @map("cost_usd")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  apiKey ApiKey? @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+
+  @@map("verification_logs")
+  @@index([userId])
+  @@index([apiKeyId])
+  @@index([verifierId])
+  @@index([createdAt])
+  @@index([agentName])
+  @@index([sessionId])
+}
+
+model AgentProfile {
+  id                  String   @id @default(uuid())
+  name                String   @unique @db.VarChar(128)
+  framework           String?  @db.VarChar(64)
+  firstSeen           DateTime @default(now()) @map("first_seen")
+  lastSeen            DateTime @default(now()) @map("last_seen")
+  totalVerifications  Int      @default(0) @map("total_verifications")
+  passRate            Float    @default(0) @map("pass_rate")
+
+  @@map("agent_profiles")
+  @@index([framework])
+}
+
+// ============================================
+// Usage & Quota Tracking
+// ============================================
+
+model UsageRecord {
+  id         Int      @id @default(autoincrement())
+  apiKeyId   String   @map("api_key_id")
+  endpoint   String   @db.VarChar(256)
+  method     String   @db.VarChar(8)
+  statusCode Int      @map("status_code")
+  latencyMs  Int      @default(0) @map("latency_ms")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@map("usage_records")
+  @@index([apiKeyId])
+  @@index([createdAt])
+}
+
+model QuotaRecord {
+  id           Int      @id @default(autoincrement())
+  apiKeyId     String   @unique @map("api_key_id")
+  dailyLimit   Int      @default(1000) @map("daily_limit")
+  monthlyLimit Int      @default(10000) @map("monthly_limit")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@map("quota_records")
+}

@@ -1,0 +1,19 @@
+/* Shared styles for paper diagrams */
+
+.diagramTitle {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-dim);
+    margin: 0 0 24px;
+    text-align: center;
+}
+
+.diagramCaption {
+    font-size: 13px;
+    color: var(--color-text-dim);
+    text-align: center;
+    margin: 20px 0 0;
+    line-height: 1.5;
+}

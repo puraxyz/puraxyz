@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FixtureSpec",
+  "description": "Schema for positive.json, negative.json, and adversarial.json fixture files",
+  "type": "object",
+  "required": ["fixtures"],
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "Description of this fixture set"
+    },
+    "fixtures": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["name", "input", "expected"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Human-readable name for this fixture case"
+          },
+          "description": {
+            "type": "string",
+            "description": "What this fixture tests"
+          },
+          "attack_type": {
+            "type": "string",
+            "description": "Type of adversarial attack (e.g. prompt_injection, state_mismatch, format_gaming)"
+          },
+          "input": {
+            "type": "object",
+            "required": ["completions", "ground_truth"],
+            "properties": {
+              "completions": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "ground_truth": {
+                "type": "object"
+              },
+              "context": {
+                "type": ["object", "null"]
+              }
+            }
+          },
+          "expected": {
+            "type": "object",
+            "required": ["verdict"],
+            "properties": {
+              "verdict": {
+                "type": "string",
+                "enum": ["PASS", "FAIL", "UNVERIFIABLE", "ERROR"]
+              },
+              "min_score": {
+                "type": "number",
+                "minimum": 0.0,
+                "maximum": 1.0
+              },
+              "max_score": {
+                "type": "number",
+                "minimum": 0.0,
+                "maximum": 1.0
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "description": "Negative fixtures for api.http.status_ok",
+  "fixtures": [
+    {
+      "name": "status_404",
+      "description": "Endpoint returns 404",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_status": 200,
+          "pre_result": {
+            "status_code": 404
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "status_500",
+      "description": "Endpoint returns server error",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_status": 200,
+          "pre_result": {
+            "status_code": 500
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "status_500_variant_3",
+      "description": "Variant 3: Endpoint returns server error",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_status": 200,
+          "pre_result": {
+            "status_code": 500
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    }
+  ]
+}

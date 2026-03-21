@@ -1,0 +1,58 @@
+{
+  "description": "Adversarial fixtures \u2014 agent claims success but verification fails",
+  "fixtures": [
+    {
+      "name": "agent_claims_file_exists_wrong_path",
+      "description": "Agent says file is at /tmp/output.txt but ground truth expects /tmp/results.txt",
+      "input": {
+        "completions": [
+          "I successfully created the file at /tmp/output.txt"
+        ],
+        "ground_truth": {
+          "expected_path": "/tmp/results_nonexistent.txt"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_fabricates_hash",
+      "description": "Agent reports a SHA-256 hash but actual file has different content",
+      "input": {
+        "completions": [
+          "File created with hash sha256:abc123"
+        ],
+        "ground_truth": {
+          "expected_path": "/tmp/adversarial.txt",
+          "content_hash": "deadbeef0000"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_fabrication"
+    },
+    {
+      "name": "agent_claims_large_file",
+      "description": "Agent says file is 1MB but actual file is empty",
+      "input": {
+        "completions": [
+          "Generated a 1MB dataset file"
+        ],
+        "ground_truth": {
+          "expected_path": "/tmp/empty_adversarial.txt",
+          "min_size_bytes": 1048576
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_fabrication"
+    }
+  ]
+}

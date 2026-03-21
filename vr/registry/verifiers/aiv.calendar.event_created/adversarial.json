@@ -1,0 +1,48 @@
+{
+  "description": "Adversarial fixtures - agent claims event created but calendar state disagrees",
+  "fixtures": [
+    {
+      "name": "agent_claims_event_but_not_created",
+      "description": "Agent says meeting was scheduled but no event exists in calendar",
+      "attack_type": "state_mismatch",
+      "input": {
+        "completions": ["I've scheduled the team meeting for 2026-04-15 with all participants."],
+        "ground_truth": {
+          "expected_title": "Team Meeting",
+          "expected_date": "2026-04-15",
+          "expected_participants": ["alice@example.com", "bob@example.com"]
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "agent_creates_wrong_date",
+      "description": "Agent created event on wrong date",
+      "attack_type": "wrong_target",
+      "input": {
+        "completions": ["Meeting scheduled for April 15th as requested."],
+        "ground_truth": {
+          "event_id": "EVT-001",
+          "expected_title": "Project Review",
+          "expected_date": "2026-04-15",
+          "expected_participants": ["manager@example.com"]
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.75 }
+    },
+    {
+      "name": "agent_omits_participants",
+      "description": "Agent creates event but forgets to add required participants",
+      "attack_type": "incomplete_action",
+      "input": {
+        "completions": ["Created the quarterly review event with all stakeholders invited."],
+        "ground_truth": {
+          "expected_title": "Quarterly Review",
+          "expected_date": "2026-05-01",
+          "expected_participants": ["ceo@example.com", "cfo@example.com", "cto@example.com"]
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.75 }
+    }
+  ]
+}

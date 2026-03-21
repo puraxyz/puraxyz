@@ -18,6 +18,7 @@ Current state and next steps. Updated March 2026.
 - GTM content: blog post, Twitter thread, LinkedIn posts, community posts, DM templates, feedback form, 3 grant applications
 - Design system extracted (tokens, components, agent prompt) for unified branding across Backproto, Buildlog, VR
 - Three reference products: AID Station (aidstation.app, Nostr relay dash), Spilt (spilt.dev, Lightning routing dash), DarkSource (darksource.ai, agent reputation explorer)
+- vr.dev absorbed into monorepo: Python SDK (38 verifiers, 19 domains), website, evidence chain. SDK bridge (`verify.ts`) connects vr.dev evidence hashes to CompletionTracker receipts and OpenClaw reputation. MerkleRootAnchor contract deployed for shared evidence anchoring.
 - Three additional blog posts: relay economics, Lightning capacity signals, OpenClaw reputation
 - Getting-started guide for OpenClaw agent operators
 - Community posts and DM templates for Nostr, Lightning, and OpenClaw audiences

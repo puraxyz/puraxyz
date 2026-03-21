@@ -1,0 +1,65 @@
+{
+  "description": "Positive fixtures for project.jira.ticket_transitioned",
+  "fixtures": [
+    {
+      "name": "positive_1",
+      "description": "Positive test case for project.jira.ticket_transitioned",
+      "input": {
+        "completions": [
+          "Ticket moved to Done"
+        ],
+        "ground_truth": {
+          "ticket_key": "PROJ-42",
+          "expected_status": "Done",
+          "pre_result": {
+            "status": "Done"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "positive_2",
+      "description": "Positive test case 2 for project.jira.ticket_transitioned",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "ticket_key": "PROJ-42",
+          "expected_status": "Done",
+          "pre_result": {
+            "status": "Done"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "positive_3",
+      "description": "Positive test case 3 for project.jira.ticket_transitioned",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "ticket_key": "PROJ-42",
+          "expected_status": "Done",
+          "pre_result": {
+            "status": "Done"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

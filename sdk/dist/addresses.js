@@ -50,6 +50,8 @@ export const addresses = {
         qualityOracle: "0x0000000000000000000000000000000000000000",
         velocityToken: "0x0000000000000000000000000000000000000000",
         urgencyToken: "0x0000000000000000000000000000000000000000",
+        // vr.dev evidence anchoring (placeholder -- update after deployment)
+        merkleRootAnchor: "0x0000000000000000000000000000000000000000",
     },
     // Base Mainnet (chain ID 8453) — placeholder, populated after mainnet deploy
     8453: {
@@ -83,6 +85,7 @@ export const addresses = {
         qualityOracle: "0x0000000000000000000000000000000000000000",
         velocityToken: "0x0000000000000000000000000000000000000000",
         urgencyToken: "0x0000000000000000000000000000000000000000",
+        merkleRootAnchor: "0x0000000000000000000000000000000000000000",
     },
 };
 export function getAddresses(chainId) {

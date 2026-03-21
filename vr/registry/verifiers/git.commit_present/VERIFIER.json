@@ -1,0 +1,50 @@
+{
+  "id": "vr/git.commit_present",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "code",
+  "task_type": "git_verification",
+  "description": "Verifies that a specific git commit exists in a repository by SHA prefix or message substring.",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "repo_path"
+    ],
+    "properties": {
+      "repo_path": {
+        "type": "string"
+      },
+      "commit_sha_prefix": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "commit_message_substring": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "hard-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "recommended_gates": [],
+    "permissions_required": [
+      "exec:git"
+    ],
+    "source_benchmark": "SWE-bench",
+    "source_citation": "arXiv:2310.06770"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04",
+  "source_citation": "arXiv:2310.06770",
+  "permissions_required": [
+    "exec:git"
+  ],
+  "latency_p50_ms": 35
+}

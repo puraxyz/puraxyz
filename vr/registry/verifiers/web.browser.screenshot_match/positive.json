@@ -1,0 +1,29 @@
+{
+  "description": "Positive fixtures - pages matching reference screenshots",
+  "fixtures": [
+    {
+      "name": "identical_page",
+      "input": {
+        "completions": ["Agent navigated to the checkout page successfully."],
+        "ground_truth": { "url": "http://localhost:8080/checkout", "reference_screenshot": "BASE64_PLACEHOLDER", "min_ssim": 0.95 }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.95 }
+    },
+    {
+      "name": "minor_timestamp_diff",
+      "input": {
+        "completions": ["Dashboard loaded with current data."],
+        "ground_truth": { "url": "http://localhost:8080/dashboard", "reference_screenshot": "BASE64_PLACEHOLDER", "min_ssim": 0.90 }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.90 }
+    },
+    {
+      "name": "form_filled_correctly",
+      "input": {
+        "completions": ["Filled in the registration form with user details."],
+        "ground_truth": { "url": "http://localhost:8080/register", "reference_screenshot": "BASE64_PLACEHOLDER", "min_ssim": 0.92 }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.92 }
+    }
+  ]
+}

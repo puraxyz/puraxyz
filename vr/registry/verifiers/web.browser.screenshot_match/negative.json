@@ -1,0 +1,29 @@
+{
+  "description": "Negative fixtures - pages not matching reference screenshots",
+  "fixtures": [
+    {
+      "name": "wrong_page",
+      "input": {
+        "completions": ["Navigated to the checkout page."],
+        "ground_truth": { "url": "http://localhost:8080/404", "reference_screenshot": "BASE64_PLACEHOLDER", "min_ssim": 0.95 }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "page_layout_broken",
+      "input": {
+        "completions": ["The page loaded but the layout is different."],
+        "ground_truth": { "url": "http://localhost:8080/broken-css", "reference_screenshot": "BASE64_PLACEHOLDER", "min_ssim": 0.95 }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.8 }
+    },
+    {
+      "name": "empty_page",
+      "input": {
+        "completions": ["Page should be populated with data."],
+        "ground_truth": { "url": "http://localhost:8080/empty", "reference_screenshot": "BASE64_PLACEHOLDER", "min_ssim": 0.95 }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    }
+  ]
+}

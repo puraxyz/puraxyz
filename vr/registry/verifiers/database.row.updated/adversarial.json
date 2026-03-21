@@ -1,0 +1,87 @@
+{
+  "description": "Adversarial fixtures for database.row.updated",
+  "fixtures": [
+    {
+      "name": "empty_row",
+      "description": "Row not found at all",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "orders",
+          "match_columns": {
+            "id": 1
+          },
+          "expected_values": {
+            "status": "cancelled"
+          },
+          "pre_result": {
+            "row": {}
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_claims_update",
+      "description": "Agent claims update applied but values unchanged",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "orders",
+          "match_columns": {
+            "id": 1
+          },
+          "expected_values": {
+            "status": "cancelled"
+          },
+          "pre_result": {
+            "row": {
+              "status": "active"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    },
+    {
+      "name": "agent_claims_update_variant_3",
+      "description": "Variant 3: Agent claims update applied but values unchanged",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "orders",
+          "match_columns": {
+            "id": 1
+          },
+          "expected_values": {
+            "status": "cancelled"
+          },
+          "pre_result": {
+            "row": {
+              "status": "active"
+            }
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    }
+  ]
+}

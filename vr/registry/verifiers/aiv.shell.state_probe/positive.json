@@ -1,0 +1,42 @@
+{
+  "description": "Positive fixtures - command output matches expected state",
+  "fixtures": [
+    {
+      "name": "file_exists_check",
+      "description": "stat confirms file exists at expected path",
+      "input": {
+        "completions": ["Created the file."],
+        "ground_truth": {
+          "command": "stat -c '%s' /tmp/testfile.txt",
+          "expected_output": "1024"
+        }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "git_branch_correct",
+      "description": "git branch shows the expected current branch",
+      "input": {
+        "completions": ["Switched to feature branch."],
+        "ground_truth": {
+          "command": "git branch --show-current",
+          "expected_output": "feature/new-widget",
+          "cwd": "__GIT_REPO__"
+        }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "grep_finds_config_value",
+      "description": "grep confirms expected config value in file",
+      "input": {
+        "completions": ["Updated the config."],
+        "ground_truth": {
+          "command": "grep -c 'max_retries=5' /tmp/app.conf",
+          "expected_output": "1"
+        }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    }
+  ]
+}

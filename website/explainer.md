@@ -170,6 +170,8 @@ Every completed task produces a **dual-signed receipt**: both the agent doing th
 
 If an agent claims it can handle 100 tasks per period but only completes 40? After three bad periods in a row, 10% of its deposit gets taken away. This makes lying about capacity a losing strategy.
 
+**Where does the evidence come from?** For AI agents and OpenClaw skill executions, [vr.dev](https://vr.dev) (Verifiable Rewards) provides the off-chain verification layer. vr.dev runs 38 domain-specific verifiers that evaluate agent outputs — code quality, factual accuracy, safety compliance, and more — and produces a SHA-256 evidence hash for each verification. That hash becomes the `taskId` in the on-chain CompletionTracker, creating a tamper-proof link between the off-chain proof of work and the on-chain completion record. A `MerkleRootAnchor` contract allows batching many evidence hashes into a single Merkle root for gas-efficient anchoring.
+
 ---
 
 ### 3. Price: Busy Agents Cost More
@@ -525,6 +527,8 @@ What this enables:
 - Portable reputation: an agent's reliability in one skill category carries over to others. Strong cross-domain reputation (OpenClaw + Lightning node + Nostr relay) earns up to 50% stake discounts
 - Pipeline orchestration: multi-stage agent pipelines (research -> analysis -> report) can efficiently allocate each stage to available agents using Backproto's Pipeline contract
 
+**Evidence-backed verification with vr.dev.** OpenClaw completions can be verified off-chain by [vr.dev](https://vr.dev) before they hit the chain. When an agent finishes a skill execution, vr.dev runs domain-specific verifiers (code correctness, factual accuracy, safety checks) and produces a SHA-256 evidence hash. That hash is used as the `executionId` in the `CompletionVerifier`, bridging the off-chain proof to the on-chain record. The `ReputationBridge` then feeds the PASS/FAIL result into the cross-domain `ReputationLedger`. Operators can also anchor batches of evidence hashes via the `MerkleRootAnchor` contract for gas-efficient bulk verification.
+
 The sidecar model: Backproto does not modify OpenClaw's core. Agents opt in by installing a Backproto coordination skill that handles staking, capacity reporting, and completion attestation. The integration lives entirely on-chain on Base L2.
 
 ---
@@ -630,6 +634,8 @@ The economic incentive layer also addresses a structural problem: Lightning rout
 | **Channel capacity** | The amount of Bitcoin locked in a Lightning channel, determining how much can be routed through it |
 | **Cross-protocol routing** | Selecting the best payment protocol (Lightning, streaming, on-chain) based on speed, cost, and reliability |
 | **Reputation ledger** | A cross-domain scoring system that makes your track record portable across BPE domains |
+| **Evidence hash** | A SHA-256 hash produced by vr.dev's off-chain verifiers, used as the on-chain taskId/executionId to link proof-of-work to completion records |
+| **MerkleRootAnchor** | An append-only contract that stores Merkle roots of batched evidence hashes on-chain for gas-efficient bulk verification |
 
 ---
 
@@ -658,3 +664,4 @@ The economic incentive layer also addresses a structural problem: Lightning rout
 - **[Relay.Gold](https://relay.gold)**: Nostr relay capacity dashboard
 - **[Lightning.Gold](https://lightning.gold)**: Lightning routing dashboard with route explorer
 - **[DarkSource](https://darksource.ai)**: Agent reputation explorer with verified completions
+- **[vr.dev](https://vr.dev)**: Verifiable Rewards — off-chain verification engine with 38 domain-specific verifiers, producing evidence hashes that anchor into Backproto's on-chain completion records

@@ -1,0 +1,83 @@
+{
+  "description": "Negative fixtures for git.ci.passed",
+  "fixtures": [
+    {
+      "name": "negative_1",
+      "description": "Negative test case for git.ci.passed",
+      "input": {
+        "completions": [
+          "CI failed"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "commit_sha": "abc123",
+          "pre_result": {
+            "all_passed": false,
+            "check_runs": [
+              {
+                "name": "test",
+                "conclusion": "failure"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_2",
+      "description": "Negative test case 2 for git.ci.passed",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "commit_sha": "abc123",
+          "pre_result": {
+            "all_passed": false,
+            "check_runs": [
+              {
+                "name": "test",
+                "conclusion": "failure"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_3",
+      "description": "Negative test case 3 for git.ci.passed",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "commit_sha": "abc123",
+          "pre_result": {
+            "all_passed": false,
+            "check_runs": [
+              {
+                "name": "test",
+                "conclusion": "failure"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    }
+  ]
+}

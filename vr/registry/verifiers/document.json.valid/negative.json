@@ -1,0 +1,32 @@
+{
+  "description": "Negative fixtures - invalid or missing JSON files",
+  "fixtures": [
+    {
+      "name": "file_not_found",
+      "description": "JSON file does not exist",
+      "input": {
+        "completions": ["Created the file"],
+        "ground_truth": { "file_path": "/tmp/nonexistent_abc123.json" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "invalid_json",
+      "description": "File contains invalid JSON syntax",
+      "input": {
+        "completions": ["File ready"],
+        "ground_truth": { "file_path": "/tmp/bad.json" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "wrong_type",
+      "description": "JSON file is an array but object expected",
+      "input": {
+        "completions": ["Done"],
+        "ground_truth": { "file_path": "/tmp/test.json", "expected_type": "object" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "description": "Negative fixtures \u2014 commit not present in repository",
+  "fixtures": [
+    {
+      "name": "nonexistent_message",
+      "description": "No commit matches the given message substring",
+      "input": {
+        "completions": [
+          "done"
+        ],
+        "ground_truth": {
+          "repo_path": "__GIT_REPO__",
+          "commit_message_substring": "this message does not exist at all xyz"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      }
+    },
+    {
+      "name": "empty_repo_no_commits",
+      "description": "Repository has no commits at all",
+      "input": {
+        "completions": [
+          "done"
+        ],
+        "ground_truth": {
+          "repo_path": "__GIT_REPO__",
+          "commit_message_substring": "any message"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      }
+    },
+    {
+      "name": "partial_match_wrong_case",
+      "description": "Message exists but case-sensitive mismatch",
+      "input": {
+        "completions": [
+          "done"
+        ],
+        "ground_truth": {
+          "repo_path": "__GIT_REPO__",
+          "commit_message_substring": "INITIAL COMMIT"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.0
+      }
+    }
+  ]
+}

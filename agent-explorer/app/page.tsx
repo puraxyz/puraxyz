@@ -16,6 +16,8 @@ interface AgentInfo {
     slashCount: string;
   } | null;
   measurabilityGap?: string;
+  verifiedCompletions?: string;
+  lastEvidenceHash?: string;
 }
 
 interface ExplorerState {
@@ -188,6 +190,27 @@ export default function Home() {
                     </dd>
                   </>
                 )}
+                {agent.verifiedCompletions && agent.verifiedCompletions !== "0" && (
+                  <>
+                    <dt>Verified</dt>
+                    <dd>{agent.verifiedCompletions}</dd>
+                  </>
+                )}
+                {agent.lastEvidenceHash && (
+                  <>
+                    <dt>Evidence</dt>
+                    <dd>
+                      <a
+                        href={`${explorerBase}/tx/${agent.lastEvidenceHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={agent.lastEvidenceHash}
+                      >
+                        {agent.lastEvidenceHash.slice(0, 10)}…
+                      </a>
+                    </dd>
+                  </>
+                )}
               </dl>
             </div>
           ))}
@@ -219,6 +242,17 @@ await openclaw.registerAgent(walletClient, addrs,
 );`}</pre>
       </section>
 
+      <section className={styles.section}>
+        <h3 className={styles.sectionTitle}>Submit a verified completion (with vr.dev evidence)</h3>
+        <pre className={styles.compact}>{`import { verify, getAddresses } from "@backproto/sdk";
+
+const addrs = getAddresses(84532);
+// evidenceHash comes from a vr.dev verification pipeline
+await verify.submitVerifiedCompletion(walletClient, addrs,
+  skillTypeId, agentOperator, evidenceHash, sinkSignature
+);`}</pre>
+      </section>
+
       <section className={styles.faq}>
         <h3 className={styles.faqTitle}>Common questions</h3>
 
@@ -238,7 +272,14 @@ await openclaw.registerAgent(walletClient, addrs,
             Each task execution produces a receipt signed by both the agent
             operator and the requester. The <code>verifyExecution</code> call
             submits both signatures on-chain, confirming the work happened.
-            Verified completions feed into the reputation score.
+            Verified completions feed into the reputation score. Optionally, a{" "}
+            <a href="https://vr.dev" target="_blank" rel="noopener noreferrer">
+              vr.dev
+            </a>{" "}
+            verification pipeline can run HARD+SOFT checks on the execution
+            output. The resulting SHA-256 evidence hash becomes the on-chain
+            taskId, binding the completion record to tamper-evident off-chain
+            proof.
           </p>
         </div>
 

@@ -1,0 +1,69 @@
+{
+  "description": "Positive fixtures for api.http.response_matches",
+  "fixtures": [
+    {
+      "name": "all_substrings",
+      "description": "Response contains all expected text",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_substrings": [
+            "success",
+            "order_id"
+          ],
+          "pre_result": {
+            "body": "{\"status\": \"success\", \"order_id\": \"123\"}"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "single_substring",
+      "description": "Response contains single expected text",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_substrings": [
+            "ok"
+          ],
+          "pre_result": {
+            "body": "status: ok"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "single_substring_variant_3",
+      "description": "Variant 3: Response contains single expected text",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "expected_substrings": [
+            "ok"
+          ],
+          "pre_result": {
+            "body": "status: ok"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

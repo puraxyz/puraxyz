@@ -1,0 +1,188 @@
+/* ==============================================
+   vr.dev Design System — Global Styles
+   Resend-inspired dark theme, violet accents
+   ============================================== */
+
+/* ── CSS Variables ── */
+:root {
+  /* Color Palette */
+  --color-bg: #0a0a0f;
+  --color-bg-elevated: #111118;
+  --color-surface: rgba(255, 255, 255, 0.03);
+  --color-surface-hover: rgba(255, 255, 255, 0.06);
+  --color-surface-active: rgba(255, 255, 255, 0.08);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.15);
+  --color-text: #f0f0f5;
+  --color-text-muted: #a0a0b0;
+  --color-text-dim: #6b6b7b;
+  --color-primary: #8b5cf6;
+  --color-primary-hover: #a78bfa;
+  --color-primary-glow: rgba(139, 92, 246, 0.4);
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-amber: #f59e0b;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+  --gradient-glow: radial-gradient(600px circle at 50% 0%, rgba(139, 92, 246, 0.12), transparent 70%);
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* Type Scale */
+  --text-display: clamp(28px, 4vw, 44px);
+  --text-h1: clamp(24px, 3vw, 32px);
+  --text-h2: clamp(20px, 2.5vw, 26px);
+  --text-h3: 18px;
+  --text-body: 16px;
+  --text-small: 14px;
+  --text-code: 14px;
+  --text-xs: 12px;
+
+  /* Spacing */
+  --space-section: 120px;
+  --space-section-mobile: 80px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 150ms var(--ease-out);
+  --transition-base: 200ms var(--ease-out);
+  --transition-slow: 400ms var(--ease-out);
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-bg);
+  min-height: 100vh;
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+h1 { font-size: var(--text-h1) !important; }
+h2 { font-size: var(--text-h2) !important; }
+h3 { font-size: var(--text-h3) !important; font-weight: 600; }
+h4 { font-size: var(--text-body) !important; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); }
+h5, h6 { font-size: var(--text-small) !important; font-weight: 600; color: var(--color-text-muted); }
+
+p { color: var(--color-text-muted); line-height: 1.7; }
+strong { color: var(--color-text); }
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: var(--text-code);
+}
+
+/* ── Background Effects ── */
+.background-effects {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+/* Noise texture overlay */
+.background-effects::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  pointer-events: none;
+}
+
+/* Subtle dot grid pattern */
+.background-effects::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+/* ── Scroll Animations ── */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+
+.fade-in-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Hide Next.js portal ── */
+nextjs-portal {
+  display: none !important;
+}
+
+/* ── Mantine Dark Mode Overrides ── */
+[data-mantine-color-scheme="dark"] .mantine-Select-dropdown,
+[data-mantine-color-scheme="dark"] .mantine-Combobox-dropdown {
+  background-color: var(--color-bg-elevated) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Select-option,
+[data-mantine-color-scheme="dark"] .mantine-Combobox-option {
+  color: var(--color-text) !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Select-option:hover,
+[data-mantine-color-scheme="dark"] .mantine-Combobox-option:hover,
+[data-mantine-color-scheme="dark"] .mantine-Select-option[data-combobox-selected],
+[data-mantine-color-scheme="dark"] .mantine-Combobox-option[data-combobox-selected] {
+  background-color: rgba(139, 92, 246, 0.2) !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  :root {
+    --space-section: var(--space-section-mobile);
+  }
+}

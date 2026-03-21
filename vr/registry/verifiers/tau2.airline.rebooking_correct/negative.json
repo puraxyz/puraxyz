@@ -1,0 +1,29 @@
+{
+  "description": "Negative fixtures - rebooking state mismatches",
+  "fixtures": [
+    {
+      "name": "wrong_date",
+      "input": {
+        "completions": ["Rebooked to April 20."],
+        "ground_truth": { "booking_id": "BK-001", "expected_date": "2026-04-20" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "wrong_cabin_class",
+      "input": {
+        "completions": ["Changed to economy."],
+        "ground_truth": { "booking_id": "BK-001", "expected_cabin_class": "economy" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "booking_not_found",
+      "input": {
+        "completions": ["Updated booking."],
+        "ground_truth": { "booking_id": "BK-999", "expected_date": "2026-06-01" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    }
+  ]
+}

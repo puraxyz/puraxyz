@@ -1,0 +1,52 @@
+{
+  "id": "vr/tau2.retail.refund_processed",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "retail",
+  "task_type": "refund_verification",
+  "description": "Queries mock/real retail API to confirm a refund has been processed with the expected amount and status. Catches agents that claim refunds were issued but the actual state shows otherwise.",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "refund_id"
+    ],
+    "properties": {
+      "refund_id": {
+        "type": "string"
+      },
+      "expected_status": {
+        "type": "string",
+        "default": "processed"
+      },
+      "expected_amount": {
+        "type": [
+          "number",
+          "null"
+        ]
+      },
+      "amount_tolerance": {
+        "type": "number",
+        "default": 0.01
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "api-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "recommended_gates": [],
+    "permissions_required": [
+      "net:http"
+    ],
+    "source_benchmark": "\u03c4\u00b2-bench",
+    "source_citation": "arXiv:2406.12045"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04",
+  "source_citation": "arXiv:2406.12045",
+  "permissions_required": [
+    "net:http"
+  ],
+  "latency_p50_ms": 25
+}

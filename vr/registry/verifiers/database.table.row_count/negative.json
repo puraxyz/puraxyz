@@ -1,0 +1,65 @@
+{
+  "description": "Negative fixtures for database.table.row_count",
+  "fixtures": [
+    {
+      "name": "wrong_count",
+      "description": "Table has different row count",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "logs",
+          "expected_count": 100,
+          "pre_result": {
+            "count": 50
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "empty_table",
+      "description": "Table is empty when rows expected",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "logs",
+          "expected_count": 10,
+          "pre_result": {
+            "count": 0
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "empty_table_variant_3",
+      "description": "Variant 3: Table is empty when rows expected",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "logs",
+          "expected_count": 10,
+          "pre_result": {
+            "count": 0
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    }
+  ]
+}

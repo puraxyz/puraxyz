@@ -1,0 +1,40 @@
+{
+  "skill_id": "skills/openclaw.vrdev_self_test@0.1.0",
+  "version": "0.1.0",
+  "promotion_stage": "DRAFT",
+  "description": "Use vr.dev's own verifiers to continuously test vr.dev. Runs the SDK test suite, checks code quality, verifies the frontend renders, and produces a test report artifact. Demonstrates recursive self-verification: if the verification infrastructure can't verify itself, it shouldn't be trusted to verify anything else.",
+  "triggers": [
+    "test vr.dev",
+    "self-test",
+    "verify vr.dev health",
+    "run vr.dev CI locally",
+    "nightly vr.dev check"
+  ],
+  "preconditions": [
+    "Python 3.10+ with vrdev SDK installed",
+    "Git clone of vr-dev repository",
+    "ruff installed (pip install ruff)",
+    "Network access to vr.dev frontend (for browser check)"
+  ],
+  "exit_criteria": [
+    "All SDK tests pass (pytest exit code 0)",
+    "Ruff lint reports zero errors",
+    "vr.dev landing page renders with expected hero element",
+    "Test report artifact written to disk"
+  ],
+  "verifier_chain": [
+    "vr/code.python.tests_pass",
+    "vr/code.python.lint_ruff",
+    "vr/web.browser.element_visible",
+    "vr/filesystem.file_created"
+  ],
+  "composition": {
+    "require_hard": true,
+    "policy_mode": "fail_closed"
+  },
+  "compatible_harnesses": ["openclaw"],
+  "token_overhead_p50": 2500,
+  "latency_overhead_ms_p50": 45000,
+  "contributor": "vr.dev",
+  "created_at": "2026-03-05"
+}

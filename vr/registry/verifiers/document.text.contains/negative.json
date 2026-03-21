@@ -1,0 +1,64 @@
+{
+  "description": "Negative fixtures for document.text.contains",
+  "fixtures": [
+    {
+      "name": "missing_substring",
+      "description": "File missing expected text",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/output.txt",
+          "expected_substrings": [
+            "nonexistent phrase"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "partial_match",
+      "description": "Only some substrings present, not all",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/output.txt",
+          "expected_substrings": [
+            "hello",
+            "nonexistent"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "partial_match_variant_3",
+      "description": "Variant 3: Only some substrings present, not all",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/output.txt",
+          "expected_substrings": [
+            "hello",
+            "nonexistent"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    }
+  ]
+}

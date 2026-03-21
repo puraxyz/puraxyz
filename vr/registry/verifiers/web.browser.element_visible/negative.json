@@ -1,0 +1,32 @@
+{
+  "description": "Negative fixtures - element not found on page",
+  "fixtures": [
+    {
+      "name": "element_does_not_exist",
+      "description": "Agent claims checkout succeeded but no confirmation element exists",
+      "input": {
+        "completions": ["Checkout complete!"],
+        "ground_truth": { "url": "http://shop.test/products/1", "selector": "div.checkout-confirmation" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "page_not_found",
+      "description": "URL returns 404 so no element can be found",
+      "input": {
+        "completions": ["Loaded the page."],
+        "ground_truth": { "url": "http://shop.test/nonexistent", "selector": "h1" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "text_content_mismatch",
+      "description": "Element exists but text doesn't match expected value",
+      "input": {
+        "completions": ["Updated the product name."],
+        "ground_truth": { "url": "http://shop.test/products/1", "selector": "h1.product-title", "expected_text": "Nonexistent Product" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.7 }
+    }
+  ]
+}

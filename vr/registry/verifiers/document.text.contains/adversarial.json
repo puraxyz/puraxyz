@@ -1,0 +1,66 @@
+{
+  "description": "Adversarial fixtures for document.text.contains",
+  "fixtures": [
+    {
+      "name": "case_mismatch",
+      "description": "Substring present in wrong case with case_sensitive=true",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/output.txt",
+          "expected_substrings": [
+            "HELLO"
+          ],
+          "case_sensitive": true
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "agent_claims_match",
+      "description": "Agent claims substrings present but file doesn't exist",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/phantom.txt",
+          "expected_substrings": [
+            "hello"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    },
+    {
+      "name": "agent_claims_match_variant_3",
+      "description": "Variant 3: Agent claims substrings present but file doesn't exist",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/phantom.txt",
+          "expected_substrings": [
+            "hello"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      },
+      "attack_type": "claim_fabrication"
+    }
+  ]
+}

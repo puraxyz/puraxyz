@@ -1,0 +1,47 @@
+{
+  "id": "vr/rubric.email.tone_professional",
+  "version": "0.1.0",
+  "tier": "SOFT",
+  "domain": "email",
+  "task_type": "email_quality",
+  "description": "4-component rubric scored by LLM judge: greeting, formality, key info, no inappropriate content. Score = sum/4. MUST be composed with vr/aiv.email.sent_folder_confirmed.",
+  "ground_truth_schema": {
+    "type": "object",
+    "properties": {
+      "key_information_required": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "List of key facts the email must mention"
+      },
+      "rubric_config": {
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "stochastic-judge",
+    "attack_surface": {
+      "injection_risk": "high",
+      "format_gaming_risk": "medium",
+      "tool_spoofing_risk": "low"
+    },
+    "evidence_quality": "judge-opinion",
+    "intended_use": "eval-and-train",
+    "gating_required": true,
+    "recommended_gates": [
+      "vr/aiv.email.sent_folder_confirmed"
+    ],
+    "permissions_required": [],
+    "source_citation": "tobysimonds.com/research/2025/09/29/Proofs.html"
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04",
+  "source_citation": "tobysimonds.com/research/2025/09/29/Proofs.html",
+  "permissions_required": [],
+  "latency_p50_ms": 2000
+}

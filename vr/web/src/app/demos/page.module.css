@@ -1,0 +1,286 @@
+.page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.header p {
+    color: var(--mantine-color-dimmed);
+    font-size: 1.05rem;
+    max-width: 560px;
+    margin: 0 auto 1rem;
+}
+
+.installCmd {
+    display: inline-block;
+    background: var(--mantine-color-dark-7);
+    color: var(--mantine-color-green-4);
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* ── Demo cards ─────────────────────────────────────────────── */
+
+.demoList {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+.demoCard {
+    background: var(--mantine-color-dark-7);
+    border: 1px solid var(--mantine-color-dark-5);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.demoHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.demoIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--mantine-color-blue-9);
+    color: var(--mantine-color-blue-3);
+    flex-shrink: 0;
+}
+
+.demoHeader h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.demoSubtitle {
+    font-size: 0.85rem;
+    color: var(--mantine-color-dimmed);
+}
+
+.demoDesc {
+    font-size: 0.95rem;
+    color: var(--mantine-color-dark-1);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+/* ── Verifier tags ──────────────────────────────────────────── */
+
+.verifierTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.verifierTag {
+    font-size: 0.75rem;
+    font-family: var(--mantine-font-family-monospace);
+    background: var(--mantine-color-dark-6);
+    color: var(--mantine-color-blue-3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* ── Terminal output ────────────────────────────────────────── */
+
+.terminalPair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.terminal {
+    background: #0d1117;
+    border: 1px solid var(--mantine-color-dark-5);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.terminal pre {
+    padding: 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--mantine-color-green-4);
+    margin: 0;
+    overflow-x: auto;
+    white-space: pre;
+}
+
+.terminalFail pre {
+    color: var(--mantine-color-red-4);
+}
+
+.terminalBar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--mantine-color-dark-6);
+    border-bottom: 1px solid var(--mantine-color-dark-5);
+}
+
+.terminalDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--mantine-color-dark-4);
+}
+
+.terminalTitle {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--mantine-color-dimmed);
+}
+
+/* ── Benchmark card ─────────────────────────────────────────── */
+
+.benchmarkCard {
+    background: var(--mantine-color-dark-7);
+    border: 1px solid var(--mantine-color-yellow-8);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.benchmarkIcon {
+    color: var(--mantine-color-yellow-4);
+    margin-bottom: 0.75rem;
+}
+
+.benchmarkCard h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.benchmarkCard > p {
+    font-size: 0.95rem;
+    color: var(--mantine-color-dark-1);
+    max-width: 600px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.5;
+}
+
+.benchmarkStats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.statValue {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--mantine-color-red-4);
+}
+
+.statGood {
+    color: var(--mantine-color-green-4);
+}
+
+.statLabel {
+    font-size: 0.75rem;
+    color: var(--mantine-color-dimmed);
+}
+
+.benchmarkNote {
+    font-size: 0.8rem;
+    color: var(--mantine-color-dimmed);
+}
+
+.benchmarkNote code {
+    background: var(--mantine-color-dark-6);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+/* ── CTA ────────────────────────────────────────────────────── */
+
+.cta {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.ctaLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--mantine-color-blue-7);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.ctaLink:hover {
+    background: var(--mantine-color-blue-6);
+}
+
+.ctaLinkSecondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--mantine-color-blue-4);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: 1px solid var(--mantine-color-dark-4);
+    transition: border-color 0.15s;
+}
+
+.ctaLinkSecondary:hover {
+    border-color: var(--mantine-color-blue-5);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    .terminalPair {
+        grid-template-columns: 1fr;
+    }
+
+    .benchmarkStats {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .header h1 {
+        font-size: 1.6rem;
+    }
+}

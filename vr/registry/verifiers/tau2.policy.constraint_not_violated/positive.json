@@ -1,0 +1,54 @@
+{
+  "description": "Positive fixtures - all policy constraints satisfied",
+  "fixtures": [
+    {
+      "name": "refund_within_window",
+      "description": "Refund requested within the 24-hour policy window",
+      "input": {
+        "completions": ["Processed refund for the customer."],
+        "ground_truth": {
+          "policies": [
+            { "rule_id": "refund_window", "description": "Refund within 24h", "field": "hours_since_purchase", "operator": "lte", "value": 24 }
+          ],
+          "actions": [
+            { "type": "refund", "hours_since_purchase": 12 }
+          ]
+        }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "discount_within_limit",
+      "description": "Discount amount is within the authorized limit",
+      "input": {
+        "completions": ["Applied 10% discount."],
+        "ground_truth": {
+          "policies": [
+            { "rule_id": "max_discount", "description": "Discount ≤ 20%", "field": "discount_percent", "operator": "lte", "value": 20 }
+          ],
+          "actions": [
+            { "type": "discount", "discount_percent": 10 }
+          ]
+        }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "multiple_policies_all_pass",
+      "description": "Multiple policies, all satisfied",
+      "input": {
+        "completions": ["Completed all actions."],
+        "ground_truth": {
+          "policies": [
+            { "rule_id": "amount_cap", "field": "amount", "operator": "lte", "value": 500 },
+            { "rule_id": "valid_category", "field": "category", "operator": "in", "value": ["electronics", "clothing", "food"] }
+          ],
+          "actions": [
+            { "type": "purchase", "amount": 100, "category": "electronics" }
+          ]
+        }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    }
+  ]
+}

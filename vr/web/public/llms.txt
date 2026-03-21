@@ -1,0 +1,75 @@
+# vr.dev
+
+> Open platform for verifying AI agent actions through deterministic checks, rubric-based scoring, and agentic probes.
+
+## What vr.dev Does
+
+vr.dev provides verifiable rewards for AI agent development. 27–78% of agent "successes" are procedurally wrong—an agent claims it cancelled an order but the database still shows it active, or says it sent an email but the content doesn't match. Training on these false positives teaches models to *appear* correct rather than *be* correct.
+
+vr.dev checks actual system state (databases, APIs, filesystems) rather than trusting agent self-reports, composes checks into reward pipelines, and generates cryptographically signed evidence anchored on Base L2.
+
+## Three Verification Tiers
+
+- **HARD**: Deterministic state checks — database rows, file existence, HTTP status codes, git commits, CSV/JSON/YAML validation. Sub-millisecond, $0.005/call.
+- **SOFT**: Rubric-based LLM judges — content quality, semantic matching, tone analysis, structured output validation. ~$0.05/call.
+- **AGENTIC**: Agent-driven probing — browser automation, calendar events, shell state inspection, multi-step workflows. ~$0.15/call.
+
+HARD verifiers gate SOFT scores in `FAIL_CLOSED` mode, preventing reward hacking by design.
+
+## Key Stats
+
+- 38 verifiers across 19 domains in the open registry
+- Python SDK: `pip install vrdev` — runs 100% locally, no API key needed
+- Evidence signed with Ed25519, hashed with SHA-256, Merkle roots anchored on Base L2
+- Hosted API for team dashboards and evidence management
+
+## Pages
+
+- [Home](https://vr.dev/)
+- [Registry](https://vr.dev/registry) — browse all verifiers
+- [Pricing](https://vr.dev/pricing)
+- [About](https://vr.dev/about)
+- [Case Study](https://vr.dev/case-study) — benchmark: HARD gating eliminates 100% of false positives
+- [Compare](https://vr.dev/compare) — how vr.dev compares to OpenAI Evals, LangSmith, Braintrust, W&B Weave
+
+## Documentation
+
+- [Quickstart](https://vr.dev/docs/quickstart)
+- [Concepts](https://vr.dev/docs/concepts)
+- [API Reference](https://vr.dev/docs/api-reference)
+- [Verifier Authoring](https://vr.dev/docs/verifier-authoring)
+- [CLI Reference](https://vr.dev/docs/cli-reference)
+- [Integration Guide](https://vr.dev/docs/integration-guide)
+- [Examples](https://vr.dev/docs/examples)
+- [Bring Your Own State (BYOS)](https://vr.dev/docs/byos)
+- [Trust Model](https://vr.dev/docs/trust-model)
+- [Execution Sandbox](https://vr.dev/docs/execution-sandbox)
+- [Cost & Latency Profile](https://vr.dev/docs/cost-latency)
+- [Local Execution](https://vr.dev/docs/local-execution)
+- [Evidence Replay](https://vr.dev/docs/evidence-replay)
+- [End-to-End Walkthrough](https://vr.dev/docs/walkthrough)
+- [AGENTIC Verifier Maintenance](https://vr.dev/docs/agentic-maintenance)
+- [Local vs Hosted](https://vr.dev/docs/local-vs-hosted)
+- [MCP Server](https://vr.dev/docs/mcp)
+- [Golden Pipeline Templates](https://vr.dev/docs/golden-pipelines)
+
+## How It Works
+
+1. Install the SDK: `pip install vrdev`
+2. Compose a pipeline of verifiers for your agent's tasks
+3. Run verifications against actual system state
+4. Gate soft scores behind hard checks to prevent reward hacking
+5. Export to training frameworks (TRL, VERL)
+
+## Integration Points
+
+- Python SDK for local verification and pipeline composition
+- Hosted REST API (Bearer auth) for team dashboards and evidence management
+- CLI for CI/CD integration
+- MCP Server with 6 tools for IDE/tooling integration
+- TRL/VERL-compatible reward export
+
+## Optional
+
+- [GitHub: SDK + Registry](https://github.com/vrDotDev/vr-dev)
+- [PyPI: vrdev](https://pypi.org/project/vrdev/)

@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SkillSpec",
+  "description": "Schema for SKILL.json files in the vr.dev registry",
+  "type": "object",
+  "required": ["skill_id", "description", "exit_criteria", "contributor"],
+  "properties": {
+    "skill_id": {
+      "type": "string",
+      "pattern": "^skills/",
+      "description": "Skill ID with version (e.g., skills/email.unsubscribe@0.1.0)"
+    },
+    "promotion_stage": {
+      "type": "string",
+      "enum": ["DRAFT", "CANDIDATE", "VERIFIED", "DEPRECATED"],
+      "default": "DRAFT"
+    },
+    "description": {
+      "type": "string"
+    },
+    "triggers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Task description patterns that should activate this skill"
+    },
+    "preconditions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Required environment/context conditions"
+    },
+    "exit_criteria": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Verifier IDs that should pass if skill is used correctly"
+    },
+    "compatible_harnesses": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "token_overhead_p50": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "latency_overhead_ms_p50": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "uplift_lower_ci": {
+      "type": ["number", "null"],
+      "description": "Lower bound of 95% CI on pass-rate improvement (must be > 0 for VERIFIED)"
+    },
+    "regression_domains": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "contributor": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date"
+    }
+  }
+}

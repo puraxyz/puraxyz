@@ -1,0 +1,29 @@
+{
+  "description": "Positive fixtures - inventory correctly updated",
+  "fixtures": [
+    {
+      "name": "quantity_matches",
+      "input": {
+        "completions": ["I updated the inventory for SKU-100 to 50 units."],
+        "ground_truth": { "sku": "SKU-100", "expected_quantity": 50 }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "quantity_and_warehouse_match",
+      "input": {
+        "completions": ["Restocked SKU-200 to 100 units in warehouse WEST-01."],
+        "ground_truth": { "sku": "SKU-200", "expected_quantity": 100, "expected_warehouse": "WEST-01" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "zero_quantity_after_depletion",
+      "input": {
+        "completions": ["SKU-300 is now out of stock as requested."],
+        "ground_truth": { "sku": "SKU-300", "expected_quantity": 0 }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    }
+  ]
+}

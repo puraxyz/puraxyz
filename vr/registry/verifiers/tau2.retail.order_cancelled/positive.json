@@ -1,0 +1,29 @@
+{
+  "description": "Positive fixtures - order correctly cancelled",
+  "fixtures": [
+    {
+      "name": "order_cancelled_customer_request",
+      "input": {
+        "completions": ["I have cancelled order ORD-001 per your request."],
+        "ground_truth": { "order_id": "ORD-001", "expected_status": "cancelled", "expected_reason": "customer_request" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "order_cancelled_duplicate",
+      "input": {
+        "completions": ["Order ORD-003 cancelled - it was a duplicate."],
+        "ground_truth": { "order_id": "ORD-003", "expected_status": "cancelled", "expected_reason": "duplicate_order" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    },
+    {
+      "name": "order_cancelled_status_only",
+      "input": {
+        "completions": ["Done, order is cancelled."],
+        "ground_truth": { "order_id": "ORD-001", "expected_status": "cancelled" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 1.0 }
+    }
+  ]
+}

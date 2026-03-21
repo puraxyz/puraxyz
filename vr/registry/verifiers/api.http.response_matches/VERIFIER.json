@@ -1,0 +1,58 @@
+{
+  "id": "vr/api.http.response_matches",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "api",
+  "task_type": "state_verification",
+  "description": "Verifies that an HTTP response body contains expected substrings.",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "expected_substrings"
+    ],
+    "properties": {
+      "url": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "expected_substrings": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "pre_result": {
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "hard-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "recommended_gates": [],
+    "permissions_required": [
+      "net:http"
+    ],
+    "source_benchmark": "custom",
+    "source_citation": "",
+    "expected_latency_ms": 200,
+    "cost_tier": "free",
+    "recommended_composition": [
+      "api.http.status_ok"
+    ]
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-15",
+  "source_citation": "",
+  "permissions_required": [
+    "net:http"
+  ],
+  "latency_p50_ms": 40
+}

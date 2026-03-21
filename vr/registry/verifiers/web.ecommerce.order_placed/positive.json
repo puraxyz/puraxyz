@@ -1,0 +1,47 @@
+{
+  "description": "Positive fixtures - orders found in confirmed/placed state",
+  "fixtures": [
+    {
+      "name": "confirmed_order_with_items",
+      "description": "Order in confirmed state with matching items and total",
+      "input": {
+        "completions": ["placed order"],
+        "ground_truth": {
+          "order_id": "WEB-001",
+          "expected_items": ["Widget A", "Widget B"],
+          "expected_total": 49.98
+        },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.9 }
+    },
+    {
+      "name": "placed_status_passes",
+      "description": "Order in 'placed' state also counts as success",
+      "input": {
+        "completions": ["done"],
+        "ground_truth": {
+          "order_id": "WEB-004",
+          "expected_items": ["Mega Pack", "Widget A", "Gadget X"],
+          "expected_total": 299.97
+        },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.9 }
+    },
+    {
+      "name": "no_total_check",
+      "description": "Skip total validation when expected_total is null",
+      "input": {
+        "completions": ["done"],
+        "ground_truth": {
+          "order_id": "WEB-002",
+          "expected_items": ["Gadget X"],
+          "expected_total": null
+        },
+        "context": { "api_base_url": "__MOCK_SERVER__" }
+      },
+      "expected": { "verdict": "PASS", "min_score": 0.9 }
+    }
+  ]
+}

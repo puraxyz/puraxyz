@@ -1,0 +1,331 @@
+.layout {
+    display: flex;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+    gap: 48px;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+}
+
+.sidebarLabel {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-dim);
+    margin-bottom: 12px;
+    padding-left: 12px;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border-left: 1px solid var(--color-border);
+}
+
+.navLink {
+    display: block;
+    padding: 5px 12px;
+    font-size: 12.5px;
+    color: var(--color-text-dim);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    line-height: 1.4;
+}
+
+.navLink:hover {
+    color: var(--color-text-muted);
+}
+
+.navDivider {
+    height: 1px;
+    background: var(--color-border);
+    margin: 8px 0 8px 12px;
+}
+
+/* ── Content ── */
+.content {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Paper header */
+.paperHeader {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.paperTitle {
+    font-size: var(--text-display);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 12px;
+    line-height: 1.15;
+}
+
+.paperSubtitle {
+    font-size: 18px;
+    color: var(--color-text-muted);
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+
+.paperMeta {
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: var(--color-text-dim);
+}
+
+/* TL;DR box */
+.tldr {
+    margin: 0 0 24px;
+    padding: 20px 24px;
+    border-left: 3px solid var(--color-primary);
+    background: rgba(139, 92, 246, 0.04);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.tldrLabel {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+}
+
+.tldrSentence {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 10px;
+    line-height: 1.5;
+}
+
+.tldrParagraph {
+    font-size: 15px;
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.65;
+}
+
+/* Part divider */
+.partDivider {
+    margin: 64px 0 48px;
+    padding: 32px 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    text-align: center;
+}
+
+.partLabel {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-primary);
+    margin: 0 0 8px;
+}
+
+.partTitle {
+    font-size: var(--text-h2);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+/* Markdown body */
+.body h2 {
+    font-size: var(--text-h2);
+    font-weight: 700;
+    margin: 48px 0 16px;
+    letter-spacing: -0.02em;
+    scroll-margin-top: 80px;
+}
+
+.body h3 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    margin: 32px 0 12px;
+    scroll-margin-top: 80px;
+}
+
+.body p {
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--color-text-muted);
+    margin: 0 0 18px;
+}
+
+.body a {
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+    transition: border-color var(--transition-fast);
+}
+
+.body a:hover {
+    border-bottom-color: var(--color-primary);
+}
+
+.body strong {
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+.body blockquote {
+    margin: 24px 0;
+    padding: 16px 24px;
+    border-left: 3px solid var(--color-primary);
+    background: rgba(139, 92, 246, 0.04);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.body blockquote p {
+    font-size: 16px;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.body pre {
+    background: var(--color-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 20px 24px;
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 24px;
+}
+
+.body code {
+    font-family: var(--font-mono);
+}
+
+.body p code {
+    font-size: 14px;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+}
+
+.body ul,
+.body ol {
+    color: var(--color-text-muted);
+    font-size: 17px;
+    line-height: 1.75;
+    margin: 0 0 18px;
+    padding-left: 24px;
+}
+
+.body li {
+    margin-bottom: 8px;
+}
+
+/* Tables */
+.body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+    display: block;
+    overflow-x: auto;
+}
+
+.body th {
+    text-align: left;
+    padding: 10px 16px;
+    font-weight: 600;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border-strong);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.body td {
+    padding: 10px 16px;
+    color: var(--color-text-muted);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.body tr:last-child td {
+    border-bottom: none;
+}
+
+/* Diagram containers */
+.diagram {
+    margin: 32px 0;
+    padding: 32px 24px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* References section */
+.body .references h2 {
+    font-size: var(--text-h3);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .layout {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .sidebar {
+        width: 100%;
+        position: static;
+    }
+
+    .nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0;
+        border-left: none;
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 12px;
+    }
+
+    .navLink {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+    .navDivider {
+        display: none;
+    }
+
+    .paperTitle {
+        font-size: var(--text-h1);
+    }
+
+    .body h2 {
+        font-size: var(--text-h3);
+    }
+
+    .body p,
+    .body ul,
+    .body ol {
+        font-size: 16px;
+    }
+
+    .diagram {
+        padding: 20px 12px;
+    }
+}

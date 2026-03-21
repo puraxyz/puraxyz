@@ -1,0 +1,49 @@
+{
+  "id": "vr/tau2.retail.inventory_updated",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "retail",
+  "task_type": "inventory_management",
+  "description": "Queries retail API to confirm that a product SKU has the expected quantity in inventory after an agent action.",
+  "source_benchmark": "\u03c4\u00b2-bench",
+  "source_citation": "arXiv:2406.12045",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [
+      "sku",
+      "expected_quantity"
+    ],
+    "properties": {
+      "sku": {
+        "type": "string"
+      },
+      "expected_quantity": {
+        "type": "integer"
+      },
+      "expected_warehouse": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "api-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "recommended_gates": [],
+    "permissions_required": [
+      "net:http"
+    ],
+    "source_benchmark": "\u03c4\u00b2-bench",
+    "source_citation": "arXiv:2406.12045"
+  },
+  "permissions_required": [
+    "net:http"
+  ],
+  "contributor": "vr.dev",
+  "created_at": "2026-03-04",
+  "latency_p50_ms": 25
+}

@@ -1,0 +1,74 @@
+{
+  "description": "Adversarial fixtures for git.pr.merged",
+  "fixtures": [
+    {
+      "name": "adversarial_1",
+      "description": "Adversarial test case for git.pr.merged",
+      "input": {
+        "completions": [
+          "I merged it to main (actually develop)"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "pr_number": 42,
+          "target_branch": "main",
+          "pre_result": {
+            "merged": true,
+            "base_branch": "develop"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_2",
+      "description": "Adversarial test case 2 for git.pr.merged",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "pr_number": 42,
+          "target_branch": "main",
+          "pre_result": {
+            "merged": true,
+            "base_branch": "develop"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_3",
+      "description": "Adversarial test case 3 for git.pr.merged",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "pr_number": 42,
+          "target_branch": "main",
+          "pre_result": {
+            "merged": true,
+            "base_branch": "develop"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    }
+  ]
+}

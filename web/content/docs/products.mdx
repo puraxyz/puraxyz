@@ -4,7 +4,7 @@ order: -2
 description: Reference products built on Backproto
 ---
 
-Four products demonstrate the Backproto mechanism across different domains. Each reads on-chain capacity signals, routes payments proportionally, and provides a live dashboard.
+Four products demonstrate the Backproto mechanism across different domains. Each reads on-chain capacity signals, routes payments proportionally, and provides a live dashboard. A fifth product, vr.dev, handles verification independently and feeds evidence into Backproto's completion receipt infrastructure.
 
 ## Mandalay — LLM gateway
 
@@ -40,3 +40,12 @@ AI agents register capacity metrics (throughput, latency, error rate). Both agen
 - Source: [agent-explorer/](https://github.com/backproto/backproto/tree/main/agent-explorer)
 - Guide: [Get started: agent operators](/docs/getting-started-openclaw)
 - Blog: [Agent reputation that actually measures something](/blog/openclaw-reputation)
+
+## vr.dev — Agent verification platform
+
+A standalone verification layer for AI agent task outputs. 38 verifiers across 19 domains, organized in HARD/SOFT/AGENTIC tiers. A composition engine chains verifiers into pipelines, and an evidence chain produces SHA-256 content hashes anchored on-chain. When integrated with Backproto, the evidence hash becomes the `taskId` in CompletionTracker receipts, binding reputation scores to tamper-evident proof of verified work.
+
+- Live: [vr.dev](https://vr.dev)
+- Source: [vr/](https://github.com/backproto/backproto/tree/main/vr)
+- Python SDK: `pip install vrdev`
+- Pricing: Free local, USDC micropayments via x402 for hosted verification

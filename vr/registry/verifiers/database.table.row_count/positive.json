@@ -1,0 +1,67 @@
+{
+  "description": "Positive fixtures for database.table.row_count",
+  "fixtures": [
+    {
+      "name": "exact_count",
+      "description": "Table has exactly 50 rows",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "logs",
+          "expected_count": 50,
+          "pre_result": {
+            "count": 50
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "within_tolerance",
+      "description": "Row count within tolerance range",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "logs",
+          "expected_count": 50,
+          "tolerance": 5,
+          "pre_result": {
+            "count": 52
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "within_tolerance_variant_3",
+      "description": "Variant 3: Row count within tolerance range",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "table": "logs",
+          "expected_count": 50,
+          "tolerance": 5,
+          "pre_result": {
+            "count": 52
+          }
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

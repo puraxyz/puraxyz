@@ -24,6 +24,7 @@ import EconomyFactoryAbi from "./EconomyFactory.json";
 import QualityOracleAbi from "./QualityOracle.json";
 import VelocityTokenAbi from "./VelocityToken.json";
 import UrgencyTokenAbi from "./UrgencyToken.json";
+import MerkleRootAnchorAbi from "./MerkleRootAnchor.json";
 export const abis = {
     BackpressurePool: BackpressurePoolAbi,
     CapacityRegistry: CapacityRegistryAbi,
@@ -51,4 +52,5 @@ export const abis = {
     QualityOracle: QualityOracleAbi,
     VelocityToken: VelocityTokenAbi,
     UrgencyToken: UrgencyTokenAbi,
+    MerkleRootAnchor: MerkleRootAnchorAbi,
 };

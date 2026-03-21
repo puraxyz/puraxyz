@@ -1,0 +1,68 @@
+{
+  "description": "Adversarial fixtures for project.jira.ticket_transitioned",
+  "fixtures": [
+    {
+      "name": "adversarial_1",
+      "description": "Adversarial test case for project.jira.ticket_transitioned",
+      "input": {
+        "completions": [
+          "Moved to Done (actually To Do)"
+        ],
+        "ground_truth": {
+          "ticket_key": "PROJ-42",
+          "expected_status": "Done",
+          "pre_result": {
+            "status": "To Do"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_2",
+      "description": "Adversarial test case 2 for project.jira.ticket_transitioned",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "ticket_key": "PROJ-42",
+          "expected_status": "Done",
+          "pre_result": {
+            "status": "To Do"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    },
+    {
+      "name": "adversarial_3",
+      "description": "Adversarial test case 3 for project.jira.ticket_transitioned",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "ticket_key": "PROJ-42",
+          "expected_status": "Done",
+          "pre_result": {
+            "status": "To Do"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      },
+      "attack_type": "state_mismatch"
+    }
+  ]
+}

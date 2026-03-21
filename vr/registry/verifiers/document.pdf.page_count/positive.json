@@ -1,0 +1,58 @@
+{
+  "description": "Positive fixtures for document.pdf.page_count",
+  "fixtures": [
+    {
+      "name": "correct_page_count",
+      "description": "PDF with exactly 3 pages",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/report.pdf",
+          "expected_pages": 3
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "within_tolerance",
+      "description": "PDF page count within tolerance range",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/report.pdf",
+          "expected_pages": 3,
+          "tolerance": 1
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "within_tolerance_variant_3",
+      "description": "Variant 3: PDF page count within tolerance range",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/report.pdf",
+          "expected_pages": 3,
+          "tolerance": 1
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    }
+  ]
+}

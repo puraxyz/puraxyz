@@ -1,0 +1,52 @@
+{
+  "id": "vr/api.http.status_ok",
+  "version": "0.1.0",
+  "tier": "HARD",
+  "domain": "api",
+  "task_type": "state_verification",
+  "description": "Verifies that an HTTP endpoint returns the expected status code.",
+  "ground_truth_schema": {
+    "type": "object",
+    "required": [],
+    "properties": {
+      "url": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "expected_status": {
+        "type": "integer",
+        "default": 200
+      },
+      "pre_result": {
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    }
+  },
+  "scorecard": {
+    "determinism": "deterministic",
+    "evidence_quality": "hard-state",
+    "intended_use": "eval-and-train",
+    "gating_required": false,
+    "recommended_gates": [],
+    "permissions_required": [
+      "net:http"
+    ],
+    "source_benchmark": "custom",
+    "source_citation": "",
+    "expected_latency_ms": 200,
+    "cost_tier": "free",
+    "recommended_composition": []
+  },
+  "contributor": "vr.dev",
+  "created_at": "2026-03-15",
+  "source_citation": "",
+  "permissions_required": [
+    "net:http"
+  ],
+  "latency_p50_ms": 40
+}

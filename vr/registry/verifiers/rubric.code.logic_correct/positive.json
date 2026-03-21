@@ -1,0 +1,59 @@
+{
+  "description": "Positive fixtures \u2014 code logic judged correct (requires StubJudge in tests)",
+  "fixtures": [
+    {
+      "name": "perfect_logic",
+      "description": "All 4 rubric criteria satisfied",
+      "input": {
+        "completions": [
+          "def fibonacci(n):\n    if n <= 1: return n\n    return fibonacci(n-1) + fibonacci(n-2)\n"
+        ],
+        "ground_truth": {
+          "requirements": [
+            "implement fibonacci recursively"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 1.0
+      }
+    },
+    {
+      "name": "clean_sorting_implementation",
+      "description": "Correct quicksort satisfies all criteria",
+      "input": {
+        "completions": [
+          "def quicksort(arr):\n    if len(arr) <= 1: return arr\n    pivot = arr[len(arr)//2]\n    left = [x for x in arr if x < pivot]\n    mid = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quicksort(left) + mid + quicksort(right)\n"
+        ],
+        "ground_truth": {
+          "requirements": [
+            "implement quicksort"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 0.8
+      }
+    },
+    {
+      "name": "binary_search_correct",
+      "description": "Correct binary search with edge cases handled",
+      "input": {
+        "completions": [
+          "def binary_search(arr, target):\n    lo, hi = 0, len(arr) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if arr[mid] == target: return mid\n        elif arr[mid] < target: lo = mid + 1\n        else: hi = mid - 1\n    return -1\n"
+        ],
+        "ground_truth": {
+          "requirements": [
+            "implement binary search"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "PASS",
+        "min_score": 0.8
+      }
+    }
+  ]
+}

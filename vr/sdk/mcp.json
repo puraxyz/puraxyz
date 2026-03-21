@@ -1,0 +1,16 @@
+{
+  "name": "vr.dev",
+  "description": "Verify real-world AI agent outcomes against ground truth. 30+ verifiers across 14 domains.",
+  "version": "1.0.0",
+  "tools": [
+    "list_verifiers",
+    "run_verifier",
+    "compose_chain",
+    "explain_failure",
+    "search_verifiers",
+    "gem_reward"
+  ],
+  "transport": "stdio",
+  "install": "pip install vrdev[mcp]",
+  "run": "python -m vrdev.adapters.mcp_server"
+}

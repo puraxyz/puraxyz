@@ -1,0 +1,38 @@
+{
+  "description": "Negative fixtures - unfaithful or hallucinated summaries",
+  "fixtures": [
+    {
+      "name": "hallucinated_statistics",
+      "input": {
+        "completions": ["The study found a 45% increase in productivity and a 30% reduction in costs, making remote work the clear winner."],
+        "ground_truth": {
+          "source_text": "A recent corporate study revealed that remote work adoption led to a 15% increase in overall productivity.",
+          "key_points": ["15% productivity increase"]
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "missing_key_points",
+      "input": {
+        "completions": ["The report discusses some cybersecurity topics."],
+        "ground_truth": {
+          "source_text": "The cybersecurity report identifies three primary risks: data breaches, phishing attacks, and insider threats.",
+          "key_points": ["data breaches", "phishing", "insider threats"]
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "fabricated_claims",
+      "input": {
+        "completions": ["The CEO announced plans to acquire three competitors and expand into the Asian market by 2027."],
+        "ground_truth": {
+          "source_text": "The CEO presented the quarterly earnings report showing steady growth in domestic markets.",
+          "key_points": ["quarterly earnings", "domestic growth"]
+        }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.34 }
+    }
+  ]
+}

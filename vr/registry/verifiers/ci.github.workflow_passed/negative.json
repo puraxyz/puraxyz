@@ -1,0 +1,68 @@
+{
+  "description": "Negative fixtures for ci.github.workflow_passed",
+  "fixtures": [
+    {
+      "name": "negative_1",
+      "description": "Negative test case for ci.github.workflow_passed",
+      "input": {
+        "completions": [
+          "Workflow failed"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "workflow_name": "CI",
+          "ref": "main",
+          "pre_result": {
+            "conclusion": "failure"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_2",
+      "description": "Negative test case 2 for ci.github.workflow_passed",
+      "input": {
+        "completions": [
+          "Agent completion variant 2"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "workflow_name": "CI",
+          "ref": "main",
+          "pre_result": {
+            "conclusion": "failure"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    },
+    {
+      "name": "negative_3",
+      "description": "Negative test case 3 for ci.github.workflow_passed",
+      "input": {
+        "completions": [
+          "Agent completion variant 3"
+        ],
+        "ground_truth": {
+          "repo": "test/repo",
+          "workflow_name": "CI",
+          "ref": "main",
+          "pre_result": {
+            "conclusion": "failure"
+          }
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "max_score": 0.5
+      }
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+.verify {
+    min-height: calc(100vh - 60px);
+    padding: 80px 24px;
+}
+
+.content {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.content h1 {
+    font-size: var(--text-h1);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px;
+}
+
+.subtitle {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--color-text-muted);
+    margin: 0 0 32px;
+}
+
+.searchBox {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.input {
+    flex: 1;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.5;
+}
+
+.input:focus {
+    border-color: var(--color-primary);
+}
+
+.button {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+}
+
+.button:hover {
+    opacity: 0.9;
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.error {
+    color: #ff6b6b;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.resultCard {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.resultRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.resultRow:last-child {
+    border-bottom: none;
+}
+
+.resultLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    min-width: 120px;
+}
+
+.resultValue {
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--color-text);
+    word-break: break-all;
+    text-align: right;
+}
+
+.verified {
+    color: #51cf66;
+    font-weight: 700;
+}
+
+.unverified {
+    color: #ff6b6b;
+    font-weight: 700;
+}
+
+.proofList {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+}
+
+.proofList li {
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--color-text-muted);
+    padding: 4px 0;
+}
+
+.sectionTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 24px 0 12px;
+}
+
+.chainLink {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.chainLink:hover {
+    text-decoration: underline;
+}

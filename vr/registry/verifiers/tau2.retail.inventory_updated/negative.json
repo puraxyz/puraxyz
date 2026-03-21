@@ -1,0 +1,29 @@
+{
+  "description": "Negative fixtures - inventory not matching expected state",
+  "fixtures": [
+    {
+      "name": "wrong_quantity",
+      "input": {
+        "completions": ["Updated inventory for SKU-100."],
+        "ground_truth": { "sku": "SKU-100", "expected_quantity": 999 }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    },
+    {
+      "name": "wrong_warehouse",
+      "input": {
+        "completions": ["Moved stock to warehouse EAST-02."],
+        "ground_truth": { "sku": "SKU-200", "expected_quantity": 100, "expected_warehouse": "EAST-02" }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.5 }
+    },
+    {
+      "name": "sku_not_found",
+      "input": {
+        "completions": ["Created new SKU entry."],
+        "ground_truth": { "sku": "SKU-NONEXISTENT", "expected_quantity": 10 }
+      },
+      "expected": { "verdict": "FAIL", "max_score": 0.0 }
+    }
+  ]
+}

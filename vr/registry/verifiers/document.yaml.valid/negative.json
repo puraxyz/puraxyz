@@ -1,0 +1,59 @@
+{
+  "description": "Negative fixtures for document.yaml.valid",
+  "fixtures": [
+    {
+      "name": "invalid_yaml",
+      "description": "Malformed YAML syntax",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/bad.yaml"
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "empty_file",
+      "description": "Empty YAML file with expected keys fails",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/empty.yaml",
+          "expected_keys": [
+            "name"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    },
+    {
+      "name": "empty_file_variant_3",
+      "description": "Variant 3: Empty YAML file with expected keys fails",
+      "input": {
+        "completions": [
+          "Agent completed the task"
+        ],
+        "ground_truth": {
+          "file_path": "/tmp/empty.yaml",
+          "expected_keys": [
+            "name"
+          ]
+        }
+      },
+      "expected": {
+        "verdict": "FAIL",
+        "min_score": 0.0
+      }
+    }
+  ]
+}
