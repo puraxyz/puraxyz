@@ -1,0 +1,165 @@
+.card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.1rem;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.15s;
+}
+
+.card:hover {
+  border-color: var(--border-bright);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  gap: 0.75rem;
+}
+
+.cardTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.challenge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.depthTag {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.audiences {
+  display: flex;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  background: var(--bg-surface);
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-sm);
+}
+
+.headline {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.55;
+  margin-top: 0.35rem;
+}
+
+.expanded {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.elevator {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.detail {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  line-height: 1.65;
+  margin-top: 0.5rem;
+}
+
+.sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.source {
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 0.1rem 0.35rem;
+  border-radius: var(--radius-sm);
+}
+
+.actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.copyBtn {
+  font-size: 0.68rem;
+  padding: 0.25rem 0.6rem;
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.copyBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.expandBtn {
+  font-size: 0.68rem;
+  padding: 0.25rem 0.6rem;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.expandBtn:hover {
+  background: var(--accent-dim);
+}
+
+@media print {
+  .card {
+    border: 1px solid #ccc;
+    background: #fff;
+    break-inside: avoid;
+    margin-bottom: 0.5rem;
+    padding: 0.6rem;
+  }
+
+  .actions {
+    display: none;
+  }
+
+  .depthTag {
+    display: none;
+  }
+
+  .headline,
+  .elevator,
+  .detail {
+    color: #111;
+  }
+
+  .source {
+    color: #666;
+    background: #eee;
+  }
+}
