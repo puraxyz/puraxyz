@@ -4,75 +4,67 @@ date: "2026-03-21"
 description: MIT's Catalini formalized the economics of verifying AI output. Here's how it maps to what we built.
 ---
 
-Christian Catalini's team at MIT published a paper last month — "Some Simple Economics of AGI" — that puts formal economic structure around a problem I've been grinding on for the past year: what happens to prices, wages, and coordination when AI can do the work but nobody can cheaply verify whether the work was done right?
+Christian Catalini's team at MIT published a paper last month, "Some Simple Economics of AGI," that puts formal economic structure around a problem I've been grinding on for the past year: what happens to prices, wages, and coordination when AI can do the work but nobody can cheaply verify whether the work was done right?
 
-Their central argument is that AI doesn't just shift the production function. It shifts the *verification* function. And the second shift is the one that actually determines how much value flows where.
+Their central argument: AI shifts the verification function more than the production function. Verification is what determines where value flows.
 
-I read it three times. Each time I found another piece that maps directly onto Backproto's mechanism design. Here are the six that matter.
+I read it three times. Each pass surfaced another piece that maps onto Backproto's mechanism design. Six stood out.
 
 ## Measurability determines everything
 
 Catalini introduces a measurability parameter *m* that controls how easily output quality can be verified. When *m* is high (say, "did this code compile and pass tests?"), you can automate verification cheaply. When *m* is low ("is this legal brief actually correct?"), you need expensive human review, and the economics change completely.
 
-In Backproto, the `CompletionTracker` contract enforces this split at the protocol level. Every task execution produces a receipt signed by both the agent operator and the requester — EIP-712 dual signatures, on-chain. The protocol tracks per-sink completion rates over rolling 300-second epochs. If an agent's completion rate drops below 50% for three consecutive epochs, it gets slashed automatically (10% of stake).
+In Backproto, `CompletionTracker` enforces this split at the protocol level. Every task execution produces a receipt signed by both the agent operator and the requester (EIP-712 dual signatures, on-chain). The protocol tracks per-sink completion rates over rolling 300-second epochs. If an agent's completion rate drops below 50% for three consecutive epochs, it gets slashed automatically, 10% of stake.
 
-That binary verified/not-verified signal is Backproto's version of high-*m* work. The interesting question — and what Catalini's framework clarifies — is what happens for tasks where dual-signed receipts aren't enough. Tasks where "the work compiled" doesn't mean "the work is correct."
+That binary verified/not-verified signal is Backproto's version of high-*m* work. Catalini's framework clarifies what happens for tasks where dual-signed receipts aren't enough, where "the work compiled" doesn't mean "the work is correct."
 
-## The automation frontier isn't a line, it's a curve
+## The automation frontier is a curve
 
-Catalini models task automation as a function of both AI capability and task measurability. Tasks with high measurability get automated first — not because they're easier, but because they're cheaper to verify. This creates an expanding frontier, not a fixed threshold.
+Catalini models task automation as a function of both AI capability and task measurability. Tasks with high measurability get automated first, because they're cheaper to verify. This creates an expanding frontier, not a fixed threshold.
 
-Backproto's `CapacityRegistry` already sorts agents by task type (bytes32 identifiers: code generation, image analysis, data extraction). Each task type has its own pool, its own capacity dynamics, its own completion rates. But nothing in the protocol currently models the *verification cost* difference between task types.
+Backproto's `CapacityRegistry` already sorts agents by task type (bytes32 identifiers like code generation or image analysis). Each task type gets its own pool with independent capacity tracking and completion rates. But nothing in the protocol currently models the *verification cost* difference between task types.
 
 That's the gap. A summarization task and an audit task might both have agents with 95% completion rates, but the cost of confirming those completions is wildly different.
 
 ## Stablecoins as the settlement layer
 
-One of Catalini's more concrete claims: stablecoins and blockchain-based settlement reduce transaction costs for high-frequency agent-to-agent payments by "an order of magnitude." His number is specific — he compares traditional payment rails at 2-3% per transaction to stablecoin transfers at fractions of a cent.
+One of Catalini's more concrete claims: stablecoins and blockchain-based settlement reduce transaction costs for high-frequency agent-to-agent payments by "an order of magnitude." He compares traditional payment rails at 2-3% per transaction to stablecoin transfers at fractions of a cent.
 
-Chris Dixon and Eddy Lazzarin made the same point three days later on the a16z podcast. Lazzarin called blockchain "the financial API for autonomous software" — a neutral settlement layer that doesn't require agents to have bank accounts or payment processor relationships.
+Chris Dixon and Eddy Lazzarin made the same point three days later on the a16z podcast. Lazzarin called blockchain "the financial API for autonomous software," a neutral settlement layer that doesn't require agents to have bank accounts or payment processor relationships.
 
-Backproto is built on exactly this stack. Superfluid's GDA (General Distribution Agreement) enables continuous streaming payments that settle on Base L2. The `BackpressurePool` contract distributes incoming streams proportional to verified capacity. No batch settlement. No invoice cycle. No 2.9% + 30¢ per transaction. The marginal cost of an additional payment flow is the L2 gas for a `rebalance()` call — currently around $0.001 on Base Sepolia.
+Backproto is built on this stack. Superfluid's GDA (General Distribution Agreement) enables continuous streaming payments that settle on Base L2. `BackpressurePool` distributes incoming streams proportional to verified capacity, with no batch settlement and no 2.9% + 30¢ per transaction. The marginal cost of an additional payment flow is the L2 gas for a `rebalance()` call, currently around $0.001 on Base Sepolia.
 
-This is the piece that's hardest to replicate on traditional rails. You can build a load balancer that routes requests. You can build a reputation system that tracks completions. But doing both while simultaneously routing *money* in real-time, with the routing signal and the payment unified in one mechanism — that requires programmable money on a chain with sub-cent transaction costs.
+Load balancing and reputation tracking are both solvable on traditional infrastructure. Unifying routing decisions and money flow in one mechanism requires programmable money on a chain with sub-cent transaction costs.
 
 ## The missing junior
 
-Catalini describes what he calls the "junior problem": AI handles the production, but the pipeline that used to train junior workers by having them do production work is now broken. The people who would have developed verification skills through doing the work no longer get that training.
+Catalini describes what he calls the "junior problem": AI handles production, but the pipeline that used to train junior workers by having them do production work is now broken. The people who would have developed verification skills through doing the work no longer get that training.
 
-In Backproto terms, this maps to the operator side of `StakeManager`. Operators stake tokens to register capacity, and that stake gets slashed if they underperform. But who evaluates whether the *new* operators — the juniors — are developing real competence? The protocol tracks completion rates quantitatively. It has no model for competence development.
+In Backproto terms, this maps to the operator side of `StakeManager`. Operators stake tokens to register capacity, and that stake gets slashed if they underperform. But who evaluates whether new operators are developing real competence? The protocol tracks completion rates quantitatively. It has no model for competence development.
 
-This is outside Backproto's current scope, and probably should stay that way. The protocol routes payments to agents that can provably do the work. Training new agents (or the humans behind them) is a different problem. But it's worth naming because grant reviewers who've read Catalini will ask about it.
+This is outside Backproto's current scope, and probably should stay that way. The protocol routes payments to agents that can provably do the work. Training new agents (or the humans behind them) is a different problem. Grant reviewers who've read Catalini will ask about it, though, so we should have an answer ready.
 
 ## Verification budget as a protocol parameter
 
-Here's where Catalini's framework suggests a concrete protocol change.
+Catalini's framework suggests a concrete protocol change. If measurability varies by task type, the protocol should let economy deployers specify how much of the payment stream goes to verification. A task type with high *m* (code compilation, API response validation) needs a small verification budget. A task type with low *m* (content quality, legal review) needs a larger one, maybe 15-30% of the stream diverted to a verification pool.
 
-If measurability varies by task type, the protocol should let economy deployers specify how much of the payment stream should be allocated to verification. A task type with high *m* (code compilation, API response validation) needs a small verification budget. A task type with low *m* (content quality, legal review) needs a larger one — maybe 15-30% of the stream diverted to a verification pool.
+We're adding a `verificationBudgetBps` parameter to `BackpressurePool`. Economy deployers set it per pool via `EconomyFactory`. The parameter is informational for v0.1 (emitted as an event so dashboards and routing clients can read it), with active enforcement deferred to v0.2 when the pricing mechanism ships.
 
-We're adding a `verificationBudgetBps` parameter to `BackpressurePool`. Economy deployers set it per pool via `EconomyFactory`. The parameter is informational for v0.1 — emitted as an event so dashboards and routing clients can read it — with active enforcement deferred to v0.2 when the pricing mechanism ships.
-
-The math: if an economy routes 1000 USDC/month through a pool and the verification budget is 2000 bps (20%), then 200 USDC/month is earmarked for verification. How that 200 gets distributed — to auditors, to dual-check mechanisms, to human reviewers — is up to the economy operator. The protocol just makes the split visible and committed.
+The math: an economy routing 1000 USDC/month through a pool with a verification budget of 2000 bps (20%) earmarks 200 USDC/month for verification. How that 200 gets distributed, whether to auditors, human reviewers, or automated dual-check systems, is up to the economy operator. The protocol makes the split visible and committed.
 
 ## The measurability gap metric
 
-The second concrete addition: a per-agent measurability gap. In the DarkSource dashboard, each agent now shows Δm — the gap between declared capacity and verified completion rate. An agent claiming capacity of 100 with a verified completion rate of 85 has a Δm of 15%. Green below 20%. Yellow at 20-50%. Red above 50%.
+The second concrete addition: a per-agent measurability gap. In the DarkSource dashboard, each agent now shows Δm, the gap between declared capacity and verified completion rate. An agent claiming capacity of 100 with a verified completion rate of 85 has a Δm of 15%. Green below 20%. Yellow at 20-50%. Red above 50%.
 
-This isn't a new idea — it's a reframing. The data already exists in `CompletionTracker`. Naming it "measurability gap" and displaying it prominently borrows Catalini's vocabulary and gives economy operators a single number to watch. A rising Δm means either the agent is overclaiming capacity or the verification process has gaps. Either way, it's the signal that something needs attention.
+The data already exists in `CompletionTracker`. Framing it as "measurability gap" and displaying it prominently borrows Catalini's vocabulary and gives economy operators a single number to watch. A rising Δm means either the agent is overclaiming capacity or the verification process has gaps.
 
-## What this means for Backproto's roadmap
+## What changes
 
-Catalini's paper gives us three things:
+Catalini's paper gives us academic vocabulary for mechanisms we already built. "Capacity-weighted routing" maps to "measurability-aware allocation." Completion tracking is a concrete implementation of his verification function *V(m)*. When someone asks how this relates to the economics literature, we have a direct mapping.
 
-First, academic vocabulary for mechanisms we already built. "Capacity-weighted routing" becomes "measurability-aware allocation." Our completion tracking is a concrete implementation of his verification function *V(m)*. When someone asks "how does this relate to the economics literature," we now have a direct mapping to a paper from MIT's economics department.
+His model also predicts that verification cost, not production cost, will determine task prices as AI capabilities increase. Our `PricingCurve` contract (currently a placeholder) should price verification difficulty, not capacity utilization alone. That's the direction for v0.2.
 
-Second, a framework for the v0.2 pricing mechanism. Catalini's model predicts that verification cost, not production cost, will determine task prices as AI capabilities increase. Our `PricingCurve` contract (currently a placeholder) should price verification difficulty, not just capacity utilization.
-
-Third, urgency. The paper is one month old. The a16z podcast aired three days ago. The people who care about agent economics are reading this material right now. If Backproto's verification mechanisms aren't framed in Catalini's vocabulary within the next few weeks, someone else will claim the territory.
-
-The protocol changes (`verificationBudgetBps`, Δm display) ship this week. The blog post you're reading is part of the framing. The paper update (adding Catalini to the bibliography and a new §2.7 on verification economics) follows.
-
-If you're building agent systems and thinking about how to verify what your agents produce, try the testnet. The verification problem Catalini describes in theory is the one Backproto solves in deployed Solidity.
+The protocol changes (`verificationBudgetBps`, Δm display) ship this week. The paper update, adding Catalini to the bibliography and a new §2.7 on verification economics, follows.
 
 ---
 
