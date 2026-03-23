@@ -26,6 +26,12 @@ interface IBackpressurePool {
     /// @param taskTypeId The task type pool to rebalance.
     function rebalance(bytes32 taskTypeId) external;
 
+    /// @notice Rebalance using pre-computed Boltzmann shares from the aggregator.
+    /// @param taskTypeId The task type.
+    /// @param sinks Array of sink addresses.
+    /// @param shares Array of Boltzmann shares (1e18 scaled).
+    function rebalanceWithShares(bytes32 taskTypeId, address[] calldata sinks, uint256[] calldata shares) external;
+
     /// @notice Check whether a rebalance is needed (capacity changed beyond threshold).
     /// @param taskTypeId The task type pool to check.
     /// @return needed True if capacity signals have changed enough to warrant rebalance.

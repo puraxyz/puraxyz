@@ -1,0 +1,10 @@
+[
+  {"type":"function","name":"getTemperature","inputs":[],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
+  {"type":"function","name":"boltzmannWeight","inputs":[{"name":"capacity","type":"uint256"}],"outputs":[{"name":"weight","type":"uint256"}],"stateMutability":"view"},
+  {"type":"function","name":"tauMin","inputs":[],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
+  {"type":"function","name":"tauMax","inputs":[],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
+  {"type":"function","name":"updateTemperature","inputs":[{"name":"variance","type":"uint256"},{"name":"maxVariance","type":"uint256"}],"outputs":[],"stateMutability":"nonpayable"},
+  {"type":"function","name":"updater","inputs":[],"outputs":[{"name":"","type":"address"}],"stateMutability":"view"},
+  {"type":"function","name":"setUpdater","inputs":[{"name":"updater_","type":"address"}],"outputs":[],"stateMutability":"nonpayable"},
+  {"type":"event","name":"TemperatureUpdated","inputs":[{"name":"oldTemperature","type":"uint256","indexed":false},{"name":"newTemperature","type":"uint256","indexed":false},{"name":"variance","type":"uint256","indexed":false}]}
+]

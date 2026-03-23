@@ -29,5 +29,10 @@ export * as quality from "./actions/quality.js";
 export * as velocityToken from "./actions/velocityToken.js";
 export * as urgencyToken from "./actions/urgencyToken.js";
 
+// Action modules: Thermodynamic layer
+export * as temperature from "./actions/temperature.js";
+export * as virial from "./actions/virial.js";
+export * as systemState from "./actions/systemState.js";
+
 // Signing helpers
 export * from "./signing.js";

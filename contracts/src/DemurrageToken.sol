@@ -6,6 +6,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 import { IDemurrageToken } from "./interfaces/IDemurrageToken.sol";
+import { IVirialMonitor } from "./interfaces/IVirialMonitor.sol";
 
 /// @title DemurrageToken
 /// @notice ERC-20 token with continuous balance decay on idle holdings.
@@ -29,6 +30,12 @@ contract DemurrageToken is IDemurrageToken, IERC20, Ownable {
     /// @notice Maximum decay rate: ~20% annual ≈ 6.34e-9/sec ≈ 6_342_000_000 in 1e18 scale.
     uint256 public constant MAX_DECAY_RATE = 7e9;
 
+    /// @notice Minimum adaptive decay rate floor.
+    uint256 public constant MIN_ADAPTIVE_RATE = 1e8;
+
+    /// @notice Maximum adaptive decay rate ceiling.
+    uint256 public constant MAX_ADAPTIVE_RATE = 7e9;
+
     // ──────────────────── Storage ────────────────────
 
     string public name;
@@ -48,6 +55,12 @@ contract DemurrageToken is IDemurrageToken, IERC20, Ownable {
 
     /// @notice Total nominal supply (before decay adjustments).
     uint256 public _totalNominalSupply;
+
+    /// @notice Virial monitor for adaptive decay.
+    IVirialMonitor public virialMonitor;
+
+    /// @notice When true, decay rate is computed from virial ratio.
+    bool public adaptiveDecayEnabled;
 
     struct AccountState {
         uint256 nominal;    // Stored nominal balance
@@ -109,6 +122,23 @@ contract DemurrageToken is IDemurrageToken, IERC20, Ownable {
         decayExempt[account] = exempt;
     }
 
+    /// @notice Set the virial monitor and enable adaptive decay.
+    function setVirialMonitor(address monitor_) external onlyOwner {
+        virialMonitor = IVirialMonitor(monitor_);
+        adaptiveDecayEnabled = monitor_ != address(0);
+    }
+
+    /// @notice Get the effective decay rate. If adaptive, reads from virial monitor.
+    function getEffectiveDecayRate() public view returns (uint256) {
+        if (!adaptiveDecayEnabled || address(virialMonitor) == address(0)) {
+            return _decayRate;
+        }
+        uint256 recommended = virialMonitor.recommendedDemurrageRate();
+        if (recommended < MIN_ADAPTIVE_RATE) return MIN_ADAPTIVE_RATE;
+        if (recommended > MAX_ADAPTIVE_RATE) return MAX_ADAPTIVE_RATE;
+        return recommended;
+    }
+
     // ──────────────────── Wrap / Unwrap ────────────────────
 
     /// @inheritdoc IDemurrageToken
@@ -160,7 +190,8 @@ contract DemurrageToken is IDemurrageToken, IERC20, Ownable {
 
         // Linear approximation of exponential decay: decay = nominal × λ × Δt / 1e18
         // Valid when λ×Δt << 1 (for 5% annual rate with hourly rebases: λ×Δt ≈ 5.7e-6)
-        uint256 decayAmount = (acc.nominal * _decayRate * elapsed) / PRECISION;
+        uint256 effectiveRate = getEffectiveDecayRate();
+        uint256 decayAmount = (acc.nominal * effectiveRate * elapsed) / PRECISION;
 
         // Cap decay at current balance
         if (decayAmount > acc.nominal) {
@@ -279,7 +310,8 @@ contract DemurrageToken is IDemurrageToken, IERC20, Ownable {
         uint256 elapsed = block.timestamp - acc.lastUpdate;
         if (elapsed == 0) return acc.nominal;
 
-        uint256 decayAmount = (acc.nominal * _decayRate * elapsed) / PRECISION;
+        uint256 effectiveRate = getEffectiveDecayRate();
+        uint256 decayAmount = (acc.nominal * effectiveRate * elapsed) / PRECISION;
         if (decayAmount > acc.nominal) return 0;
         return acc.nominal - decayAmount;
     }

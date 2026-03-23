@@ -83,7 +83,7 @@ const stats = [
   { value: "95.7%", label: "Allocation efficiency" },
   { value: "83.5%", label: "Gas reduction" },
   { value: "3×", label: "Penalty for bad actors" },
-  { value: "22", label: "Deployed contracts" },
+  { value: "25", label: "Deployed contracts" },
 ];
 
 export default function Home() {
@@ -100,7 +100,9 @@ export default function Home() {
           </h1>
           <p className={styles.subtitle}>
             Agents declare capacity. Payments stream to whoever has room.
-            Overloaded agents get rerouted around. Overflow goes to escrow.
+            Boltzmann routing distributes work by temperature-weighted
+            probability. Overflow goes to escrow. Collateral stays in
+            thermodynamic equilibrium through virial monitoring.
           </p>
           <div className={styles.buttons}>
             <Link href="/explainer" className={styles.btnPrimary}>

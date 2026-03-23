@@ -36,6 +36,10 @@ export type ChainAddresses = {
   urgencyToken: `0x${string}`;
   // vr.dev evidence anchoring
   merkleRootAnchor: `0x${string}`;
+  // Thermodynamic layer
+  temperatureOracle: `0x${string}`;
+  virialMonitor: `0x${string}`;
+  systemStateEmitter: `0x${string}`;
 };
 
 /** Well-known Superfluid addresses on Base Sepolia */
@@ -94,6 +98,10 @@ export const addresses: Record<number, ChainAddresses> = {
     urgencyToken: "0x0000000000000000000000000000000000000000",
     // vr.dev evidence anchoring (placeholder -- update after deployment)
     merkleRootAnchor: "0x0000000000000000000000000000000000000000",
+    // Thermodynamic layer (placeholder -- update after deployment)
+    temperatureOracle: "0x0000000000000000000000000000000000000000",
+    virialMonitor: "0x0000000000000000000000000000000000000000",
+    systemStateEmitter: "0x0000000000000000000000000000000000000000",
   },
 
   // Base Mainnet (chain ID 8453) — placeholder, populated after mainnet deploy
@@ -129,6 +137,9 @@ export const addresses: Record<number, ChainAddresses> = {
     velocityToken: "0x0000000000000000000000000000000000000000",
     urgencyToken: "0x0000000000000000000000000000000000000000",
     merkleRootAnchor: "0x0000000000000000000000000000000000000000",
+    temperatureOracle: "0x0000000000000000000000000000000000000000",
+    virialMonitor: "0x0000000000000000000000000000000000000000",
+    systemStateEmitter: "0x0000000000000000000000000000000000000000",
   },
 };
 

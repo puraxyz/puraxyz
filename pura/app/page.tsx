@@ -112,10 +112,48 @@ export default function Dashboard() {
       <header className={styles.hero}>
         <h1 className={styles.title}>Backpressure infrastructure for Nostr</h1>
         <p className={styles.subtitle}>
-          Capacity-routed payments and hosting for relays, Lightning, AI agents,
-          and LLMs. Built on Base Sepolia.
+          Capacity-routed payments with thermodynamic equilibrium for relays,
+          Lightning, AI agents, and LLMs. Built on Base Sepolia.
         </p>
       </header>
+
+      {/* ── SYSTEM STATE — thermodynamic overview ── */}
+      <section className={styles.section} id="thermo">
+        <SectionHead label="system state" color="var(--amber)" />
+        <p className={styles.desc}>
+          The protocol tracks three thermodynamic signals on-chain. Temperature
+          (τ) is derived from attestation variance &mdash; high disagreement means
+          high temperature and more exploratory routing. The virial ratio V
+          measures whether staked collateral and escrowed payments are in
+          equilibrium with throughput (V=1 at balance). Escrow pressure P tracks
+          buffer fill level. Together these drive adaptive pricing, demurrage,
+          and circuit breakers.
+        </p>
+        <div className={styles.stats}>
+          <span className={styles.kv}>
+            <span className={styles.k}>τ range</span>{" "}
+            <span className={styles.v}>0.5 – 5.0</span>
+          </span>
+          <span className={styles.kv}>
+            <span className={styles.k}>V target</span>{" "}
+            <span className={styles.v}>1.0</span>
+          </span>
+          <span className={styles.kv}>
+            <span className={styles.k}>contracts</span>{" "}
+            <span className={styles.v}>TemperatureOracle · VirialMonitor · SystemStateEmitter</span>
+          </span>
+        </div>
+        <a
+          href="https://backproto.io/plan/13-THERMODYNAMIC-ADOPTION/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.docLink}
+        >
+          thermodynamic plan →
+        </a>
+      </section>
+
+      <hr className={styles.divider} />
 
       {/* ── DEPLOY — primary conversion ── */}
       <section className={styles.deployBlock} id="deploy">

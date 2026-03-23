@@ -3,6 +3,8 @@ pragma solidity ^0.8.26;
 
 import { ICapacitySignal } from "./interfaces/ICapacitySignal.sol";
 import { IPricingCurve } from "./interfaces/IPricingCurve.sol";
+import { ITemperatureOracle } from "./interfaces/ITemperatureOracle.sol";
+import { IEscrowBuffer } from "./interfaces/IEscrowBuffer.sol";
 
 /// @title PricingCurve
 /// @notice Dynamic queue-length pricing for BPE task types.
@@ -28,9 +30,17 @@ contract PricingCurve is IPricingCurve {
     /// @notice Minimum base fee floor to prevent zero pricing.
     uint256 public constant MIN_BASE_FEE = 1e12;
 
+    /// @notice Escrow pressure sensitivity β (1e18 scaled, default 0.8).
+    uint256 public constant ESCROW_SENSITIVITY = 8e17;
+
+    /// @notice Maximum utilization cap to avoid division-by-zero (0.99 in 1e18).
+    uint256 public constant MAX_UTILIZATION = 99e16;
+
     // ──────────────────── Storage ────────────────────
 
     ICapacitySignal public immutable capacityRegistry;
+    ITemperatureOracle public temperatureOracle;
+    IEscrowBuffer public escrowBuffer;
 
     struct PricingState {
         uint256 baseFee;
@@ -50,6 +60,16 @@ contract PricingCurve is IPricingCurve {
 
     constructor(address capacityRegistry_) {
         capacityRegistry = ICapacitySignal(capacityRegistry_);
+    }
+
+    /// @notice Set the temperature oracle reference.
+    function setTemperatureOracle(address oracle_) external {
+        temperatureOracle = ITemperatureOracle(oracle_);
+    }
+
+    /// @notice Set the escrow buffer reference.
+    function setEscrowBuffer(address buffer_) external {
+        escrowBuffer = IEscrowBuffer(buffer_);
     }
 
     // ──────────────────── Queue Load Reporting ────────────────────
@@ -106,13 +126,26 @@ contract PricingCurve is IPricingCurve {
         uint256 capacity = capacityRegistry.getSmoothedCapacity(taskTypeId, sink);
 
         if (capacity == 0) {
-            // No capacity → infinite price (return max to signal unavailability)
             return type(uint256).max;
         }
 
-        // price = baseFee × (1 + γ × queueLoad / capacity)
-        // = baseFee + baseFee × γ × queueLoad / (capacity × BPS)
-        price = baseFee + (baseFee * GAMMA_BPS * load) / (capacity * BPS);
+        // Utilization ratio u = load / capacity, capped at MAX_UTILIZATION
+        uint256 utilization = (load * 1e18) / capacity;
+        if (utilization > MAX_UTILIZATION) utilization = MAX_UTILIZATION;
+
+        // Congestion multiplier: (1 + γ * u / (1 - u))
+        // Denominator: 1e18 - utilization (never zero due to cap)
+        uint256 congestion = 1e18 + (GAMMA_BPS * utilization) / (1e18 - utilization) * 1e18 / BPS;
+
+        // Escrow pressure multiplier: (1 + β * P_escrow)
+        uint256 escrowMultiplier = 1e18;
+        if (address(escrowBuffer) != address(0)) {
+            uint256 pressure = escrowBuffer.getEscrowPressure(taskTypeId);
+            escrowMultiplier = 1e18 + (ESCROW_SENSITIVITY * pressure) / 1e18;
+        }
+
+        // price = baseFee * escrowMultiplier * congestionMultiplier / 1e36
+        price = (baseFee * escrowMultiplier / 1e18) * congestion / 1e18;
     }
 
     /// @inheritdoc IPricingCurve

@@ -10,6 +10,7 @@ import {
 } from "@superfluid-finance/contracts/interfaces/agreements/gdav1/IGeneralDistributionAgreementV1.sol";
 import { IBackpressurePool } from "./interfaces/IBackpressurePool.sol";
 import { ICapacitySignal } from "./interfaces/ICapacitySignal.sol";
+import { ITemperatureOracle } from "./interfaces/ITemperatureOracle.sol";
 
 /// @title BackpressurePool
 /// @notice Factory and rebalancer for Superfluid GDA pools weighted by capacity signals.
@@ -23,6 +24,9 @@ contract BackpressurePool is IBackpressurePool, Ownable {
     /// @notice Rebalance threshold in basis points - only rebalance if total capacity changed by this much.
     uint256 public constant REBALANCE_THRESHOLD_BPS = 500; // 5%
     uint256 public constant BPS = 10_000;
+
+    /// @notice Maximum exploration rate (20%).
+    uint256 public constant MAX_EXPLORATION_RATE = 2e17;
 
     // ──────────────────── Storage ────────────────────
 
@@ -38,12 +42,24 @@ contract BackpressurePool is IBackpressurePool, Ownable {
     mapping(bytes32 taskTypeId => PoolState) internal _pools;
     mapping(bytes32 taskTypeId => uint256) internal _verificationBudgetBps;
 
+    /// @notice Temperature oracle for exploration bonus.
+    ITemperatureOracle public temperatureOracle;
+
+    /// @notice Exploration rate ε (1e18 scaled, default 5%).
+    uint256 public explorationRate = 5e16;
+
+    /// @notice Authorized address for submitting Boltzmann shares.
+    address public shareSubmitter;
+
     // ──────────────────── Errors ────────────────────
 
     error PoolAlreadyExists();
     error PoolDoesNotExist();
     error TaskTypeDoesNotExist();
     error BudgetExceedsBps();
+    error ExplorationRateTooHigh();
+    error NotShareSubmitter();
+    error ArrayLengthMismatch();
 
     // ──────────────────── Constructor ────────────────────
 
@@ -56,6 +72,24 @@ contract BackpressurePool is IBackpressurePool, Ownable {
         GDA = IGeneralDistributionAgreementV1(gda_);
         SUPER_TOKEN = ISuperfluidToken(superToken_);
         capacityRegistry = ICapacitySignal(capacityRegistry_);
+    }
+
+    // ──────────────────── Thermodynamic Config ────────────────────
+
+    /// @notice Set the temperature oracle reference.
+    function setTemperatureOracle(address oracle_) external onlyOwner {
+        temperatureOracle = ITemperatureOracle(oracle_);
+    }
+
+    /// @notice Set the exploration rate ε. Capped at 20%.
+    function setExplorationRate(uint256 rate_) external onlyOwner {
+        if (rate_ > MAX_EXPLORATION_RATE) revert ExplorationRateTooHigh();
+        explorationRate = rate_;
+    }
+
+    /// @notice Set the authorized share submitter (typically OffchainAggregator).
+    function setShareSubmitter(address submitter_) external onlyOwner {
+        shareSubmitter = submitter_;
     }
 
     // ──────────────────── Pool Lifecycle ────────────────────
@@ -112,6 +146,34 @@ contract BackpressurePool is IBackpressurePool, Ownable {
 
         ps.lastTotalCapacity = totalCap;
         emit Rebalanced(taskTypeId, sinks.length, totalCap);
+    }
+
+    /// @notice Rebalance using pre-computed Boltzmann shares from the aggregator.
+    ///         shares[i] = (1-ε) * boltzmannShare[i] + ε * (1/N), all in 1e18.
+    function rebalanceWithShares(
+        bytes32 taskTypeId,
+        address[] calldata sinks,
+        uint256[] calldata shares
+    ) external {
+        if (msg.sender != shareSubmitter && msg.sender != owner()) revert NotShareSubmitter();
+        if (sinks.length != shares.length) revert ArrayLengthMismatch();
+
+        PoolState storage ps = _pools[taskTypeId];
+        if (address(ps.pool) == address(0)) revert PoolDoesNotExist();
+
+        uint256 n = sinks.length;
+        uint256 eps = explorationRate;
+        uint256 uniformShare = n > 0 ? 1e18 / n : 0;
+
+        for (uint256 i; i < n; ++i) {
+            // Blended share: (1 - ε) * boltzmann + ε * uniform
+            uint256 blended = ((1e18 - eps) * shares[i] + eps * uniformShare) / 1e18;
+            uint128 units = uint128((blended * UNIT_SCALE) / 1e18);
+            if (units == 0 && blended > 0) units = 1; // Minimum 1 unit if share > 0
+            ps.pool.updateMemberUnits(sinks[i], units);
+        }
+
+        emit Rebalanced(taskTypeId, n, 0);
     }
 
     /// @inheritdoc IBackpressurePool

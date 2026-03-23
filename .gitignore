@@ -64,3 +64,5 @@ vr/api/*.egg-info/
 # Secrets
 .env
 contracts/.env
+
+.local

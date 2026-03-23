@@ -26,6 +26,10 @@ contract EscrowBuffer is IEscrowBuffer, Ownable {
 
     mapping(bytes32 taskTypeId => BufferState) internal _buffers;
 
+    // ──────────────────── Events ────────────────────
+
+    event PressureChanged(bytes32 indexed taskTypeId, uint256 newPressure, uint256 timestamp);
+
     // ──────────────────── Errors ────────────────────
 
     error BufferExceedsMax(uint256 attempted, uint256 max);
@@ -59,6 +63,8 @@ contract EscrowBuffer is IEscrowBuffer, Ownable {
         if (buf.maxBuffer > 0 && newLevel >= buf.maxBuffer) {
             emit BufferFull(taskTypeId, newLevel);
         }
+
+        _emitPressure(taskTypeId, buf);
     }
 
     /// @inheritdoc IEscrowBuffer
@@ -91,6 +97,8 @@ contract EscrowBuffer is IEscrowBuffer, Ownable {
         }
 
         buf.level -= drained;
+
+        _emitPressure(taskTypeId, buf);
     }
 
     // ──────────────────── Configuration ────────────────────
@@ -110,5 +118,19 @@ contract EscrowBuffer is IEscrowBuffer, Ownable {
     /// @inheritdoc IEscrowBuffer
     function bufferMax(bytes32 taskTypeId) external view returns (uint256) {
         return _buffers[taskTypeId].maxBuffer;
+    }
+
+    /// @notice Escrow pressure = level / maxBuffer (1e18 scaled). 0 if maxBuffer is 0.
+    function getEscrowPressure(bytes32 taskTypeId) external view returns (uint256) {
+        BufferState storage buf = _buffers[taskTypeId];
+        if (buf.maxBuffer == 0) return 0;
+        return (buf.level * 1e18) / buf.maxBuffer;
+    }
+
+    // ──────────────────── Internal ────────────────────
+
+    function _emitPressure(bytes32 taskTypeId, BufferState storage buf) internal {
+        uint256 pressure = buf.maxBuffer > 0 ? (buf.level * 1e18) / buf.maxBuffer : 0;
+        emit PressureChanged(taskTypeId, pressure, block.timestamp);
     }
 }

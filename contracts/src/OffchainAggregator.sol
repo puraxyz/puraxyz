@@ -3,6 +3,9 @@ pragma solidity ^0.8.26;
 
 import { IOffchainAggregator } from "./interfaces/IOffchainAggregator.sol";
 import { ICapacitySignal } from "./interfaces/ICapacitySignal.sol";
+import { ITemperatureOracle } from "./interfaces/ITemperatureOracle.sol";
+import { IVirialMonitor } from "./interfaces/IVirialMonitor.sol";
+import { IBackpressurePool } from "./interfaces/IBackpressurePool.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
@@ -24,9 +27,22 @@ contract OffchainAggregator is IOffchainAggregator, Ownable, EIP712 {
     /// @notice Maximum age of an attestation in seconds (stale attestations are rejected).
     uint256 public constant MAX_ATTESTATION_AGE = 600; // 10 minutes
 
+    /// @notice EIP-712 typehash for Boltzmann share submissions.
+    bytes32 public constant BOLTZMANN_SHARES_TYPEHASH =
+        keccak256("BoltzmannShares(bytes32 taskTypeId,address[] sinks,uint256[] shares,uint256 temperature,uint256 timestamp,uint256 nonce)");
+
     // ──────────────────── Storage ────────────────────
 
     CapacityRegistryLike public immutable capacityRegistry;
+
+    /// @notice Temperature oracle for variance updates.
+    ITemperatureOracle public temperatureOracle;
+
+    /// @notice Virial monitor for throughput/stake ratio.
+    IVirialMonitor public virialMonitor;
+
+    /// @notice Backpressure pool for Boltzmann share rebalancing.
+    IBackpressurePool public backpressurePool;
 
     /// @notice Last processed nonce per sink (replay prevention - nonces must be strictly increasing).
     mapping(address sink => uint256) public lastNonce;
@@ -47,6 +63,20 @@ contract OffchainAggregator is IOffchainAggregator, Ownable, EIP712 {
         address owner_
     ) Ownable(owner_) EIP712("BPE-OffchainAggregator", "1") {
         capacityRegistry = CapacityRegistryLike(capacityRegistry_);
+    }
+
+    // ──────────────────── Thermodynamic Config ────────────────────
+
+    function setTemperatureOracle(address oracle_) external onlyOwner {
+        temperatureOracle = ITemperatureOracle(oracle_);
+    }
+
+    function setVirialMonitor(address monitor_) external onlyOwner {
+        virialMonitor = IVirialMonitor(monitor_);
+    }
+
+    function setBackpressurePool(address pool_) external onlyOwner {
+        backpressurePool = IBackpressurePool(pool_);
     }
 
     // ──────────────────── Batch Submission ────────────────────
@@ -93,6 +123,62 @@ contract OffchainAggregator is IOffchainAggregator, Ownable, EIP712 {
         }
 
         emit BatchSubmitted(len, msg.sender);
+
+        // Compute variance from accepted attestations and update temperature oracle
+        if (address(temperatureOracle) != address(0) && len > 1) {
+            _updateVariance(attestations);
+        }
+    }
+
+    /// @notice Submit pre-computed Boltzmann shares for pool rebalancing.
+    ///         Shares are computed off-chain: share[i] = exp(c_i/τ) / Σ exp(c_j/τ)
+    function submitBoltzmannShares(
+        bytes32 taskTypeId,
+        address[] calldata sinks,
+        uint256[] calldata shares
+    ) external {
+        if (address(backpressurePool) == address(0)) return;
+        backpressurePool.rebalanceWithShares(taskTypeId, sinks, shares);
+    }
+
+    // ──────────────────── Internal Variance ────────────────────
+
+    /// @dev Compute capacity variance from batch and update temperature oracle.
+    ///      Variance = E[X²] - (E[X])², computed in 1e18 fixed point.
+    function _updateVariance(SignedAttestation[] calldata attestations) internal {
+        uint256 len = attestations.length;
+        uint256 sumCap;
+        uint256 sumCapSq;
+        uint256 accepted;
+
+        for (uint256 i; i < len; ++i) {
+            // Only include attestations that passed validation (check nonce)
+            if (lastNonce[attestations[i].sink] == attestations[i].nonce) {
+                uint256 c = attestations[i].capacity;
+                sumCap += c;
+                sumCapSq += c * c;
+                accepted++;
+            }
+        }
+
+        if (accepted < 2) return;
+
+        // mean = sumCap / accepted
+        uint256 mean = sumCap / accepted;
+        // variance = sumCapSq / accepted - mean^2
+        uint256 variance = (sumCapSq / accepted);
+        if (variance > mean * mean) {
+            variance -= mean * mean;
+        } else {
+            variance = 0;
+        }
+
+        // Normalize variance relative to mean^2 to get coefficient of variation squared
+        // Pass raw variance and a max (mean^2) to temperature oracle
+        uint256 maxVariance = mean * mean;
+        if (maxVariance == 0) maxVariance = 1;
+
+        temperatureOracle.updateTemperature(variance, maxVariance);
     }
 
     // ──────────────────── Reads ────────────────────

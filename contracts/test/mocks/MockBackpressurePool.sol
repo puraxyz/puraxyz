@@ -22,6 +22,11 @@ contract MockBackpressurePool is IBackpressurePool {
         emit Rebalanced(taskTypeId, 0, 0);
     }
 
+    function rebalanceWithShares(bytes32 taskTypeId, address[] calldata, uint256[] calldata) external {
+        rebalanceCount[taskTypeId]++;
+        emit Rebalanced(taskTypeId, 0, 0);
+    }
+
     function needsRebalance(bytes32) external pure returns (bool) {
         return true;
     }

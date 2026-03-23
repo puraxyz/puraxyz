@@ -1,0 +1,7 @@
+[
+  {"type":"function","name":"emitSystemState","inputs":[{"name":"scope","type":"bytes32"}],"outputs":[],"stateMutability":"nonpayable"},
+  {"type":"function","name":"temperatureOracle","inputs":[],"outputs":[{"name":"","type":"address"}],"stateMutability":"view"},
+  {"type":"function","name":"virialMonitor","inputs":[],"outputs":[{"name":"","type":"address"}],"stateMutability":"view"},
+  {"type":"function","name":"escrowBuffer","inputs":[],"outputs":[{"name":"","type":"address"}],"stateMutability":"view"},
+  {"type":"event","name":"SystemStateUpdate","inputs":[{"name":"scope","type":"bytes32","indexed":true},{"name":"temperature","type":"uint256","indexed":false},{"name":"virialRatio","type":"uint256","indexed":false},{"name":"escrowPressure","type":"uint256","indexed":false},{"name":"phase","type":"uint8","indexed":false},{"name":"timestamp","type":"uint256","indexed":false}]}
+]

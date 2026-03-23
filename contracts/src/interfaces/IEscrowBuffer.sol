@@ -41,4 +41,9 @@ interface IEscrowBuffer {
     /// @param taskTypeId The task type.
     /// @return maxBuffer Maximum buffer level.
     function bufferMax(bytes32 taskTypeId) external view returns (uint256 maxBuffer);
+
+    /// @notice Get the escrow pressure P = level / maxBuffer (1e18 scaled).
+    /// @param taskTypeId The task type.
+    /// @return pressure The pressure ratio (0 = empty, 1e18 = full).
+    function getEscrowPressure(bytes32 taskTypeId) external view returns (uint256 pressure);
 }

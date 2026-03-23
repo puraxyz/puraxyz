@@ -126,6 +126,42 @@ def random_allocate(
     return allocations
 
 
+def boltzmann_allocate(
+    sinks: List[Sink],
+    total_payment: float,
+    task_type: int,
+    temperature: float = 1.0,
+    exploration_rate: float = 0.05,
+) -> np.ndarray:
+    """Allocate via Boltzmann distribution: P(i) = exp(c_i / τ) / Σ exp(c_j / τ).
+
+    Blends (1 - ε) Boltzmann + ε uniform for exploration.
+    """
+    relevant = [s for s in sinks if s.task_type == task_type]
+    if not relevant:
+        return np.zeros(len(sinks))
+
+    caps = np.array([s.smoothed_capacity for s in relevant])
+    if caps.sum() == 0:
+        return np.zeros(len(sinks))
+
+    tau = max(temperature, 0.01)
+    logits = caps / tau
+    logits -= logits.max()  # numerical stability
+    weights = np.exp(logits)
+    boltzmann_shares = weights / weights.sum()
+
+    n = len(relevant)
+    uniform = np.ones(n) / n
+    blended = (1 - exploration_rate) * boltzmann_shares + exploration_rate * uniform
+
+    allocations = np.zeros(len(sinks))
+    for i, s in enumerate(relevant):
+        idx = sinks.index(s)
+        allocations[idx] = blended[i] * total_payment
+    return allocations
+
+
 # ──────────────────── Metrics ────────────────────
 
 @dataclass
@@ -173,6 +209,7 @@ def run_simulation(
         "backpressure": backpressure_allocate,
         "round_robin": round_robin_allocate,
         "random": random_allocate,
+        "boltzmann": lambda sinks, tp, tt: boltzmann_allocate(sinks, tp, tt),
     }[strategy]
 
     metrics = Metrics()
@@ -311,6 +348,56 @@ def experiment_buffer(config: SimConfig) -> dict:
             "stall_rate": stall_rate,
             "b_max": b_max,
         }
+    return results
+
+
+def experiment_boltzmann_temperature(config: SimConfig) -> dict:
+    """E6: Boltzmann temperature sweep — compare allocation at different τ values.
+
+    Low τ concentrates on highest-capacity sinks (exploitation).
+    High τ spreads allocation more evenly (exploration).
+    """
+    results = {}
+    for tau in [0.1, 0.5, 1.0, 2.0, 5.0]:
+        rng = np.random.default_rng(config.seed)
+
+        sinks: List[Sink] = []
+        for i in range(config.n_sinks):
+            task_type = i % config.n_task_types
+            capacity = rng.uniform(10, 100)
+            stake = rng.uniform(config.min_stake, config.min_stake * 10)
+            sinks.append(Sink(id=i, task_type=task_type, true_capacity=capacity,
+                              stake=stake, smoothed_capacity=capacity))
+
+        sources: List[Source] = []
+        for i in range(config.n_sources):
+            task_type = i % config.n_task_types
+            flow_rate = rng.uniform(50, 200)
+            sources.append(Source(id=i, task_type=task_type, flow_rate=flow_rate))
+
+        metrics = Metrics()
+
+        for t in range(config.timesteps):
+            for s in sinks:
+                s.signal_capacity(config.ewma_alpha)
+
+            for s in sinks:
+                s.payment_received = 0.0
+
+            for task_type in range(config.n_task_types):
+                total_payment = sum(src.flow_rate for src in sources if src.task_type == task_type)
+                allocs = boltzmann_allocate(sinks, total_payment, task_type, temperature=tau)
+                for i, s in enumerate(sinks):
+                    s.payment_received += allocs[i]
+
+            for s in sinks:
+                excess = max(0, s.payment_received - s.true_capacity)
+                s.queue_backlog = s.queue_backlog * 0.9 + excess
+
+            metrics.record(sinks)
+
+        results[tau] = metrics
+
     return results
 
 
@@ -521,6 +608,30 @@ def plot_buffer(results: dict, output: str = "buffer.pdf"):
     print(f"Saved: {output}")
 
 
+def plot_boltzmann_temperature(results: dict, output: str = "boltzmann_temperature.pdf"):
+    """Plot Boltzmann temperature sweep: efficiency and backlog at different τ."""
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
+
+    for tau, metrics in sorted(results.items()):
+        ax1.plot(metrics.allocation_efficiency, label=f"τ={tau}", alpha=0.7)
+        ax2.plot(metrics.max_queue_backlog, label=f"τ={tau}", alpha=0.7)
+
+    ax1.set_ylabel("Allocation Efficiency")
+    ax1.set_title("E6: Boltzmann Temperature Sweep")
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+
+    ax2.set_ylabel("Max Queue Backlog")
+    ax2.set_xlabel("Timestep")
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig(output, dpi=150)
+    plt.close()
+    print(f"Saved: {output}")
+
+
 # ──────────────────── Main ────────────────────
 
 if __name__ == "__main__":
@@ -546,6 +657,10 @@ if __name__ == "__main__":
     buffer = experiment_buffer(config)
     plot_buffer(buffer)
 
+    print("Running E6: Boltzmann temperature sweep...")
+    boltz = experiment_boltzmann_temperature(config)
+    plot_boltzmann_temperature(boltz)
+
     # Print summary
     print("\n── E1 Summary ──")
     for name, metrics in conv.items():
@@ -561,3 +676,9 @@ if __name__ == "__main__":
         r = buffer[frac]
         avg_eff = np.mean(r["metrics"].allocation_efficiency[-100:])
         print(f"  B_max={frac:.1f}Λ: stall_rate={r['stall_rate']:.4f}, efficiency={avg_eff:.4f}")
+
+    print("\n── E6 Summary ──")
+    for tau in sorted(boltz.keys()):
+        avg_eff = np.mean(boltz[tau].allocation_efficiency[-100:])
+        avg_backlog = np.mean(boltz[tau].max_queue_backlog[-100:])
+        print(f"  τ={tau}: avg efficiency={avg_eff:.4f}, avg backlog={avg_backlog:.1f}")

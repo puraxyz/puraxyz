@@ -1,0 +1,11 @@
+[
+  {"type":"function","name":"getVirialRatio","inputs":[],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
+  {"type":"function","name":"recommendedDemurrageRate","inputs":[],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
+  {"type":"function","name":"recommendedStakeAdjustment","inputs":[],"outputs":[{"name":"","type":"int256"}],"stateMutability":"view"},
+  {"type":"function","name":"equilibriumTarget","inputs":[],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
+  {"type":"function","name":"updateVirial","inputs":[{"name":"throughput","type":"uint256"},{"name":"totalStaked","type":"uint256"},{"name":"totalEscrowed","type":"uint256"}],"outputs":[],"stateMutability":"nonpayable"},
+  {"type":"function","name":"updater","inputs":[],"outputs":[{"name":"","type":"address"}],"stateMutability":"view"},
+  {"type":"function","name":"deltaMin","inputs":[],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
+  {"type":"function","name":"deltaMax","inputs":[],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
+  {"type":"event","name":"VirialUpdated","inputs":[{"name":"oldRatio","type":"uint256","indexed":false},{"name":"newRatio","type":"uint256","indexed":false},{"name":"throughput","type":"uint256","indexed":false},{"name":"staked","type":"uint256","indexed":false},{"name":"escrowed","type":"uint256","indexed":false}]}
+]

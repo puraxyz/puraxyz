@@ -22,7 +22,8 @@ export default function Home() {
                 Composable pipelines for backpressure economics
               </h1>
               <p className="text-lg text-[var(--color-text-muted)] max-w-2xl">
-                Browse recipes. Fork them. Simulate backpressure routing in your
+                Browse recipes. Fork them. Simulate backpressure routing with
+                Boltzmann allocation and thermodynamic equilibrium in your
                 browser. Deploy to Base with one CLI command.
               </p>
             </div>
