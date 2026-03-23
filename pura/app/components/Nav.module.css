@@ -1,80 +1,76 @@
-.nav {
+/* tmux top status bar */
+
+.bar {
   position: sticky;
   top: 0;
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 40px;
-  padding: 0 1.25rem;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  height: 28px;
+  padding: 0 0.6rem;
+  background: var(--bg-elevated);
   font-family: var(--font-mono);
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text);
-  text-decoration: none;
-  letter-spacing: -0.01em;
-}
-
-.brandIcon {
-  color: var(--accent);
-}
-
-.links {
-  display: flex;
-  gap: 0.15rem;
-  align-items: center;
-}
-
-.link {
   font-size: 0.72rem;
-  font-family: var(--font-mono);
-  color: var(--text-dim);
-  text-decoration: none;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius);
-  transition: color 0.12s;
 }
 
-.link:hover {
-  color: var(--link-color, var(--text));
+.left,
+.right {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
 }
 
-.external {
-  font-size: 0.68rem;
-  font-family: var(--font-mono);
+.session {
+  color: #282c34;
+  background: var(--green);
+  padding: 0 0.45rem;
+  text-decoration: none;
+  font-weight: 600;
+  line-height: 28px;
+  margin-right: 0.15rem;
+}
+
+.active {
+  color: inherit;
+}
+
+.tab {
   color: var(--text-dim);
   text-decoration: none;
-  padding: 0.25rem 0.4rem;
+  padding: 0 0.4rem;
+  line-height: 28px;
+  transition: color 0.1s;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.inactive {
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.net {
+  color: var(--text-dim);
+  padding: 0 0.4rem;
+  line-height: 28px;
+  border-left: 1px solid var(--border);
   margin-left: 0.25rem;
 }
 
-.external:hover {
-  color: var(--text-muted);
+.dot {
+  color: var(--green);
+  font-size: 0.6rem;
 }
 
-@media (max-width: 768px) {
-  .nav {
-    padding: 0 0.75rem;
+@media (max-width: 640px) {
+  .bar {
+    padding: 0 0.4rem;
   }
 
-  .links {
-    gap: 0;
-  }
-
-  .link {
-    font-size: 0.66rem;
-    padding: 0.2rem 0.3rem;
-  }
-
-  .external {
+  .net {
     display: none;
   }
 }

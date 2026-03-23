@@ -51,6 +51,7 @@ body {
   font-family: var(--font-sans);
   font-size: 0.84rem;
   line-height: 1.5;
+  padding-bottom: 28px;
   -webkit-font-smoothing: antialiased;
 }
 

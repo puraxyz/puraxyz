@@ -1,21 +1,85 @@
-.footer {
-  border-top: 1px solid var(--border);
-  padding: 0.6rem 1.25rem;
-  text-align: center;
-}
+/* tmux bottom status bar */
 
-.line {
+.bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 28px;
+  padding: 0 0.6rem;
+  background: var(--bg-elevated);
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  color: var(--text-dim);
-  letter-spacing: 0.02em;
+  font-size: 0.72rem;
 }
 
-.line a {
+.left,
+.right {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.session {
+  color: #282c34;
+  background: var(--green);
+  padding: 0 0.45rem;
+  font-weight: 600;
+  line-height: 28px;
+  margin-right: 0.15rem;
+}
+
+.win {
   color: var(--text-dim);
   text-decoration: none;
+  padding: 0 0.4rem;
+  line-height: 28px;
+  transition: color 0.1s;
 }
 
-.line a:hover {
-  color: var(--text-muted);
+.win:hover {
+  color: var(--text);
+}
+
+.active {
+  color: var(--text);
+}
+
+.inactive {
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.ext {
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 0 0.3rem;
+  transition: color 0.1s;
+}
+
+.ext:hover {
+  color: var(--text);
+}
+
+.sep {
+  color: var(--border-bright);
+  font-size: 0.64rem;
+}
+
+.ts {
+  color: var(--text-dim);
+  padding: 0 0.3rem;
+}
+
+@media (max-width: 640px) {
+  .bar {
+    padding: 0 0.4rem;
+  }
+
+  .ts {
+    display: none;
+  }
 }
