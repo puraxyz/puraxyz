@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
 
-const DATA_DIR = join(process.cwd(), "data");
+const DATA_DIR = join("/tmp", "pura-data");
 const DB_FILE = join(DATA_DIR, "tenants.json");
 
 export interface Tenant {

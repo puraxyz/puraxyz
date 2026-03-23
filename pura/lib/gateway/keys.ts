@@ -2,7 +2,7 @@ import { randomBytes, createHash } from "crypto";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
 
-const DATA_DIR = join(process.cwd(), "data");
+const DATA_DIR = join("/tmp", "pura-data");
 const KEYS_FILE = join(DATA_DIR, "keys.json");
 
 export interface ApiKeyRecord {

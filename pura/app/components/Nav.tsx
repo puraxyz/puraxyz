@@ -6,7 +6,7 @@ export function Nav() {
     <nav className={styles.bar}>
       <div className={styles.left}>
         <Link href="/" className={styles.session}>
-          [0:pura<span className={styles.active}>*</span>]
+          [pura<span className={styles.active}>*</span>]
         </Link>
         <Link href="/deploy" className={styles.tab}>
           1:deploy<span className={styles.inactive}>-</span>
