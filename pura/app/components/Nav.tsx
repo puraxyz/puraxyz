@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./Nav.module.css";
 
 const NAV_LINKS = [
@@ -21,6 +22,7 @@ export function Nav() {
     <nav className={styles.nav}>
       <div className={styles.inner}>
         <Link href="/" className={styles.logo}>
+          <Image src="/pura-icon-sm.png" alt="Pura" width={24} height={24} />
           pura<span>.</span>
         </Link>
 

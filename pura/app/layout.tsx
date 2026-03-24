@@ -15,6 +15,17 @@ export const metadata: Metadata = {
   title: "Pura — Capacity-aware routing for the machine economy",
   description:
     "Route payments through on-chain capacity signals. Boltzmann-weighted routing, verified completions, overflow buffering. TCP-style congestion control for agent economies.",
+  icons: {
+    icon: "/pura-icon-sm.png",
+    apple: "/pura-icon.png",
+  },
+  openGraph: {
+    images: [{ url: "/pura-icon.png", width: 540, height: 540 }],
+  },
+  twitter: {
+    card: "summary",
+    images: ["/pura-icon.png"],
+  },
 };
 
 export default function RootLayout({
