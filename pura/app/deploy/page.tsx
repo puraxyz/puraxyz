@@ -129,11 +129,25 @@ export default function DeployPage() {
           <hr className={s.rule} />
         </div>
 
-        <h1 className={s.title}>Deploy a service on Pura</h1>
+        <h1 className={s.title}>Deploy a service that earns</h1>
         <p className={s.subtitle}>
-          Nostr relays, NIP-90 DVMs, AI agent endpoints. Sign in with Nostr
-          to provision yours.
+          Gateway operators, relay runners, DVM providers. Pick your path.
         </p>
+
+        {/* ── gateway operator ── */}
+        <section style={{ marginBottom: "2rem" }}>
+          <div style={{ fontSize: "0.7rem", color: "#888", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.5rem" }}>
+            gateway operator
+          </div>
+          <p style={{ fontSize: "0.72rem", color: "#888", lineHeight: 1.6, marginBottom: "0.5rem" }}>
+            Run the Pura LLM inference gateway. Route requests across OpenAI,
+            Anthropic, Groq, and Gemini. Automatic model selection, budget
+            enforcement, cost tracking. Settle incoming payments via Lightning.
+          </p>
+          <Link href="/gateway" style={{ fontSize: "0.72rem", color: "var(--color-deploy)" }}>
+            gateway quick start →
+          </Link>
+        </section>
 
         {/* ── pricing model ── */}
         <section style={{ marginBottom: "2rem" }}>

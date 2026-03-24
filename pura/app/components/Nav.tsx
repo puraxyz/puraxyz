@@ -6,13 +6,13 @@ import Image from "next/image";
 import styles from "./Nav.module.css";
 
 const NAV_LINKS = [
+  { href: "/gateway", label: "gateway" },
   { href: "/docs", label: "docs" },
   { href: "/paper", label: "paper" },
   { href: "/blog", label: "blog" },
   { href: "/explainer", label: "how it works" },
-  { href: "/deploy", label: "deploy" },
+  { href: "/status", label: "status" },
   { href: "/monitor", label: "monitor" },
-  { href: "/simulate", label: "simulate" },
 ];
 
 export function Nav() {

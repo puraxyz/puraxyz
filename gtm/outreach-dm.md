@@ -6,15 +6,15 @@ All DMs first person singular. Short. Specific. No pitch deck language.
 
 ## AI agent builders (primary target)
 
-Subject: capacity routing for agent payments
+Subject: drop-in LLM routing for your agents
 
-Hey — I saw your work on [specific project/post]. I have been working on a problem that probably shows up once you have multiple agents paying each other: what happens when the provider hits capacity?
+Hey, I saw your work on [specific project/post]. I built something that might save you integration headaches.
 
-I built a protocol called Pura that does backpressure routing for streaming payments. Agents declare capacity, the protocol verifies completions, and payments automatically reroute when someone is overloaded. Live on Base Sepolia with 25 contracts and a TS SDK.
+Pura is a gateway that routes LLM calls across four providers (OpenAI, Anthropic, Groq, Gemini) and picks the cheapest model that can handle each request. OpenAI SDK compatible. Your agent points at api.pura.xyz instead of api.openai.com and gets automatic failover, cost-based routing, and per-request Lightning settlement.
 
-It is part of a stack I am building: Buildlog (buildlog.ai) captures agent workflows, VR (vr.dev) verifies outcomes, and Pura routes payments to verified capacity.
+Free tier is 5,000 requests. Takes 30 seconds to get a key.
 
-Would 15 minutes on a call be useful? Happy to walk through the testnet. No pitch — just want to know if the model makes sense for your use case.
+Would 15 minutes be useful? I can walk you through the routing logic and show how it handles provider failures.
 
 pura.xyz
 
@@ -22,45 +22,63 @@ pura.xyz
 
 ## AI framework developers (LangChain, CrewAI, AutoGen contributors)
 
-Subject: payment flow control for multi-agent frameworks
+Subject: provider routing layer for multi-agent frameworks
 
-Hey, I have been following your contributions to [framework]. I built something that might complement what you are doing on the payment/resource layer.
+Hey, I have been following your contributions to [framework]. I built a gateway that sits between agent code and LLM providers.
 
-Pura is a protocol for routing payments between agents based on verified spare capacity. Concretely: agents stake tokens, report completions, and payments stream proportional to who has room for more work. Overloaded agents get rerouted around.
+It scores task complexity, routes to the cheapest capable model, and fails over automatically when a provider goes down. OpenAI SDK compatible, so any framework that supports custom base URLs works out of the box.
 
-The math is from network theory (Tassiulas-Ephremides, 1992). The implementation is 25 contracts on Base plus a TypeScript SDK.
+The routing is backed by on-chain capacity contracts on Base (35 contracts, 319 tests). Settlement is Lightning. The whole thing is MIT-licensed.
 
-Is resource allocation / payment routing something your framework handles today, or do you leave that to app developers?
+Is provider selection / cost optimization something your framework handles internally, or do your users manage that themselves?
 
-pura.xyz/explainer
+pura.xyz/docs/getting-started-gateway
+
+---
+
+## OpenClaw skill developers
+
+Subject: ship LLM routing with your skill
+
+Hey, I saw your OpenClaw skill [specific skill]. I built a gateway that OpenClaw skills can bundle as part of their config.
+
+When someone installs your skill, it already knows which LLM providers to use, what routing rules to apply, and how to pay per-request on Lightning. No manual API key setup for the end user.
+
+The gateway handles GPT-4o, Claude Sonnet, Llama 3.3 on Groq, and Gemini. Task complexity scoring routes simple prompts to cheap models automatically.
+
+Would a 15-minute walkthrough be useful? I can show you the skill config format.
+
+pura.xyz
 
 ---
 
 ## Base / onchain AI builders
 
-Subject: shipped capacity routing on Base Sepolia
+Subject: LLM gateway with on-chain settlement on Base
 
-Hey, I shipped 25 contracts on Base Sepolia that do capacity-weighted payment routing for AI agents. Uses Superfluid GDA for streaming, EIP-712 attestations for capacity verification, off-chain aggregation for gas efficiency.
+Hey, I shipped an LLM routing gateway backed by 35 contracts on Base. The gateway routes inference across four providers, scores complexity to pick the cheapest capable model, and settles per-request on Lightning.
 
-Part of a stack: Buildlog (agent workflow capture, buildlog.ai) + VR (outcome verification, vr.dev) + Pura (payment routing, pura.xyz).
+Core contracts handle capacity registration, completion verification, and backpressure routing. 319 passing tests. TypeScript SDK with 23 action modules.
 
-249 tests, TypeScript SDK with 18 modules. Looking for builders to try it on testnet and tell me what breaks.
+Free tier is 5,000 requests. The gateway is live at api.pura.xyz.
 
-Would you be up for 15 minutes? I can walk through deploy → register → stream in the SDK.
+Would you be up for 15 minutes? I can walk through the architecture.
+
+Router contract: 0x8e999a246afea241cf3c1d400dd7786cf591fa88
 
 ---
 
-## Superfluid ecosystem builders
+## Lightning builders
 
-Subject: using GDA for dynamic capacity rebalancing
+Subject: per-request LLM settlement on Lightning
 
-Hey, I built a protocol that uses Superfluid GDA in a way you might find interesting. Pura dynamically adjusts GDA member units based on verified agent capacity, turning pools into real-time allocation engines.
+Hey, I built an LLM gateway that settles per-request on Lightning via LNbits. No subscriptions, no prepaid credits. Your agent pays exactly what it uses.
 
-The primary use case is AI agent payment routing: agents declare capacity, complete task receipts update their share, and the GDA pool rebalances accordingly. Overflow goes to an escrow buffer.
+The gateway routes across OpenAI, Anthropic, Groq, and Gemini. Cost per request ranges from $0.0003 (simple prompts on Groq) to $0.02 (long-context Claude). Each response includes X-Pura-Cost and X-Pura-Budget-Remaining headers so the agent can track spend.
 
-25 contracts, 249 tests, Base Sepolia. Off-chain attestation batching gets 83.5% gas reduction.
+Funding is via LNURL. Minimum useful deposit is about 1,000 sats.
 
-What patterns have you seen work well for rapid GDA unit updates? I have some questions about multi-pool architectures sharing a Super Token.
+Would a quick walkthrough be useful?
 
 pura.xyz
 
@@ -70,81 +88,10 @@ pura.xyz
 
 Subject: Re: [original subject]
 
-Hey, just circling back. No pressure at all. If the timing is off, I will leave it.
+Hey, circling back. No pressure.
 
-If it helps, here is the 2-minute version of what Pura does:
+Quick version: Pura is an LLM gateway. Four providers. Routes by cost and complexity. Settles on Lightning. OpenAI SDK compatible. Free tier is 5,000 requests.
 
-Agents register capacity → get verified via completion receipts → payments stream proportional to spare capacity → overloaded agents get rerouted → overflow sits in escrow.
-
-15-minute walkthrough on testnet is open if you are curious.
+15-minute walkthrough is open if you are curious.
 
 pura.xyz
-
----
-
-## Pinata / OpenClaw agent platform (local Omaha connection)
-
-Subject: Pura + OpenClaw agents on Pinata
-
-Hey, I am an engineer in Omaha working on agent infrastructure on Base. I noticed Pinata is running hosted OpenClaw instances for its agent platform and I built a protocol that plugs into that.
-
-Pura does capacity-aware payment routing for agent economies. I already have three OpenClaw-specific contracts deployed on Base Sepolia: an adapter that maps agent capacity into the routing layer, a completion verifier for dual-signed work receipts, and a reputation bridge that makes track records portable across domains.
-
-The short version: when Pinata-hosted agents start doing multi-step work that involves paying external services (other agents, compute, storage), Pura provides the payment routing. It uses Superfluid streaming on Base, same chain as your x402 monetization layer.
-
-Not asking Pinata to change any infrastructure. This sits alongside what you already have. Your agent users opt in when they need payment flow control.
-
-25 contracts live on Base Sepolia. 249 tests. TypeScript SDK.
-
-Would a 15-minute walkthrough be useful? Happy to do it in person given we are both in Omaha.
-
-pura.xyz
-github.com/puraxyz/puraxyz
-
----
-
-## Nostr relay operators
-
-Subject: earn proportional to your relay's spare capacity
-
-Hey, I saw your relay [specific relay name/pubkey]. I built a protocol that turns relay capacity into a revenue stream based on actual performance.
-
-You register events/sec, storage, and bandwidth on-chain. An exponential moving average smooths the data. A Superfluid payment pool distributes revenue proportional to your verified capacity score. Three pool types: write, read, and store.
-
-There is a live dashboard at relay.gold showing registered relays and anti-spam minimums. TypeScript SDK handles registration.
-
-Would 15 minutes work to walk through it? I can run the setup script on testnet while we talk.
-
-relay.gold
-
----
-
-## Lightning node operators
-
-Subject: on-chain capacity signals for your node
-
-Hey, I noticed your node [specific node pubkey/alias]. I built a system where Lightning node operators publish their channel capacity on-chain, backed by stake. Routers use these signals instead of gossip to compute capacity-weighted routes.
-
-The tradeoff vs gossip: you commit capital, but you get consistent routing fee income instead of random HTLC lottery tickets.
-
-Live dashboard with a route explorer at lightning.gold.
-
-Would you try it on testnet? Takes about 5 minutes to register a node.
-
-lightning.gold
-
----
-
-## AI agent framework developers (OpenClaw / agent reputation)
-
-Subject: on-chain reputation for your agents
-
-Hey, I have been following [specific framework/project]. I built a reputation system where the score comes from verified work rather than ratings.
-
-Both the agent operator and requester sign each execution receipt on-chain. The protocol tracks completions, failures, and computes a composite reputation score. High reputation reduces stake requirements across the whole network.
-
-Explorer at darksource.ai. SDK integration is about 10 lines of TypeScript.
-
-Would a quick walkthrough be useful?
-
-darksource.ai

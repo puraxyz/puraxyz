@@ -1,0 +1,133 @@
+---
+title: "Get started: gateway"
+order: -0.9
+description: Route LLM inference through Pura with automatic model selection and cost tracking
+---
+
+The Pura gateway is an OpenAI-compatible API that routes across four LLM providers (OpenAI, Anthropic, Groq, Gemini). It picks the cheapest model that fits your task and tracks per-request costs.
+
+## Get an API key
+
+```bash
+curl -X POST https://api.pura.xyz/api/keys \
+  -H "Content-Type: application/json" \
+  -d '{"label":"my-agent"}'
+```
+
+Save the `key` from the response. It starts with `pura_`.
+
+## Send a request
+
+```bash
+curl https://api.pura.xyz/api/chat \
+  -H "Authorization: Bearer $PURA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"Hello"}]}'
+```
+
+Pura picks the model automatically. Simple questions go to Groq or Gemini (cheapest). Complex reasoning goes to Anthropic or OpenAI.
+
+## Use with the OpenAI SDK
+
+```typescript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://api.pura.xyz/api",
+  apiKey: process.env.PURA_API_KEY,
+});
+
+const res = await client.chat.completions.create({
+  model: "auto",
+  messages: [{ role: "user", content: "Explain backpressure routing." }],
+});
+```
+
+## Response headers
+
+Every response includes routing metadata:
+
+| Header | What it tells you |
+|--------|-------------------|
+| `X-Pura-Provider` | Which provider handled the request |
+| `X-Pura-Model` | Specific model used |
+| `X-Pura-Cost` | Estimated cost in USD |
+| `X-Pura-Tier` | Complexity tier (cheap / mid / premium) |
+| `X-Pura-Budget-Remaining` | Daily budget left |
+
+## How routing works
+
+Each request gets scored on complexity:
+
+- **cheap** — Short messages, no code blocks, simple questions. Routes to Groq (llama-3.3-70b) or Gemini (gemini-2.0-flash).
+- **mid** — Moderate length, some code, multi-turn conversations. Routes to OpenAI (gpt-4o) or Gemini.
+- **premium** — Long system prompts, code-heavy, reasoning triggers like "analyze" or "debug". Routes to Anthropic (claude-sonnet-4-20250514) or OpenAI.
+
+On-chain capacity weights (GDA pool units on Base Sepolia) break ties between providers in the same tier.
+
+## Force a specific model
+
+```bash
+# Force GPT-4o
+curl https://api.pura.xyz/api/chat \
+  -H "Authorization: Bearer $PURA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"Hello"}]}'
+```
+
+Supported model prefixes: `gpt*` / `o*` → OpenAI, `claude*` → Anthropic, `llama*` / `mixtral*` / `gemma*` → Groq, `gemini*` → Gemini.
+
+## Cost reports
+
+```bash
+curl https://api.pura.xyz/api/report \
+  -H "Authorization: Bearer $PURA_API_KEY"
+```
+
+Returns a JSON breakdown: total spend, per-model costs, request count, average cost per request over the past 24 hours.
+
+## Budget enforcement
+
+Each key has a daily spend cap (default $10). When the budget runs out, the gateway returns HTTP 402 with a `budget_exhausted` error code. The budget resets at midnight UTC.
+
+## BYOK (bring your own key)
+
+Pass your own provider API key to use your account directly:
+
+```bash
+curl https://api.pura.xyz/api/chat \
+  -H "Authorization: Bearer $PURA_API_KEY" \
+  -H "X-Provider-Key: sk-your-openai-key" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"Hello"}]}'
+```
+
+With BYOK, Pura still routes and tracks costs, but inference charges go to your provider account.
+
+## Lightning wallet (optional)
+
+The first 5,000 requests are free. After that, fund a Lightning wallet:
+
+```bash
+# Create a funding invoice
+curl -X POST https://api.pura.xyz/api/wallet/fund \
+  -H "Authorization: Bearer $PURA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 10000}'
+
+# Check balance
+curl https://api.pura.xyz/api/wallet/balance \
+  -H "Authorization: Bearer $PURA_API_KEY"
+```
+
+## OpenClaw skill
+
+If you use OpenClaw, install the Pura skill instead of configuring the API manually. See [OpenClaw integration](/docs/getting-started-openclaw).
+
+## Provider status
+
+Check real-time provider availability at [pura.xyz/status](/status) or hit the API directly:
+
+```bash
+curl https://api.pura.xyz/api/status
+```

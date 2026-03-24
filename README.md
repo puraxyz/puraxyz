@@ -1,6 +1,6 @@
-# Pura: Backpressure Economics for Decentralized Networks
+# Pura
 
-**Universal capacity-constrained flow control across AI agents, Nostr relays, Lightning routing, and streaming payments**
+**LLM routing gateway with on-chain capacity contracts and Lightning settlement**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.26-363636.svg)](https://soliditylang.org/)
@@ -9,115 +9,114 @@
 
 ---
 
-Pura adapts the [Tassiulas–Ephremides backpressure routing algorithm](https://doi.org/10.1109/9.182479) from communication networks to monetary and data flows in decentralized systems. When downstream participants reach capacity, payments and messages must reroute, buffer, or throttle. Pura makes receiver-side capacity constraints a first-class protocol primitive.
+Pura routes LLM inference across providers, settles per-request on Lightning, and distributes via OpenClaw skills. One API endpoint. OpenAI SDK compatible.
 
-The core protocol handles capacity-weighted payment routing for AI agents. Additional research modules extend to other domains:
+## Gateway
 
-| Domain | What it solves |
-|--------|---------------|
-| **Core BPE** | Capacity-weighted streaming payment routing for AI agents via Superfluid GDA |
-| **Demurrage** | Time-decaying super tokens + velocity metrics to incentivize circulation |
-| **Nostr Relays** | Relay capacity signaling, anti-spam pricing, BPE-weighted payment pools |
-| **Lightning** | EWMA-smoothed channel capacity oracles, cross-protocol routing |
-| **V2 Composition** | Factory-deployed nested economies, quality scoring, urgency and velocity tokens |
-| **Thermodynamic** | Temperature oracle, virial ratio monitor, system state emitter for adaptive routing |
-| **DVM Adapters** | NIP-90 capacity, dual-signed completion verification, kind-weighted pricing curves |
-| **Settlement** | Three settlement rails: Superfluid streaming, Lightning HTLC, direct ERC-20 escrow |
+The gateway sits between your agent and LLM providers. It scores each request for task complexity, routes to the cheapest capable model, streams the response, and tracks cost.
 
-Plus a **platform layer** (universal capacity adapter, cross-domain reputation ledger, and protocol router) that composes these domains into one system.
+```python
+from openai import OpenAI
 
-## Architecture
-
-```
-                        ┌─────────────────────────────────┐
-                        │       Platform Layer             │
-                        │  UniversalCapacityAdapter        │
-                        │  ReputationLedger                │
-                        │  CrossProtocolRouter             │
-                        └──────┬───────┬──────┬───────────┘
-                               │       │      │
-             ┌─────────────────┤       │      ├──────────────────┐
-             ▼                 ▼       ▼      ▼                  ▼
-  ┌───────────────────┐ ┌──────────────┐ ┌──────────────────┐ ┌────────────────┐
-  │   Core BPE        │ │  Demurrage   │ │   Nostr Relays   │ │   Lightning    │
-  │  CapacityRegistry │ │  Demurrage-  │ │  RelayCapacity-  │ │  LightningCap- │
-  │  StakeManager     │ │   Token      │ │   Registry       │ │   acityOracle  │
-  │  BackpressurePool │ │  Velocity-   │ │  RelayPayment-   │ │  LightningRout-│
-  │  EscrowBuffer     │ │   Metrics    │ │   Pool           │ │   ingPool      │
-  │  Pipeline         │ └──────────────┘ └──────────────────┘ └────────────────┘
-  │  PricingCurve     │
-  │  CompletionTracker│       ┌──────────────────────────────┐
-  │  OffchainAggr.    │──────▶│   Thermodynamic Layer        │
-  └───────────────────┘       │  TemperatureOracle (τ)       │
-                              │  VirialMonitor (V)           │
-                              │  SystemStateEmitter          │
-                              └──────────────────────────────┘
+client = OpenAI(base_url="https://api.pura.xyz/v1", api_key="pura_...")
+response = client.chat.completions.create(
+    model="auto",
+    messages=[{"role": "user", "content": "Explain backpressure routing"}]
+)
 ```
 
-## Results
+Four providers. Three complexity tiers. Automatic failover.
 
-- **Throughput-optimal** allocation via Lyapunov drift analysis: every stabilisable demand vector is served
-- **95.7%** allocation efficiency vs 93.5% for round-robin (simulation)
-- **83.5%** gas reduction via off-chain attestation aggregation
-- **Sybil-resistant** concave capacity cap: cap(S) = √(S/u)
-- **Incentive-compatible**: truthful reporting is a Bayesian-Nash equilibrium
-- **Cross-domain reputation**: portable scores with 3× negative weight, up to 50% stake discount
+| Tier | Provider | Model | Cost/1K tokens |
+|------|----------|-------|---------------|
+| Cheap | Groq | Llama 3.3 70B | $0.00059 |
+| Mid | OpenAI | GPT-4o | $0.005 |
+| Mid | Anthropic | Claude Sonnet | $0.003 |
+| Overflow | Google | Gemini | $0.00125 |
 
-## Repository Structure
+Response headers expose routing decisions: `X-Pura-Model`, `X-Pura-Cost`, `X-Pura-Budget-Remaining`, `X-Pura-Tier`.
+
+Free tier: 5,000 requests. After that, fund via Lightning invoice.
+
+## On-chain layer
+
+35 contracts on Base handle the economics behind the gateway: who provides capacity, how completions are verified, and how payments distribute.
+
+| Contract | What it does |
+|----------|-------------|
+| CapacityRegistry | Providers register multi-dimensional capacity vectors |
+| BackpressurePool | Superfluid GDA pool, units = verified spare capacity |
+| StakeManager | Concave sqrt staking, Sybil-resistant capacity caps |
+| CompletionTracker | Dual-signed completion receipts |
+| OffchainAggregator | Batched EIP-712 attestations (83.5% gas reduction) |
+| EscrowBuffer | Overflow buffer when all providers are at capacity |
+| PricingCurve | EIP-1559-style dynamic pricing per capacity dimension |
+| Pipeline | Multi-stage routing chains |
+
+Research modules extend the core to Nostr relay economics, Lightning routing incentives, demurrage tokens, and cross-domain composition.
+
+## Settlement
+
+Per-request Lightning settlement via LNbits. No subscriptions, no prepaid credits that expire.
+
+- Fund your account: `POST /api/wallet/fund` returns an LNURL
+- Check balance: `GET /api/wallet/balance`
+- Cost report: `GET /api/report` (24h breakdown by provider)
+- Provider status: `GET /api/status` (latency, success rate per provider)
+
+## Distribution
+
+OpenClaw skills. A developer packages routing config, provider preferences, and budget limits into an installable skill. Users install and get a working LLM endpoint without provider setup.
 
 ```
-contracts/              Solidity smart contracts (Foundry)
-  src/                  32 contracts (8 core + 5 v2 + 3 thermodynamic + 6 adapters + 10 research)
-    adapters/           SuperfluidSettlement, LightningSettlement, DirectSettlement,
-                        DVMCapacity, DVMCompletionVerifier, DVMPricingCurve
-    lightning/          LightningCapacityOracle, LightningRoutingPool, CrossProtocolRouter
-    nostr/              RelayCapacityRegistry, RelayPaymentPool
-    interfaces/         15 interfaces (+ ISettlementAdapter)
-  test/                 319 passing tests
-  script/               Full-stack deployment script
-  deployments/          Deployed addresses (Base Sepolia)
-
-sdk/                    TypeScript SDK (@puraxyz/sdk)
-  src/actions/          18 action modules (sink, source, pool, stake, buffer,
-                        pricing, completion, aggregator, demurrage, relay,
-                        lightning, platform, openclaw, economy, nestedPool,
-                        quality, urgencyToken, velocityToken)
-  src/schemas.ts        5 standard object types + signing helpers
-  schemas/              JSON Schema (draft-07) for all 5 protocol objects
-  src/examples/         Full-flow demo + testnet validation
-
-shadow/                 Shadow mode sidecar (@pura/shadow)
-  src/collector.ts      Circular buffer, sliding window per-sink metrics
-  src/simulator.ts      Boltzmann allocation, EWMA, congestion pricing engine
-  src/shadow.ts         createShadow() factory, middleware + manual modes
-  src/server.ts         HTTP metrics server (port 3099)
-
-pura/                   Operator dashboard (pura.xyz) — Next.js
-  app/api/              11 API routes (on-chain state + shadow sidecar proxy)
-  app/monitor/          Shadow mode monitor (4 pages: overview, capacity, congestion, audit)
-  app/simulate/         Interactive BPE benchmark (Canvas charts, 4 strategies)
-  app/deploy/dvm/       DVM deployment flow (6 NIP-90 kinds)
-  scripts/              Setup scripts for on-chain registration
-
-bitrecipes/             Visual pipeline builder (bit.recipes) — Next.js
-
-docs/
-  paper/                Research paper (LaTeX, 16 sections)
-  nips/                 NIP-XX: Backpressure Relay Economics spec
-
-simulation/             Python simulation (5 experiments, figure generation)
-plan/                   Design documents 00–08 (historical) + protocol spec
-web/                    Next.js website (pura.xyz)
-gtm/                    Go-to-market material
+openclaw install pura-gateway
 ```
 
-## Quick Start
+## Repository structure
 
-### Prerequisites
+```
+gateway/              LLM routing gateway (Next.js)
+  app/api/            Chat, report, status, wallet endpoints
+  lib/                Routing, providers, budget, settlement, metrics
 
-- [Foundry](https://book.getfoundry.sh/) (forge, cast, anvil)
-- [Node.js](https://nodejs.org/) ≥ 18 + npm
-- Python 3.10+ (for simulation)
+contracts/            Solidity smart contracts (Foundry)
+  src/                35 contracts (8 core + research modules)
+  test/               319 passing tests
+  deployments/        Deployed addresses (Base Sepolia)
+
+sdk/                  TypeScript SDK (@puraxyz/sdk)
+  src/actions/        23 action modules
+  schemas/            JSON Schema (draft-07)
+
+pura/                 Documentation site (pura.xyz) — Next.js
+  app/                Pages, components, API routes
+  content/            MDX docs and blog posts
+
+openclaw-skill/       OpenClaw skill packaging
+  SKILL.md            Skill manifest
+  scripts/            Install and test scripts
+
+shadow/               Shadow mode sidecar (@pura/shadow)
+  src/                Collector, simulator, middleware
+
+docs/paper/           Research paper (LaTeX)
+  thermo/             Paper 2: thermodynamic extensions
+
+simulation/           Python simulation (BPE + Boltzmann routing)
+plan/                 Historical design documents
+gtm/                  Go-to-market materials
+```
+
+## Quick start
+
+### Gateway (self-host)
+
+```bash
+cd gateway
+npm install
+cp .env.example .env    # add your provider API keys
+npm run dev              # localhost:3000
+```
 
 ### Contracts
 
@@ -125,7 +124,7 @@ gtm/                    Go-to-market material
 cd contracts
 forge install
 forge build
-forge test            # 319 tests passing
+forge test               # 319 tests passing
 ```
 
 ### SDK
@@ -133,16 +132,16 @@ forge test            # 319 tests passing
 ```bash
 cd sdk
 npm install
-npm run build         # compile TypeScript
-npm run lint          # type-check
+npm run build
+npm run test
 ```
 
-### Website
+### Site
 
 ```bash
-cd web
+cd pura
 npm install
-npm run dev           # local preview at localhost:3000
+npm run dev              # localhost:3000
 ```
 
 ### Simulation
@@ -150,11 +149,12 @@ npm run dev           # local preview at localhost:3000
 ```bash
 pip install numpy matplotlib
 python simulation/bpe_sim.py
+python simulation/boltzmann_sim.py
 ```
 
-## Contracts: 32 on Base Sepolia
+## Contracts on Base Sepolia
 
-### Core BPE
+### Core
 
 | Contract | Address |
 |----------|---------|
@@ -169,7 +169,7 @@ python simulation/bpe_sim.py
 | CompletionTracker | [`0x7Dd6d47AC3b0BbF3D99bd61D1f1B1F85350A90c4`](https://sepolia.basescan.org/address/0x7Dd6d47AC3b0BbF3D99bd61D1f1B1F85350A90c4) |
 | OffchainAggregator | [`0x98c621051b5909f41d3d9A32b3b7DbB02615a179`](https://sepolia.basescan.org/address/0x98c621051b5909f41d3d9A32b3b7DbB02615a179) |
 
-### Demurrage, Nostr, Lightning, Platform
+### Research modules
 
 | Contract | Domain | Address |
 |----------|--------|---------|
@@ -182,40 +182,25 @@ python simulation/bpe_sim.py
 | CrossProtocolRouter | Lightning | [`0x89df6EF70ef288f61003E392D3E5ddC8D9bD6e2d`](https://sepolia.basescan.org/address/0x89df6EF70ef288f61003E392D3E5ddC8D9bD6e2d) |
 | UniversalCapacityAdapter | Platform | [`0x66368dbFdf4de036efB4D37bC73B490903062421`](https://sepolia.basescan.org/address/0x66368dbFdf4de036efB4D37bC73B490903062421) |
 | ReputationLedger | Platform | [`0xdbCD358acEe7671D1ce7311CF9aC2a5B1C266B55`](https://sepolia.basescan.org/address/0xdbCD358acEe7671D1ce7311CF9aC2a5B1C266B55) |
-| TemperatureOracle | Thermodynamic | Not yet deployed |
-| VirialMonitor | Thermodynamic | Not yet deployed |
-| SystemStateEmitter | Thermodynamic | Not yet deployed |
-| DVMCapacityAdapter | DVM Adapter | Not yet deployed |
-| DVMCompletionVerifier | DVM Adapter | Not yet deployed |
-| DVMPricingCurve | DVM Adapter | Not yet deployed |
-| SuperfluidSettlementAdapter | Settlement | Not yet deployed |
-| LightningSettlementAdapter | Settlement | Not yet deployed |
-| DirectSettlementAdapter | Settlement | Not yet deployed |
+
+Thermodynamic, DVM adapter, and settlement contracts compiled and tested but not yet deployed.
 
 ## Paper
 
-The research paper is in [`docs/paper/`](docs/paper/) (LaTeX). Sections:
+Research paper in [`docs/paper/`](docs/paper/) (LaTeX). Covers the formal model, throughput-optimality proof, pricing equilibrium, off-chain attestation design, and security analysis.
 
-1. **Formal Model**: capacity-constrained monetary flow network with EWMA smoothing
-2. **Throughput Optimality**: Lyapunov drift proof with explicit overflow buffer bounds
-3. **Dynamic Pricing**: EIP-1559-style queue-length pricing with equilibrium analysis
-4. **Off-Chain Attestation**: batched EIP-712 capacity signals (83.5% gas savings)
-5. **Security Analysis**: Sybil resistance, MEV resistance, Bayesian-Nash incentive compatibility
-6. **Capacity Verification**: statistical completion tracking with auto-slash
+Paper 2 (thermodynamic extensions) in [`docs/paper/thermo/`](docs/paper/thermo/).
 
 ```bash
 cd docs/paper && pdflatex main && bibtex main && pdflatex main && pdflatex main
 ```
 
-## Community
+## Links
 
-Pura is early infrastructure looking for feedback from builders across AI agents, Nostr, Lightning, and DeFi.
-
-- **Website**: [pura.xyz](https://pura.xyz)
-- **GitHub**: [github.com/puraxyz/puraxyz](https://github.com/puraxyz/puraxyz)
-- **Twitter/X**: Follow for updates (link TBD)
-
-If you're building decentralized systems that need capacity-aware economic coordination, [open an issue](https://github.com/puraxyz/puraxyz/issues) or reach out directly.
+- Website: [pura.xyz](https://pura.xyz)
+- GitHub: [github.com/puraxyz/puraxyz](https://github.com/puraxyz/puraxyz)
+- Gateway docs: [pura.xyz/docs/getting-started-gateway](https://pura.xyz/docs/getting-started-gateway)
+- Paper: [pura.xyz/paper](https://pura.xyz/paper)
 
 ## License
 

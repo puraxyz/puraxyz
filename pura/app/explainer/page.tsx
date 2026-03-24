@@ -16,6 +16,7 @@ import {
 export const metadata = { title: "How It Works" };
 
 const sections = [
+  { id: "use-cases", label: "What Pura does", level: 2 as const },
   { id: "the-problem", label: "The problem", level: 2 as const },
   { id: "four-planes", label: "Four architectural planes", level: 2 as const },
   { id: "five-objects", label: "Five standard objects", level: 2 as const },
@@ -76,9 +77,61 @@ export default function ExplainerPage() {
         How Pura Works
       </h1>
       <p className={styles.subtitle}>
-        Backpressure economics, thermodynamic pricing, and why any of it
-        matters. No math degree required.
+        Pick your use case below, then scroll down for the full protocol
+        mechanics. No math degree required.
       </p>
+
+      <hr />
+
+      {/* ────────────────── USE CASE PATHS ────────────────── */}
+
+      <h2 id="use-cases">What Pura does</h2>
+
+      <h3><Zap size={16} style={{ verticalAlign: "text-bottom" }} /> LLM gateway</h3>
+      <p>
+        You run AI agents that call LLMs. You want to pay less per request
+        without managing four different provider APIs. Pura scores each request
+        by complexity and routes it to the cheapest provider that can handle it.
+        Simple lookups go to Groq or Gemini. Reasoning goes to Anthropic or
+        OpenAI. You get cost headers on every response and a nightly spend
+        report.
+      </p>
+      <p>
+        One line change: swap your base URL to <code>api.pura.xyz</code>.
+        Everything else in your OpenAI SDK code stays the same.
+      </p>
+      <p><a href="/gateway">Gateway quick start →</a></p>
+
+      <h3><Radio size={16} style={{ verticalAlign: "text-bottom" }} /> Nostr relay operator</h3>
+      <p>
+        You run a Nostr relay. You want to monetize it without spamming your
+        users with subscription prompts. Pura lets you declare your relay&apos;s
+        capacity on-chain, receive flow-weighted payments through a Superfluid
+        stream, and have your relay&apos;s throughput verified cryptographically.
+        Busier relays earn proportionally more.
+      </p>
+      <p><a href="#domains">Nostr relay details →</a></p>
+
+      <h3><Coins size={16} style={{ verticalAlign: "text-bottom" }} /> Lightning node operator</h3>
+      <p>
+        You run a Lightning node. Channel rebalancing costs money and time.
+        Pura can read your node&apos;s channel capacity on-chain, route rebalancing
+        flows through the backpressure algorithm, and settle fees via your
+        existing Lightning channels. The protocol treats your node like any other
+        service provider that declares capacity and earns proportional to work
+        done.
+      </p>
+      <p><a href="#lightning">Lightning integration details →</a></p>
+
+      <h3><PawPrint size={16} style={{ verticalAlign: "text-bottom" }} /> AI agent framework</h3>
+      <p>
+        You build AI agents with OpenClaw, LangChain, or a custom stack. Your
+        agents need LLM inference, and you want cost control without hardcoding
+        provider logic. Install the Pura OpenClaw skill or point your HTTP
+        client at the gateway. Your agents get automatic model selection,
+        budget caps, and spend tracking across every agent in your fleet.
+      </p>
+      <p><a href="/docs/getting-started-openclaw">OpenClaw skill docs →</a></p>
 
       <hr />
 

@@ -1,12 +1,69 @@
 ---
-title: "Get started: AI agent operators"
-order: -0.3
-description: Register agents, verify executions, and build on-chain reputation
+title: "Get started: OpenClaw agents"
+order: -0.8
+description: Install the Pura skill in OpenClaw for automatic LLM routing and cost tracking
 ---
 
-Pura's OpenClaw protocol lets AI agent operators register their agents on-chain, track verified completions, and build a reputation score that reduces stake requirements across the protocol.
+The Pura OpenClaw skill routes all your agent's LLM calls through the Pura gateway. Install the skill, and your agent gets automatic model selection, budget enforcement, and overnight cost reports.
 
-You need: a wallet with Base Sepolia ETH and test tokens for staking.
+## Install the skill
+
+Copy the skill into your OpenClaw workspace:
+
+```bash
+cp -r openclaw-skill ~/.openclaw/workspace/skills/pura
+```
+
+Or download from ClawHub when available:
+
+```bash
+openclaw install pura
+```
+
+## Set up your API key
+
+Run the setup script:
+
+```bash
+bash ~/.openclaw/workspace/skills/pura/scripts/setup.sh
+```
+
+This generates a Pura API key and saves it to your environment. The key starts with `pura_`.
+
+## What the skill does
+
+Once installed, any LLM call your agent makes routes through `api.pura.xyz` instead of directly to a provider. The skill handles:
+
+- Automatic model selection based on task complexity
+- Budget enforcement (daily spend caps)
+- Cost tracking with per-model breakdowns
+- Provider failover (OpenAI → Anthropic → Groq → Gemini)
+- Lightning wallet management for post-free-tier usage
+
+## Check your cost report
+
+```bash
+bash ~/.openclaw/workspace/skills/pura/scripts/report.sh
+```
+
+Returns your past 24h spend broken down by model.
+
+## Manual configuration
+
+If you don't use the skill scripts, point your agent's LLM client at Pura:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.pura.xyz/api",
+    api_key=os.environ["PURA_API_KEY"]
+)
+```
+
+## On-chain reputation (advanced)
+
+The rest of this guide covers registering agents on-chain, verifying executions, and building reputation scores.
 
 ## Install the SDK
 

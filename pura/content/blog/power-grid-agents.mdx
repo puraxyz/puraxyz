@@ -1,0 +1,97 @@
+---
+title: We built 32 contracts. The first product is an LLM gateway.
+description: Pura routes inference across OpenAI, Anthropic, Groq, and Gemini. It picks the cheapest model that fits your task, settles on Lightning, and distributes to agents via OpenClaw.
+date: "2026-03-28"
+---
+
+We spent a year building a throughput-optimal payment routing protocol. 32 contracts. 319 tests. Lyapunov proofs. Superfluid GDA pools with dynamic unit rebalancing. A thermodynamic layer that computes system temperature from capacity variance.
+
+And then we built the product.
+
+## The gateway
+
+`api.pura.xyz` is an OpenAI-compatible endpoint. You send a chat completion request. The gateway scores your task's complexity, picks the cheapest provider that can handle it, streams the response back, and tells you what it cost.
+
+```bash
+curl https://api.pura.xyz/api/chat \
+  -H "Authorization: Bearer pura_abc123" \
+  -d '{"messages":[{"role":"user","content":"What is 2+2?"}]}'
+```
+
+That request goes to Groq (llama-3.3-70b) because the task is simple. A request with a 2,000-word system prompt and chain-of-thought reasoning goes to Anthropic or OpenAI. You never specify the model unless you want to.
+
+Response headers tell you what happened:
+
+```
+X-Pura-Model: groq/llama-3.3-70b-versatile
+X-Pura-Cost: 0.0003
+X-Pura-Tier: cheap
+X-Pura-Budget-Remaining: 9.85
+```
+
+Four providers today: OpenAI (gpt-4o), Anthropic (claude-sonnet-4-20250514), Groq (llama-3.3-70b-versatile), Gemini (gemini-2.0-flash). The router reads on-chain capacity state from BackpressurePool to break ties.
+
+## Why this exists
+
+Every agent framework eventually needs to call an LLM. Most hard-code a single provider. Some let you configure a fallback. None of them score the task and route to the cheapest option automatically.
+
+The cost difference is real. Groq charges $0.0003 per 1K tokens. OpenAI charges $0.005. For the same "what is 2+2?" query, routing to Groq saves 94%. Across thousands of overnight agent runs, that compounds.
+
+OpenRouter does provider aggregation too. So does LiteLLM. The difference: Pura reads from on-chain capacity pools. When the protocol has multiple providers staked into a BackpressurePool, the router picks the one with the most spare capacity. That routing decision is the same backpressure algorithm (Tassiulas-Ephremides, 1992) that runs the rest of the protocol.
+
+## Settlement
+
+The first 5,000 requests are free. After that, you fund a Lightning wallet via LNbits:
+
+```bash
+curl -X POST https://api.pura.xyz/api/wallet/fund \
+  -H "Authorization: Bearer pura_abc123" \
+  -d '{"amount": 10000}'
+```
+
+You get a BOLT11 invoice. Pay it. The gateway deducts per-request costs from your balance asynchronously. Inference never blocks on payment settlement.
+
+Why Lightning and not Stripe? Two reasons. First, agent frameworks run unattended. An agent doing overnight work can't pause to enter a credit card. A pre-funded sat balance just works. Second, Lightning is programmable money. When on-chain settlement via Superfluid or direct ERC-20 comes online, the settlement abstraction in the gateway swaps the provider without changing any client code.
+
+## OpenClaw distribution
+
+The gateway works with any HTTP client. But the fastest path for AI agents is the OpenClaw skill:
+
+```bash
+cp -r openclaw-skill ~/.openclaw/workspace/skills/pura
+```
+
+The skill handles auth, model routing, budget alerts, and cost reports. Your agent calls the gateway through the skill without knowing anything about providers, pricing, or wallets.
+
+## Cost reports
+
+Every morning you get a report:
+
+```bash
+curl https://api.pura.xyz/api/report \
+  -H "Authorization: Bearer pura_abc123"
+```
+
+```json
+{
+  "period": "24h",
+  "totalSpendUsd": 1.47,
+  "requestCount": 892,
+  "averageCostUsd": 0.00165,
+  "perModel": {
+    "groq/llama-3.3-70b-versatile": { "requests": 671, "spend": 0.20 },
+    "anthropic/claude-sonnet-4-20250514": { "requests": 142, "spend": 0.43 },
+    "openai/gpt-4o": { "requests": 79, "spend": 0.84 }
+  }
+}
+```
+
+671 out of 892 requests went to Groq. The router classified them as cheap-tier tasks and saved money on each one. The 79 requests that hit OpenAI were complex enough to justify the cost.
+
+## From protocol to product
+
+The 32 contracts still matter. BackpressurePool, CapacityRegistry, CompletionTracker, PricingCurve — they're the mechanism underneath. When more providers stake into the pool, the routing gets better. When completion receipts accumulate, the complexity classifier gets calibrated against real data.
+
+But the product is the gateway. One endpoint. Automatic model selection. Per-request cost tracking. Lightning settlement. OpenClaw distribution.
+
+Try it: [pura.xyz/gateway](/gateway)

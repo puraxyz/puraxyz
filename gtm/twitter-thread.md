@@ -6,161 +6,126 @@ Copy-paste each numbered block as a separate tweet. Post from personal account u
 
 1/
 
-AI agents are learning to pay each other in real time using streaming payments.
+I built an LLM gateway that routes your inference calls across four providers and settles on Lightning.
 
-Nobody built the flow control layer. When an agent gets overwhelmed, the money keeps streaming in. No reroute. No throttle. No feedback.
+One API key. OpenAI-compatible. You send a prompt, the gateway picks the cheapest model that can handle it, streams the response, and pays per-token via Lightning.
 
-Here is how I fixed it.
+pura.xyz
 
 ---
 
 2/
 
-In data networks, routers drop packets. TCP throttles the sender. Backpressure signals propagate upstream.
+The problem: every AI agent app hard-codes one provider. When that provider goes down or gets expensive, your agent stops working.
 
-The internet works because congestion is a first-class concept.
-
-Payment networks for AI agents have no equivalent.
+Pura sits between your agent and the LLM. It picks the best available provider for each request based on cost, latency, and task complexity.
 
 ---
 
 3/
 
-Pura adapts backpressure routing (Tassiulas-Ephremides, 1992) to monetary flows.
+How routing works:
 
-The rule: route payments to agents with the most spare capacity.
+Simple prompt? Goes to Groq (Llama 3.3 70B) at $0.00059/1K tokens.
+Needs code or structured output? GPT-4o at $0.005/1K.
+Long-context analysis? Claude Sonnet at $0.003/1K.
+Fallback? Gemini catches overflow.
 
-Saturated agents get less. Available agents get more. Automatically. No coordinator.
+You see one endpoint. The gateway decides.
 
 ---
 
 4/
 
-Then I added a thermodynamic layer.
+Payment is per-request via Lightning. No subscriptions. No prepaid credits that expire. Your agent pays exactly what it uses and can stop at any time.
 
-The system computes a temperature from capacity variance. High disagreement = high temperature = more exploratory routing. Low disagreement = deterministic routing to the best provider.
-
-Boltzmann-weighted probabilities. Same math as statistical mechanics.
+The gateway exposes balance and cost in response headers: X-Pura-Cost, X-Pura-Budget-Remaining, X-Pura-Model.
 
 ---
 
 5/
 
-A virial ratio tracks whether staked capital matches throughput.
+Free tier: 5,000 requests. No credit card. Takes 30 seconds to get an API key.
 
-V = 2T / (S + E). T is throughput, S is staked, E is escrowed.
-
-At V=1, the system is in equilibrium. Below 1, idle capital is taxed via adaptive demurrage (1-10%/year) to push tokens back into productive use.
+After that, fund your account with a Lightning invoice. The smallest useful deposit is about 1,000 sats (~$0.30), good for roughly 500 routed completions.
 
 ---
 
 6/
 
-Circuit breakers per pipeline stage.
+Why not just use OpenRouter or LiteLLM?
 
-If throughput drops below 5% of declared capacity, or escrow pressure hits 95%, the stage decouples. A bottleneck in stage 3 stops cascading to stages 1 and 2. Recovery is automatic once throughput returns.
+Because they charge you platform margin on top of provider costs, and they keep your usage data. Pura runs open source. You can self-host the gateway, bring your own provider keys, and pay nothing except raw model costs.
 
 ---
 
 7/
 
-The math works.
+Under the hood: 35 contracts on Base. 319 passing tests. The on-chain layer handles capacity registration, completion verification, and backpressure routing. The gateway is the first consumer of that protocol.
 
-95.7% allocation efficiency (vs 93.5% round-robin).
-83.5% gas reduction via off-chain attestation batching.
-Recovery from agent failure within 50 steps.
-Formal throughput optimality proof via Lyapunov drift analysis.
+Research paper: pura.xyz/paper
 
 ---
 
 8/
 
-Live on Base Sepolia. 25 contracts. 249 passing tests. TypeScript SDK with 18 modules. Research paper with formal proofs. MIT licensed.
+Try it now. Drop-in replacement for the OpenAI SDK:
 
-Three new thermodynamic contracts: TemperatureOracle, VirialMonitor, SystemStateEmitter.
+```
+from openai import OpenAI
+client = OpenAI(base_url="https://api.pura.xyz/v1", api_key="pura_...")
+```
 
-pura.xyz
+pura.xyz/docs/getting-started-gateway
 github.com/puraxyz/puraxyz
-
----
-
-9/
-
-Looking for feedback from AI agent builders.
-
-If your agents pay each other and you want flow control for those payments, try the testnet.
-
-If it breaks, tell me how. If something is missing, tell me what.
-
-pura.xyz/explainer
 
 ---
 
 ## Notes
 
 - Post from personal account, use "I" voice throughout
-- Add architecture diagram image from the repo to tweet 5
-- Tag relevant accounts: @BuildOnBase, @Superfluid_HQ, @LangChainAI
+- Screenshot the DemoTerminal from pura.xyz for tweet 3
+- Tag: @BuildOnBase, @OpenClaw
 - Pin the thread after posting
 
 ---
 
 ## One-off posts
 
-Post individually from personal account. Not a thread. Same "I" voice. Each stands alone.
+Post individually. Not a thread. Same "I" voice. Each stands alone.
 
 ---
 
-The entire AI agent economy runs on fire-and-forget payments. Send money, hope the work happens. No receipt. No reroute if the agent is down. We have better plumbing for water than for agent payments.
+Every AI agent framework picks one LLM provider and hard-codes it. That works until the provider raises prices, goes down, or rate-limits you at 2am. I built a gateway that routes around all three problems. pura.xyz
 
 ---
 
-If three agents all pay the same LLM and it is at capacity, what happens? Today: nothing. The money streams in. The work does not get done. Nobody gets told to try somewhere else.
+Agents should pay per-request on Lightning, not per-month on Stripe. A subscription assumes steady usage. Agent usage is bursty and unpredictable. Lightning invoices match the actual usage curve.
 
 ---
 
-Backpressure routing was invented in 1992 for data networks. The core idea: send traffic to the node with the most spare capacity. It took 33 years for someone to apply it to money. I built that.
-
-pura.xyz
+The OpenAI SDK already supports custom base URLs. That means any agent built on it can switch to Pura by changing one line. No new SDK. No new auth flow. Just a different base_url and an API key.
 
 ---
 
-I keep seeing agent frameworks add "payment" as a feature and "load balancing" as a separate feature. These are the same problem. If the act of paying IS the demand signal, then routing the payment IS load balancing.
+If your agent calls GPT-4o for every request including "what time is it," you are burning money. Pura scores task complexity and routes simple requests to Llama 3.3 on Groq. The agent does not notice. The bill drops 80%.
 
 ---
 
-25 contracts. 249 tests. 18 SDK modules. Boltzmann routing. Virial equilibrium. Circuit breakers. One idea: route payments to whoever has room to do the work. pura.xyz
+Self-hosting the Pura gateway: clone the repo, add your own provider API keys, run `npm run dev`. No platform fees, no usage tracking, no vendor lock-in. Your keys, your data, your routing rules.
 
 ---
 
-Agents that fake capacity get slashed. Agents that do the work get more payment flow. Agents that fill up get rerouted around. No human in the loop.
+35 contracts. 319 tests. 4 LLM providers. Lightning settlement. One API endpoint. The whole thing is MIT-licensed. pura.xyz
 
 ---
 
-The system tracks a temperature derived from capacity variance. When providers disagree, temperature rises and routing spreads. When they agree, it locks in on the best one. Same math used in statistical mechanics and simulated annealing.
+The gateway tracks which providers are up, how fast they respond, and what they cost per token. When a provider degrades, traffic shifts automatically. Your agent never sees a 500 error.
 
 ---
 
-EIP-1559 solved gas pricing by making fees respond to congestion. Pura does the same thing for agent payments. Busy agent = higher price = demand shifts to the agent with room.
+OpenClaw skills can ship with a Pura gateway config baked in. Install the skill, it brings its own routing and payment. No manual provider setup. The skill author chose the tradeoffs. You just run it.
 
 ---
 
-The concave square root capacity cap is the part of the protocol I am most pleased with. If you split your stake across two fake identities, your total capacity drops. Sybil attacks make you strictly worse off. No identity layer needed.
-
----
-
-Streaming payments are a UX improvement. Backpressure routing is a mechanism design improvement. One makes payments continuous. The other makes sure continuous payments go to the right place.
-
----
-
-Every agent framework will eventually need flow control for payments. The question is whether each one invents it independently or whether there is a shared protocol. I am building the shared protocol.
-
-pura.xyz
-
----
-
-Hot take: the first AI agent economy that actually works will not have the best models. It will have the best plumbing. Who gets paid, how much, and what happens when the pipe is full.
-
----
-
-The worst thing that can happen in an agent economy is not fraud. It is silent overload. Money flowing to an agent that cannot do the work, with no signal propagating back to the sender. That is the default today.
+Hot take: the first AI agent platform that actually works at scale will not have the best models. It will have the best routing. Who handles the request, at what cost, and what happens when the provider is down.

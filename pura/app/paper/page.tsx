@@ -32,7 +32,10 @@ export default function PaperIndex() {
     <div className={styles.page}>
       <h1>Paper: Backpressure Economics</h1>
       <p className={styles.subtitle}>
-        Capacity-constrained monetary flow control for agent economies
+        The theory behind the Pura gateway. Adapts congestion control from
+        data networks to monetary flows between AI agents. The gateway&apos;s
+        routing algorithm, pricing curves, and settlement mechanics all derive
+        from this paper.
       </p>
       <div className={styles.pdfLinks}>
         <a

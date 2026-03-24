@@ -13,6 +13,9 @@ const CURL_COMMAND = `curl -X POST ${API_BASE}/v1/chat/completions \\
 interface DemoResult {
   output: string;
   provider: string | null;
+  model: string | null;
+  cost: string | null;
+  tier: string | null;
   requestId: string | null;
   rateRemaining: string | null;
   latencyMs: number;
@@ -51,6 +54,9 @@ export function DemoTerminal() {
       }
 
       const provider = res.headers.get("x-pura-provider");
+      const model = res.headers.get("x-pura-model");
+      const cost = res.headers.get("x-pura-cost");
+      const tier = res.headers.get("x-pura-tier");
       const requestId = res.headers.get("x-pura-request-id");
       const rateRemaining = res.headers.get("x-ratelimit-remaining");
 
@@ -74,6 +80,9 @@ export function DemoTerminal() {
               setResult({
                 output,
                 provider,
+                model,
+                cost,
+                tier,
                 requestId,
                 rateRemaining,
                 latencyMs: Date.now() - start,
@@ -88,6 +97,9 @@ export function DemoTerminal() {
       setResult({
         output: output || "(empty response)",
         provider,
+        model,
+        cost,
+        tier,
         requestId,
         rateRemaining,
         latencyMs: Date.now() - start,
@@ -126,6 +138,18 @@ export function DemoTerminal() {
                 <span className={styles.metaItem}>
                   <span className={styles.metaKey}>provider</span>{" "}
                   <span className={styles.metaVal}>{result.provider}</span>
+                </span>
+              )}
+              {result.tier && (
+                <span className={styles.metaItem}>
+                  <span className={styles.metaKey}>tier</span>{" "}
+                  <span className={styles.metaVal}>{result.tier}</span>
+                </span>
+              )}
+              {result.cost && (
+                <span className={styles.metaItem}>
+                  <span className={styles.metaKey}>cost</span>{" "}
+                  <span className={styles.metaVal}>${result.cost}</span>
                 </span>
               )}
               <span className={styles.metaItem}>

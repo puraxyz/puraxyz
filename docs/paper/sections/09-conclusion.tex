@@ -13,13 +13,9 @@ buffer handling the fundamental constraint that money cannot be dropped. We prov
 throughput optimality within the capacity region via Lyapunov drift analysis and
 implement the protocol using Superfluid GDA pools on Base.
 
-The thermodynamic extensions (\Cref{sec:thermodynamic}) recast the allocation
-problem in physical terms: capacity variance becomes a system temperature
-governing Boltzmann-weighted routing, the ratio of throughput to bound capital
-defines a virial equilibrium, and sustained departures from equilibrium trigger
-circuit-breaker phase transitions. Adaptive demurrage closes the feedback loop by
-taxing idle capital in proportion to the virial deficit, pushing the system back
-toward balance without manual intervention.
+The thermodynamic extensions---Boltzmann routing, virial equilibrium,
+adaptive demurrage, and circuit-breaker phase transitions---are presented
+in a companion paper~\cite{bpethermo2025}.
 
 Simulation results demonstrate that BPE achieves 95.7\% allocation efficiency
 compared to 93.5\% for round-robin and 79.7\% for random allocation, with robust

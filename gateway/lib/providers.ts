@@ -1,4 +1,4 @@
-export type Provider = "openai" | "anthropic" | "groq";
+export type Provider = "openai" | "anthropic" | "groq" | "gemini";
 
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
@@ -45,9 +45,21 @@ function getGroqConfig(apiKeyOverride?: string): ProviderConfig {
   };
 }
 
+function getGeminiConfig(apiKeyOverride?: string): ProviderConfig {
+  const key = apiKeyOverride ?? process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("GEMINI_API_KEY not set");
+  return {
+    name: "gemini",
+    model: "gemini-2.0-flash",
+    apiKey: key,
+    endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+  };
+}
+
 export function getProviderConfig(provider: Provider, apiKeyOverride?: string): ProviderConfig {
   if (provider === "openai") return getOpenAIConfig(apiKeyOverride);
   if (provider === "groq") return getGroqConfig(apiKeyOverride);
+  if (provider === "gemini") return getGeminiConfig(apiKeyOverride);
   return getAnthropicConfig(apiKeyOverride);
 }
 
@@ -56,5 +68,6 @@ export function getProviderConfigs(): ProviderConfig[] {
   try { configs.push(getOpenAIConfig()); } catch { /* skip */ }
   try { configs.push(getAnthropicConfig()); } catch { /* skip */ }
   try { configs.push(getGroqConfig()); } catch { /* skip */ }
+  try { configs.push(getGeminiConfig()); } catch { /* skip */ }
   return configs;
 }

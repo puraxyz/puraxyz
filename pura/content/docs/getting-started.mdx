@@ -1,16 +1,14 @@
 ---
-title: "Get started: AI agent economies"
+title: "Get started"
 order: -1
-description: Deploy a capacity-weighted payment economy for your agents in one transaction
+description: Route inference through the Pura gateway, deploy agents, or run the full protocol
 ---
 
-This guide walks you through deploying a BPE economy, registering agents as capacity sinks, and streaming payments that automatically route to agents with spare capacity.
+Pick your path. Most people start with the gateway.
 
-You need: a wallet with Base Sepolia ETH and some test tokens. The whole thing takes about five minutes.
+## Path A: LLM gateway (fastest)
 
-## Quick start: route through the gateway
-
-The fastest path — send an inference request through Pura in two lines. No wallet needed, just an API key.
+Route inference through Pura and let the system pick the cheapest provider. Two lines, no wallet needed.
 
 ```typescript
 import { route } from '@puraxyz/sdk'
@@ -25,55 +23,34 @@ console.log(result.provider)     // which provider handled it
 console.log(result.requestId)    // on-chain receipt id
 ```
 
-Or skip the SDK entirely — the gateway is OpenAI-compatible:
+Or use curl. The gateway is OpenAI-compatible:
 
 ```bash
-curl https://api.pura.xyz/v1/chat/completions \
+curl https://api.pura.xyz/api/chat \
   -H "Authorization: Bearer pura_your_key" \
   -H "Content-Type: application/json" \
-  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'
+  -d '{"messages":[{"role":"user","content":"hello"}]}'
 ```
 
-## Monitor protocol state
+See the [full gateway guide](/docs/getting-started-gateway) for cost reports, budget enforcement, Lightning wallets, and BYOK.
 
-Read live on-chain state with one call:
+## Path B: OpenClaw agent skill
 
-```typescript
-import { createPublicClient, http } from 'viem'
-import { baseSepolia } from 'viem/chains'
-import { monitor, getAddresses } from '@puraxyz/sdk'
+Install the Pura skill in OpenClaw. Your agent routes all LLM calls through the gateway automatically.
 
-const client = createPublicClient({ chain: baseSepolia, transport: http() })
-const state = await monitor(client, getAddresses(84532))
+See [OpenClaw integration](/docs/getting-started-openclaw).
 
-console.log(state.sinkCount)       // registered providers
-console.log(state.poolTotalUnits)  // total capacity units
-console.log(state.baseFee)         // current base fee
-```
+## Path C: Lightning settlement
 
-## Deploy as a provider
+Fund a Lightning wallet and pay per-request in sats. The first 5,000 requests are free.
 
-Register capacity, stake tokens, and join the pool in one call:
+See [Lightning guide](/docs/getting-started-lightning).
 
-```typescript
-import { deploy, getAddresses } from '@puraxyz/sdk'
+## Path D: Full protocol deploy (advanced)
 
-const txs = await deploy(wallet, getAddresses(84532), {
-  taskTypeId: '0x' + Buffer.from('text-generation').toString('hex').padEnd(64, '0') as `0x${string}`,
-  initialCapacity: 100n,
-  stakeAmount: 400n * 10n ** 18n,
-})
+Deploy a BPE economy, register agent sinks, and stream payments. This is the full on-chain setup.
 
-console.log('Registered:', txs.registerTx)
-console.log('Staked:', txs.stakeTx)
-console.log('Connected to pool:', txs.connectTx)
-```
-
-## Full setup (advanced)
-
-The rest of this guide covers the lower-level SDK modules for full control.
-
-## Install the SDK
+### Install the SDK
 
 ```bash
 npm install @puraxyz/sdk viem

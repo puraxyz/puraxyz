@@ -28,10 +28,11 @@ export default function AboutPage() {
       </div>
 
       <p style={{ fontSize: "0.78rem", color: "#888", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-        Pura is an open protocol for verified machine service coordination. It
-        makes capacity observable, completions verifiable, and payments
-        proportional to actual throughput. The protocol runs on Base (Ethereum L2)
-        and integrates with Nostr for decentralized service discovery.
+        Pura routes payments based on real-time capacity. An LLM gateway sends
+        inference to the cheapest available provider. Nostr relays and Lightning
+        nodes earn proportional to verified throughput. Everything runs on
+        Base (Ethereum L2), settles via Lightning, and records completion
+        receipts on-chain.
       </p>
 
       <div style={{ marginBottom: "1.5rem" }}>
@@ -49,10 +50,12 @@ export default function AboutPage() {
             {[
               ["Smart contracts", "32 (Solidity 0.8.26, Base Sepolia)"],
               ["Test coverage", "319+ tests (Foundry)"],
-              ["Settlement rails", "Superfluid streaming, Lightning HTLC, direct ERC-20"],
-              ["Service types", "Nostr relays, NIP-90 DVMs, LLM endpoints, AI agents"],
+              ["Settlement rails", "Lightning, Superfluid streaming, direct ERC-20"],
+              ["Service types", "LLM endpoints, Nostr relays, Lightning nodes, AI agents"],
+              ["SDK modules", "24 action modules + TypeScript client"],
               ["Verification", "Dual-signed EIP-712 completion receipts"],
               ["Pricing model", "Congestion-adjusted (Boltzmann routing + EWMA capacity)"],
+              ["Agent distribution", "OpenClaw skill + OpenAI-compatible API"],
               ["License", "MIT"],
             ].map(([label, value]) => (
               <tr key={label}>
@@ -92,14 +95,17 @@ export default function AboutPage() {
           >
             github
           </a>
+          <Link href="/gateway" style={{ color: "#d97706" }}>
+            gateway
+          </Link>
           <Link href="/paper" style={{ color: "#d97706" }}>
             paper
           </Link>
           <Link href="/docs" style={{ color: "#d97706" }}>
             docs
           </Link>
-          <Link href="/deploy" style={{ color: "#d97706" }}>
-            deploy
+          <Link href="/status" style={{ color: "#d97706" }}>
+            status
           </Link>
           <Link href="/monitor" style={{ color: "#d97706" }}>
             monitor

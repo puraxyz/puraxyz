@@ -1,38 +1,59 @@
 ---
 title: Products
 order: -2
-description: Reference products built on Pura
+description: The Pura stack — gateway, OpenClaw skill, Lightning settlement, and reference apps
 ---
 
-Two products demonstrate the Pura mechanism. A third, vr.dev, handles verification independently and feeds evidence into Pura's completion receipt infrastructure.
+Three pieces work together. The gateway routes inference. The OpenClaw skill distributes the gateway to AI agents. Lightning handles settlement. Each piece works standalone, but they're designed as a stack.
 
-## pura.xyz — Routing middleware dashboard
+```
+Agent (via OpenClaw skill)
+  → api.pura.xyz (gateway)
+    → cheapest available LLM provider
+    → completion recorded on Base Sepolia
+    → cost deducted from Lightning wallet
+```
 
-A consolidated dashboard that pulls live on-chain state from all deployed Pura contracts on Base Sepolia. Five sections in one app:
+## Gateway — LLM inference routing
 
-- **LLM gateway** — Routes calls across OpenAI and Anthropic based on which provider has capacity. Reads pool member units, completion rates, and dynamic pricing from BackpressurePool and PricingCurve. Chat interface with real API passthrough.
-- **Nostr relay capacity** — Displays registered relay operators, their composite capacity scores, and anti-spam minimums across write/read/store pools. Reads from RelayCapacityRegistry and RelayPaymentPool.
-- **Lightning routing** — Shows lightning node capacity (EMA-smoothed), routing fees, and active pool membership. Reads from LightningCapacityOracle and LightningRoutingPool.
-- **Agent reputation** — Lists agents registered for a skill type, their capacity metrics, reputation scores (completions, slashes), and verified completions from CompletionTracker.
-- **Simulator** — Runs the BPE allocation algorithm against live contract state with configurable parameters.
+An OpenAI-compatible API at `api.pura.xyz`. Scores task complexity and routes to the cheapest provider (OpenAI, Anthropic, Groq, Gemini) that fits. Per-request cost headers, daily budget caps, overnight spend reports.
 
-Includes one-click economy deployment (free tier + $9/mo hosted) and a deploy status tracker.
+- API: `https://api.pura.xyz/api/chat`
+- Provider status: [pura.xyz/status](/status)
+- Docs: [Gateway guide](/docs/getting-started-gateway)
+
+## OpenClaw skill — agent distribution
+
+A skill package for the OpenClaw agent framework. Install it and your agent routes through the gateway automatically. Handles auth, budget alerts, cost reports, wallet management.
+
+- Install: `cp -r openclaw-skill ~/.openclaw/workspace/skills/pura`
+- Docs: [OpenClaw guide](/docs/getting-started-openclaw)
+
+## Lightning settlement — pay in sats
+
+The first 5,000 requests are free. After that, fund a Lightning wallet via LNbits. The gateway deducts per-request costs asynchronously — inference never blocks on payment.
+
+- Fund: `POST /api/wallet/fund`
+- Balance: `GET /api/wallet/balance`
+- Docs: [Lightning guide](/docs/getting-started-lightning)
+
+## pura.xyz — routing dashboard
+
+Consolidated dashboard pulling live on-chain state from all deployed contracts on Base Sepolia. Gateway metrics, relay capacity, Lightning routing, agent reputation, and BPE simulation.
 
 - Live: [pura.xyz](https://pura.xyz)
 - Source: [pura/](https://github.com/puraxyz/puraxyz/tree/main/pura)
 
-## bit.recipes — Pipeline builder
+## bit.recipes — pipeline builder
 
-Visual drag-and-drop pipeline builder for Pura economies. Compose multi-stage task pipelines, preview cost estimates from on-chain pricing curves, and deploy the resulting economy in one transaction.
+Visual drag-and-drop pipeline builder for Pura economies. Compose multi-stage task pipelines, preview cost estimates from on-chain pricing curves, deploy in one transaction.
 
 - Live: [bit.recipes](https://bit.recipes)
 - Source: [bitrecipes/](https://github.com/puraxyz/puraxyz/tree/main/bitrecipes)
 
-## vr.dev — Agent verification platform
+## vr.dev — agent verification platform
 
-A standalone verification layer for AI agent task outputs. 38 verifiers across 19 domains, organized in HARD/SOFT/AGENTIC tiers. A composition engine chains verifiers into pipelines, and an evidence chain produces SHA-256 content hashes anchored on-chain. When integrated with Pura, the evidence hash becomes the `taskId` in CompletionTracker receipts, binding reputation scores to tamper-evident proof of verified work.
+Standalone verification layer for AI agent task outputs. 38 verifiers across 19 domains. Evidence chain produces SHA-256 hashes anchored on-chain that become task IDs in Pura completion receipts.
 
 - Live: [vr.dev](https://vr.dev)
 - Source: [vr/](https://github.com/puraxyz/puraxyz/tree/main/vr)
-- Python SDK: `pip install vrdev`
-- Pricing: Free local, USDC micropayments via x402 for hosted verification

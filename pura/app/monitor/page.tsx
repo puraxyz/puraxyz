@@ -199,6 +199,29 @@ export default function MonitorPage() {
         </div>
       </div>
 
+      {/* sink type legend */}
+      <div className={s.section}>
+        <div className={s.sectionHead}>sink types</div>
+        <div className={s.statsRow}>
+          <div className={s.stat}>
+            <div className={s.statLabel}>relay-*</div>
+            <div className={s.statValue} style={{ fontSize: "0.65rem" }}>Nostr relay</div>
+          </div>
+          <div className={s.stat}>
+            <div className={s.statLabel}>dvm-*</div>
+            <div className={s.statValue} style={{ fontSize: "0.65rem" }}>NIP-90 DVM</div>
+          </div>
+          <div className={s.stat}>
+            <div className={s.statLabel}>llm-*</div>
+            <div className={s.statValue} style={{ fontSize: "0.65rem" }}>LLM provider</div>
+          </div>
+          <div className={s.stat}>
+            <div className={s.statLabel}>agent-*</div>
+            <div className={s.statValue} style={{ fontSize: "0.65rem" }}>AI agent</div>
+          </div>
+        </div>
+      </div>
+
       {/* per-sink table */}
       <div className={s.section}>
         <div className={s.sectionHead}>sink performance</div>

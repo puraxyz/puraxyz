@@ -35,6 +35,10 @@
   border-radius: 6px;
 }
 
+.logo:hover {
+  color: #35b5c8;
+}
+
 .logo span {
   color: var(--accent);
 }

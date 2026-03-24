@@ -3,6 +3,7 @@ import type { Provider } from "./providers";
 import { streamOpenAI } from "./providers/openai";
 import { streamAnthropic } from "./providers/anthropic";
 import { streamGroq } from "./providers/groq";
+import { streamGemini } from "./providers/gemini";
 import { getProviderConfig } from "./providers";
 
 export { type Provider } from "./providers";
@@ -24,6 +25,9 @@ export async function streamChat(
   }
   if (provider === "groq") {
     return streamGroq(config, messages, model);
+  }
+  if (provider === "gemini") {
+    return streamGemini(config, messages, model);
   }
   return streamAnthropic(config, messages, model);
 }

@@ -8,6 +8,8 @@ import { maybeRebalance } from "@/lib/rebalance";
 import { checkRateLimitAsync } from "@/lib/ratelimit";
 import { estimateTokens } from "@/lib/tokens";
 import { log } from "@/lib/log";
+import { checkBudget, recordSpend, estimateCostUsd } from "@/lib/budget";
+import { recordRequest } from "@/lib/metrics";
 import type { ChatMessage } from "@/lib/providers";
 import { createHash } from "crypto";
 
@@ -19,7 +21,7 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Provider-Key",
   "Access-Control-Expose-Headers":
-    "X-Pura-Provider, X-Pura-Capacity, X-Pura-Request-Id, X-RateLimit-Remaining",
+    "X-Pura-Provider, X-Pura-Capacity, X-Pura-Request-Id, X-Pura-Model, X-Pura-Cost, X-Pura-Budget-Remaining, X-Pura-Routed, X-Pura-Tier, X-RateLimit-Remaining",
 };
 
 export async function OPTIONS() {
@@ -107,12 +109,36 @@ export async function POST(request: Request) {
 
   // --- Route ---
   let provider;
+  let tier;
   try {
-    provider = await selectProvider(body.model);
+    const result = await selectProvider(body.model, messages);
+    provider = result.provider;
+    tier = result.tier;
   } catch (e) {
     return NextResponse.json(
       { error: { message: (e as Error).message } },
       { status: 503 },
+    );
+  }
+
+  // --- Budget check ---
+  const budgetCheck = await checkBudget(keyHash);
+  if (!budgetCheck.allowed) {
+    return NextResponse.json(
+      {
+        error: {
+          message: `Daily budget exhausted ($${budgetCheck.capUsd}). Resets at midnight UTC.`,
+          type: "budget_exceeded",
+          code: "budget_exhausted",
+        },
+      },
+      {
+        status: 402,
+        headers: {
+          ...CORS_HEADERS,
+          "X-Pura-Budget-Remaining": "0",
+        },
+      },
     );
   }
 
@@ -158,12 +184,26 @@ export async function POST(request: Request) {
   const promptText = messages.map((m) => m.content).join(" ");
   const promptTokens = estimateTokens(promptText);
 
+  // Estimate cost for headers
+  const estCost = estimateCostUsd(provider, promptTokens * 2);
+
+  // Record spend and metrics (fire-and-forget)
+  recordSpend(keyHash, provider, promptTokens * 2).catch(() => {});
+
   const puraHeaders = {
     ...CORS_HEADERS,
     "X-Pura-Provider": provider,
+    "X-Pura-Model": body.model ?? provider,
+    "X-Pura-Cost": estCost.toFixed(6),
+    "X-Pura-Budget-Remaining": budgetCheck.remainingUsd.toFixed(4),
+    "X-Pura-Routed": tier,
+    "X-Pura-Tier": tier,
     "X-Pura-Request-Id": requestId,
     "X-RateLimit-Remaining": String(rl.remaining),
   };
+
+  const latencyMs = Date.now() - startMs;
+  recordRequest(provider, latencyMs, true);
 
   log.info("chat.request", {
     requestId,

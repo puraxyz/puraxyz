@@ -2,6 +2,8 @@ import { type Hash } from "viem";
 import { getAddresses, pool } from "@puraxyz/sdk";
 import { publicClient, chainId } from "./chain";
 import { getProviderConfigs, type Provider } from "./providers";
+import { scoreComplexity, tierToProviders, type ComplexityTier } from "./complexity";
+import type { ChatMessage } from "./providers";
 
 /** Task type ID used for the gateway pool (bytes32) */
 export const GATEWAY_TASK_TYPE: Hash =
@@ -29,32 +31,45 @@ const PROVIDER_SINKS: ProviderSink[] = [
     provider: "groq",
     address: (process.env.GROQ_SINK_ADDRESS ?? "0x0000000000000000000000000000000000000003") as `0x${string}`,
   },
+  {
+    provider: "gemini",
+    address: (process.env.GEMINI_SINK_ADDRESS ?? "0x0000000000000000000000000000000000000004") as `0x${string}`,
+  },
 ];
 
 /**
- * Select a provider based on pool capacity.
- * Reads member units (capacity weight) for each provider sink from BackpressurePool.
- * Returns the provider with the highest available units.
+ * Select a provider based on task complexity and pool capacity.
+ * 1. If user explicitly requests a model, route directly.
+ * 2. Score task complexity (cheap/mid/premium) from messages.
+ * 3. Read on-chain capacity weights and prefer providers that match the tier.
  * Falls back to round-robin if chain reads fail.
  */
-export async function selectProvider(requestModel?: string): Promise<Provider> {
+export async function selectProvider(requestModel?: string, messages?: ChatMessage[]): Promise<{ provider: Provider; tier: ComplexityTier }> {
   // If user explicitly requests a model, route directly
   if (requestModel) {
-    if (requestModel.startsWith("gpt") || requestModel.startsWith("o")) return "openai";
-    if (requestModel.startsWith("claude")) return "anthropic";
-    if (requestModel.startsWith("llama") || requestModel.startsWith("mixtral") || requestModel.startsWith("gemma")) return "groq";
+    if (requestModel.startsWith("gpt") || requestModel.startsWith("o")) return { provider: "openai", tier: "premium" };
+    if (requestModel.startsWith("claude")) return { provider: "anthropic", tier: "premium" };
+    if (requestModel.startsWith("llama") || requestModel.startsWith("mixtral") || requestModel.startsWith("gemma")) return { provider: "groq", tier: "cheap" };
+    if (requestModel.startsWith("gemini")) return { provider: "gemini", tier: "mid" };
   }
 
   // Check which providers are actually configured
   const available = getProviderConfigs();
   if (available.length === 0) throw new Error("No LLM providers configured");
-  if (available.length === 1) return available[0].name;
+
+  const configuredNames = new Set(available.map((c) => c.name));
+
+  // Score complexity
+  const tier = messages ? scoreComplexity(messages) : "mid";
+  const preferred = tierToProviders(tier).filter((p) => configuredNames.has(p as Provider));
+
+  if (preferred.length === 0) return { provider: available[0].name, tier };
 
   try {
     const addrs = getAddresses(chainId);
 
     const units = await Promise.all(
-      PROVIDER_SINKS.map(async (sink) => {
+      PROVIDER_SINKS.filter((s) => configuredNames.has(s.provider)).map(async (sink) => {
         const u = await pool
           .getMemberUnits(publicClient, addrs, GATEWAY_TASK_TYPE, sink.address)
           .catch(() => 0n);
@@ -62,19 +77,21 @@ export async function selectProvider(requestModel?: string): Promise<Provider> {
       }),
     );
 
-    // Filter to only configured providers
-    const configuredNames = new Set(available.map((c) => c.name));
-    const eligible = units.filter((u) => configuredNames.has(u.provider));
+    // Among preferred providers, pick the one with highest capacity
+    const preferredSet = new Set(preferred);
+    const eligible = units.filter((u) => preferredSet.has(u.provider));
 
-    if (eligible.length === 0) return available[0].name;
+    if (eligible.length > 0) {
+      eligible.sort((a, b) => (b.units > a.units ? 1 : b.units < a.units ? -1 : 0));
+      return { provider: eligible[0].provider, tier };
+    }
 
-    // Pick provider with highest units (most spare capacity)
-    eligible.sort((a, b) => (b.units > a.units ? 1 : b.units < a.units ? -1 : 0));
-    return eligible[0].provider;
+    // Fall back to any configured provider with highest capacity
+    units.sort((a, b) => (b.units > a.units ? 1 : b.units < a.units ? -1 : 0));
+    return { provider: units[0]?.provider ?? (preferred[0] as Provider), tier };
   } catch {
-    // Chain read failed — simple round-robin fallback
-    const idx = Math.floor(Date.now() / 1000) % available.length;
-    return available[idx].name;
+    // Chain read failed — use first preferred provider
+    return { provider: preferred[0] as Provider, tier };
   }
 }
 

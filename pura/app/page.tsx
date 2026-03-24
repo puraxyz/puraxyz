@@ -86,61 +86,70 @@ const STEPS = [
   {
     num: "1",
     name: "connect",
-    desc: "Point your HTTP endpoint at api.pura.xyz, or add one SDK line. Drop-in OpenAI-compatible.",
+    desc: "Point your agent at api.pura.xyz. Drop-in OpenAI-compatible. One line to swap.",
   },
   {
     num: "2",
     name: "route",
-    desc: "Pura reads on-chain capacity attestations and routes to spare capacity via Boltzmann weighting.",
+    desc: "Pura scores task complexity, checks on-chain capacity, and picks the cheapest provider that fits.",
   },
   {
     num: "3",
-    name: "verify",
-    desc: "Dual-signed receipt goes on-chain. Cryptographic proof the work actually happened.",
+    name: "settle",
+    desc: "Completion recorded on-chain. Cost deducted from your Lightning balance. You get a receipt.",
+  },
+  {
+    num: "4",
+    name: "report",
+    desc: "Wake up to a cost breakdown by model and provider. See exactly where your money went.",
   },
 ];
 
 const BUILD_CARDS = [
   {
-    label: "inference router",
+    label: "gateway API",
     color: "var(--color-gateway)",
-    body: "OpenAI-compatible API that routes across providers based on real-time capacity. Saturated provider? Requests go to whoever has room. Every completion recorded on-chain.",
-    href: "/deploy",
+    body: "OpenAI-compatible endpoint that routes across OpenAI, Anthropic, Groq, and Gemini. Complexity scoring picks cheap models for simple tasks, premium for hard ones. Budget caps and cost headers on every response.",
+    href: "/gateway",
   },
   {
-    label: "agent marketplace",
+    label: "OpenClaw skill",
     color: "var(--color-agents)",
-    body: "Deploy an economy where agents compete on capacity. Register skills, stake against throughput claims, earn proportional to verified completions.",
-    href: "/deploy/dvm",
+    body: "Install the Pura skill in OpenClaw and your agent routes through the gateway automatically. Budget alerts, overnight cost reports, wallet management built in.",
+    href: "/docs/getting-started-openclaw",
   },
   {
-    label: "pipeline orchestrator",
-    color: "var(--color-sim)",
-    body: "Multi-stage workflows with backpressure. Chain pools into pipelines. If stage 3 is overwhelmed, stages 1 and 2 slow down automatically.",
-    href: "/docs/contracts",
+    label: "Lightning settlement",
+    color: "var(--color-lightning)",
+    body: "5,000 free requests to start. After that, fund a Lightning wallet and pay per-request in sats. No subscriptions, no credit cards, no KYC.",
+    href: "/docs/getting-started",
   },
 ];
 
 const COMPARE_ROWS = [
   {
+    metric: "Model routing",
+    vals: ["None", "None", "Manual", "None", "None", "Auto by complexity"],
+  },
+  {
+    metric: "Cost optimization",
+    vals: ["None", "None", "Markup pricing", "None", "None", "Cheapest-fit per task"],
+  },
+  {
     metric: "Flow control",
-    vals: ["None", "Temp MPP", "None", "None", "Backpressure + Boltzmann"],
+    vals: ["None", "Temp MPP", "None", "None", "None", "Backpressure + Boltzmann"],
   },
   {
     metric: "Capacity signal",
-    vals: ["None", "None", "Server-side", "None", "On-chain, EWMA-smoothed"],
+    vals: ["None", "None", "Server-side", "Server-side", "None", "On-chain, EWMA-smoothed"],
   },
   {
     metric: "Completion verification",
-    vals: ["None", "None", "None", "None", "Dual-signed receipts"],
-  },
-  {
-    metric: "Dynamic pricing",
-    vals: ["None", "None", "None", "Fixed", "Congestion-driven"],
+    vals: ["None", "None", "None", "None", "None", "Dual-signed receipts"],
   },
   {
     metric: "Settlement",
-    vals: ["HTTP 402", "ILP", "Stripe", "HTTP 402", "Lightning + Superfluid + ERC-20"],
+    vals: ["HTTP 402", "ILP", "Stripe", "Credit", "HTTP 402", "Lightning"],
   },
 ];
 
@@ -191,15 +200,16 @@ export default function Dashboard() {
       {/* ═══════════ HERO ═══════════ */}
       <header className={styles.hero}>
         <h1 className={styles.title}>
-          Capacity-aware routing for the machine economy.
+          The power grid for autonomous AI agents.
         </h1>
         <p className={styles.subtitle}>
-          Point payments at Pura. We read on-chain capacity, route to spare
-          providers via Boltzmann weighting, verify completions, and buffer
-          overflow. TCP/IP-style congestion control for monetary flows.
+          One API endpoint. Four LLM providers. Automatic model selection
+          based on task complexity. Per-request cost tracking. Settle in
+          sats over Lightning. Install via OpenClaw or swap one line of code.
         </p>
         <div className={styles.heroCtas}>
-          <a href="#demo" className={styles.ctaPrimary}>route your first request →</a>
+          <a href="#demo" className={styles.ctaPrimary}>try the gateway →</a>
+          <a href="/gateway" className={styles.ctaSecondary}>get an API key →</a>
           <a href="/paper" className={styles.ctaSecondary}>read the paper →</a>
         </div>
         <RoutingViz />
@@ -211,15 +221,11 @@ export default function Dashboard() {
         <span className={styles.statsBarSep}>│</span>
         <span>32 contracts</span>
         <span className={styles.statsBarSep}>│</span>
-        <span>319 tests passing</span>
-        {thermo && (
-          <>
-            <span className={styles.statsBarSep}>│</span>
-            <span>τ = {thermo.temperature}</span>
-            <span className={styles.statsBarSep}>│</span>
-            <span>phase: {thermo.phase}</span>
-          </>
-        )}
+        <span>4 LLM providers</span>
+        <span className={styles.statsBarSep}>│</span>
+        <span>5,000 free requests</span>
+        <span className={styles.statsBarSep}>│</span>
+        <span>Lightning settlement</span>
       </div>
 
       <hr className={styles.divider} />
@@ -292,6 +298,7 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
                 <th>x402</th>
                 <th>Tempo MPP</th>
                 <th>load balancer</th>
+                <th>OpenRouter</th>
                 <th>AP2 / TAP</th>
                 <th className={styles.highlightCol}>pura</th>
               </tr>
@@ -303,7 +310,7 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
                   {r.vals.map((v, i) => (
                     <td
                       key={i}
-                      className={i === 4 ? styles.highlightCol : undefined}
+                      className={i === 5 ? styles.highlightCol : undefined}
                     >
                       {v}
                     </td>
@@ -367,14 +374,14 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
       <section className={styles.section}>
         <SectionHead label="the protocol" color="var(--text-dim)" />
         <p className={styles.desc} style={{ maxWidth: 620 }}>
-          Built on the Pura protocol (MIT). Backpressure Economics adapts
-          congestion control from data networks to monetary flows. Five
-          on-chain primitives: declare capacity, verify completions, price
-          dynamically, route to spare capacity, buffer overflow.
+          The gateway runs on the Pura protocol (MIT). Backpressure Economics
+          applies congestion control from data networks to monetary flows.
+          On-chain primitives handle capacity declaration, completion verification,
+          congestion-driven pricing, and overflow buffering.
         </p>
         <div className={styles.heroCtas}>
           <a href="/paper" className={styles.ctaSecondary}>paper →</a>
-          <a href="/explainer" className={styles.ctaSecondary}>explainer →</a>
+          <a href="/explainer" className={styles.ctaSecondary}>how it works →</a>
           <a href="/docs" className={styles.ctaSecondary}>docs →</a>
           <a href="https://github.com/puraxyz/puraxyz" target="_blank" rel="noopener noreferrer" className={styles.ctaSecondary}>github →</a>
         </div>
@@ -598,7 +605,7 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
         <span className={styles.ecosystemSep}>·</span>
         <span>Backpressure Economics</span>
         <span className={styles.ecosystemSep}>·</span>
-        <span>Settled via Lightning + Superfluid</span>
+        <span>Settled via Lightning</span>
         <span className={styles.ecosystemSep}>·</span>
         <a
           href="https://github.com/puraxyz/puraxyz"

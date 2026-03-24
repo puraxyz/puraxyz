@@ -6,69 +6,68 @@ Pura
 
 ## One-liner
 
-Backpressure routing applied to AI agent payment flows, with formal throughput guarantees.
+LLM routing gateway distributed as an OpenClaw skill, with on-chain capacity contracts and Lightning settlement.
 
 ## Summary
 
-Pura adapts backpressure routing (Tassiulas-Ephremides, 1992) to streaming payment networks. The core insight: payment flows between AI agents have the same congestion problems as data packets in networks, and the same family of algorithms that solved network congestion can solve payment congestion.
+Pura is an LLM gateway that routes inference across four providers (OpenAI, Anthropic, Groq, Gemini), scores task complexity, picks the cheapest capable model, and settles per-request on Lightning.
 
-Agents register multi-dimensional capacity. Completions are verified via dual-signed receipts. A Superfluid GDA pool distributes payments proportional to verified spare capacity. Dynamic pricing (EIP-1559-style) adjusts costs per capacity dimension. Overflow goes to escrow.
+The gateway ships as an OpenClaw skill. When a user installs the skill, they get pre-configured routing rules, provider fallback chains, and per-request billing without manual API key management. The skill author defines the routing policy; the end user gets a working LLM endpoint.
 
-The result is throughput-optimal payment routing under any stabilizable demand vector. Formal proof via Lyapunov drift analysis.
+The on-chain layer on Base (35 contracts, 319 tests) handles capacity registration, completion verification, and backpressure-based payment distribution. The research paper formalizes the routing algorithm with throughput-optimality proofs.
 
 ## Technical contribution
 
-1. Capacity-weighted routing: Extends Tassiulas-Ephremides from packet scheduling to monetary flows. The key adaptation: "queue differential" becomes "spare capacity differential" and "packet routing" becomes "payment stream allocation."
+1. Cost-based routing: the gateway scores each request for task complexity (cheap/mid/premium) and routes to the cheapest provider in that tier. Simple prompts go to Groq Llama 3.3 at $0.00059/1K tokens. Code generation goes to GPT-4o. Long-context analysis goes to Claude Sonnet. Gemini catches overflow.
 
-2. Sybil-resistant staking: Concave sqrt cap on capacity-per-stake makes splitting into multiple identities strictly worse than a single registration. An agent splitting stake S into k identities gets k×sqrt(S/k) = sqrt(k)×sqrt(S), which is less than sqrt(S) only when... actually, it is more. The cap function is designed so that effective capacity per unit stake decreases: total effective capacity from splitting is sqrt(k)×sqrt(S) vs sqrt(S). Since sqrt(k) > 1 for k > 1, the staking curve alone does not prevent Sybil attacks — the completion verification layer does. An agent cannot fabricate dual-signed completion receipts without actually completing work.
+2. OpenClaw skill packaging: a Pura skill bundles routing config, provider preferences, and budget limits into a single installable unit. The install script provisions an API key and configures the endpoint. No manual provider setup.
 
-3. Off-chain attestation aggregation: BLS signature aggregation reduces on-chain verification from O(n) to O(1) per batch. 83.5% gas reduction in benchmarks.
+3. On-chain capacity contracts: CapacityRegistry stores multi-dimensional capacity vectors. BackpressurePool (Superfluid GDA) distributes payments proportional to verified spare capacity. CompletionTracker verifies dual-signed completion receipts. StakeManager enforces concave sqrt caps (Sybil-resistant).
 
-4. Dynamic pricing: Per-dimension EIP-1559-style pricing. Base fee adjusts toward a target utilization ratio. Congested capacity dimensions become expensive.
+4. Off-chain attestation batching: BLS signature aggregation reduces on-chain verification cost by 83.5%. Capacity proofs are collected off-chain and submitted as aggregated roots.
 
-5. Cross-domain composition: The Pipeline contract routes flows across heterogeneous GDA pools (AI agents, Nostr relays, Lightning channels, demurrage tokens). Each domain has its own capacity semantics but shares the backpressure routing primitive.
+5. Lightning settlement: per-request payment via LNbits. No subscriptions. Agents fund via LNURL and pay exactly what they use.
 
 ## What is deployed?
 
-32 contracts (12 on Base mainnet, 20 testnet-only research modules). 319 passing tests across all contracts. TypeScript SDK with 23 action modules. Live gateway at gateway.pura.xyz.
+35 contracts on Base Sepolia (12 core verified on Basescan). 319 passing tests across all contracts. TypeScript SDK with 23 action modules. Gateway live at api.pura.xyz with four providers.
+
+Free tier: 5,000 requests. After that, fund via Lightning invoice.
 
 Simulation results (50 agents, 100 time steps):
 - 95.7% allocation efficiency vs 93.5% round-robin
-- 3× throughput under burst demand
-- Stable operation under adversarial capacity reporting (completion verification catches false claims within 2 epochs)
+- 3x throughput under burst demand
+- Stable operation under adversarial capacity reporting
 
-## Part of a stack
+## OpenClaw integration
 
-Pura is one component in a three-project stack:
+The openclaw-skill/ directory contains:
+- SKILL.md: skill manifest with capabilities, configuration schema, and usage instructions
+- scripts/install.sh: provisions API key, validates connectivity
+- scripts/test.sh: verifies routing across all four providers
 
-- Buildlog (buildlog.ai): Captures agent execution trails — what was run, what changed, what was the outcome
-- VR (vr.dev): Verifies that agent-claimed outcomes reflect actual system state changes
-- Pura (pura.xyz): Routes payments to agents with verified spare capacity
-
-Buildlog generates execution traces. VR validates outcomes against those traces. Pura uses both signals to weight payment distribution. Each project works independently but the stack closes a full observe-verify-pay loop.
+Skill installation: `openclaw install pura-gateway`
 
 ## Research paper
 
-Full paper with formal proofs available at https://pura.xyz/paper.
-
-Sections: background on backpressure routing theory, protocol design, smart contract architecture, simulation methodology and results, security analysis, related work comparison.
+Full paper with formal proofs at https://pura.xyz/paper. Covers backpressure routing theory, protocol design, contract architecture, simulation results, and security analysis.
 
 ## What the grant would fund
 
-1. Mainnet deployment and first external pilot integration
-2. Extended simulation: adversarial scenarios, larger agent populations, cross-domain routing
+1. OpenClaw skill marketplace listing and developer documentation
+2. Mainnet deployment of core contracts on Base
 3. External security audit of core contracts
-4. Research paper submission to a venue (targeting IEEE/ACM workshop or similar)
-5. Integration documentation and developer onboarding tooling
+4. Gateway infrastructure (hosting, provider API costs for free tier)
+5. Framework-specific skill variants (LangChain, CrewAI, AutoGen)
 
 ## Team
 
-Solo builder. Background in software engineering. Building Pura, Buildlog, and VR.
+Solo builder. Background in software engineering. Building full-time.
 
 ## Links
 
 - Website: https://pura.xyz
 - GitHub (MIT): https://github.com/puraxyz/puraxyz
+- Gateway docs: https://pura.xyz/docs/getting-started-gateway
 - Paper: https://pura.xyz/paper
-- Explainer: https://pura.xyz/explainer
-- Simulation: simulation/bpe_sim.py
+- OpenClaw skill: openclaw-skill/SKILL.md

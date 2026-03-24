@@ -1,6 +1,6 @@
 import { validateKey, validateKeyAsync, type ApiKeyRecord } from "./keys";
 
-const FREE_TIER_LIMIT = 100;
+const FREE_TIER_LIMIT = 5000;
 
 export interface AuthResult {
   valid: boolean;

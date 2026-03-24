@@ -23,8 +23,8 @@ export default function SimulatePage() {
         <Link href="/playground" className={s.card}>
           <div className={s.cardTitle}>playground</div>
           <p className={s.cardDesc}>
-            Interactive protocol parameter tuning. Adjust temperature, EWMA alpha,
-            demurrage rates. Watch routing behavior in real time.
+            Interactive routing parameter tuning. Adjust how the protocol weights
+            capacity vs price signals. Watch routing behavior change in real time.
           </p>
           <span className={s.cardLink}>open playground →</span>
         </Link>
