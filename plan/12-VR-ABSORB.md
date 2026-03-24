@@ -56,10 +56,10 @@ vr.dev publishes Merkle roots to an append-only contract on Base L2. Pura also d
 
 ### I5: SDK bridging
 
-The Pura SDK (`@pura/sdk`, TypeScript) has an `openclaw` action module with `verifyExecution()`, `reportCompletion()`, and `reportFailure()`. The vr.dev SDK (`vrdev`, Python) has `verify()`, `compose()`, and training export functions.
+The Pura SDK (`@puraxyz/sdk`, TypeScript) has an `openclaw` action module with `verifyExecution()`, `reportCompletion()`, and `reportFailure()`. The vr.dev SDK (`vrdev`, Python) has `verify()`, `compose()`, and training export functions.
 
 After absorption, two SDK entry points serve two audiences:
-- TypeScript SDK (`@pura/sdk`) for on-chain operations: registering agents, submitting receipts, querying reputation
+- TypeScript SDK (`@puraxyz/sdk`) for on-chain operations: registering agents, submitting receipts, querying reputation
 - Python SDK (`vrdev`) for off-chain verification: running verifiers, composing pipelines, generating evidence, feeding training loops
 
 The Python SDK calls the TypeScript SDK's contract interactions via the REST API or a direct viem bridge for on-chain submission.

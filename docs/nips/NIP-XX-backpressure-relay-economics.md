@@ -159,7 +159,7 @@ Concave capacity caps (via `StakeManager`) ensure diminishing returns for Sybil 
 ## Implementations
 
 - **Contracts**: `RelayCapacityRegistry.sol`, `RelayPaymentPool.sol` (Solidity 0.8.26, Base L2)
-- **SDK**: `@pura/sdk` TypeScript client with relay management actions
+- **SDK**: `@puraxyz/sdk` TypeScript client with relay management actions
 - **Bridge**: Off-chain attestation service (Node.js/TypeScript)
 
 ## References

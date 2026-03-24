@@ -57,7 +57,7 @@ export default function PlaygroundPage() {
 
       <div className={styles.cta}>
         <p className={styles.ctaText}>
-          The real protocol runs on Base Sepolia with 22 deployed contracts.
+          The real protocol runs on Base Sepolia with 32 deployed contracts.
           This simulation uses the same routing logic: payments flow
           proportional to spare capacity, verified by dual-signed completion
           receipts.

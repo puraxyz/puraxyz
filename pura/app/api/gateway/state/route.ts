@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAddresses, pool, pricing, completion } from "@pura/sdk";
+import { getAddresses, pool, pricing, completion } from "@puraxyz/sdk";
 import { publicClient, chainId } from "@/lib/shared/chain";
 import { GATEWAY_TASK_TYPE } from "@/lib/gateway/routing";
 import { listKeys } from "@/lib/gateway/keys";

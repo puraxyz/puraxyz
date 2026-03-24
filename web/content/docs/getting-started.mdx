@@ -11,7 +11,7 @@ You need: a wallet with Base Sepolia ETH and some test tokens. The whole thing t
 ## Install the SDK
 
 ```bash
-npm install @pura/sdk viem
+npm install @puraxyz/sdk viem
 ```
 
 ## Choose your path
@@ -24,8 +24,8 @@ Call `deployEconomy` on the shared EconomyFactory. Pura deploys and manages the 
 import { createWalletClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { baseSepolia } from 'viem/chains'
-import { getAddresses } from '@pura/sdk'
-import { deployEconomy, Template } from '@pura/sdk/actions/economy'
+import { getAddresses } from '@puraxyz/sdk'
+import { deployEconomy, Template } from '@puraxyz/sdk/actions/economy'
 
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
 const wallet = createWalletClient({ account, chain: baseSepolia, transport: http() })
@@ -65,8 +65,8 @@ Each AI agent that can handle work registers as a sink on the CapacityRegistry. 
 
 ```typescript
 import { createPublicClient } from 'viem'
-import { registerSink } from '@pura/sdk/actions/sink'
-import { stake } from '@pura/sdk/actions/stake'
+import { registerSink } from '@puraxyz/sdk/actions/sink'
+import { stake } from '@puraxyz/sdk/actions/stake'
 
 const public_ = createPublicClient({ chain: baseSepolia, transport: http() })
 
@@ -85,7 +85,7 @@ Repeat for each agent. The agent with 400 tokens staked gets a capacity cap of $
 A source (the entity paying for work) starts a Superfluid stream that flows into the BackpressurePool. The pool distributes to sinks in proportion to their smoothed capacity.
 
 ```typescript
-import { startStream } from '@pura/sdk/actions/source'
+import { startStream } from '@puraxyz/sdk/actions/source'
 
 await startStream(wallet, addrs, taskTypeId, 100n) // 100 tokens/second flow rate
 ```
@@ -95,7 +95,7 @@ Payments now flow continuously. Agents with more declared (and verified) capacit
 ## Verify it works
 
 ```typescript
-import { getSmoothedCapacity } from '@pura/sdk/actions/pool'
+import { getSmoothedCapacity } from '@puraxyz/sdk/actions/pool'
 
 const capacity = await getSmoothedCapacity(public_, addrs, taskTypeId, agentAddress)
 console.log('Smoothed capacity:', capacity)

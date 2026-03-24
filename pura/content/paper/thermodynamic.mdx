@@ -1,0 +1,101 @@
+---
+title: Thermodynamic Extensions
+order: 11
+description: Temperature oracle, Boltzmann routing, virial equilibrium, adaptive demurrage, osmotic pressure, circuit breakers
+---
+
+The core BPE mechanism treats capacity as a signal and money as a conserved flow. This section introduces six extensions that recast the protocol as a thermodynamic system, where aggregate variance maps to temperature, capital ratios map to virial equilibrium, and phase transitions trigger circuit breakers. Three new contracts (`TemperatureOracle`, `VirialMonitor`, `SystemStateEmitter`) plus modifications to `BackpressurePool`, `Pipeline`, and `DemurrageToken` implement the framework.
+
+## Temperature oracle
+
+In statistical mechanics, temperature measures the width of the energy distribution across microstates. We define an analogous economic temperature $\tau$ from the variance of capacity attestations within an epoch.
+
+Let $\sigma^2$ be the EWMA-smoothed variance of declared capacities across all active sinks, and $\sigma^2_{\max}$ be the maximum expected variance (a governance parameter). The system temperature is
+
+$$\tau = \tau_{\min} + (\tau_{\max} - \tau_{\min}) \cdot \frac{\sigma^2}{\sigma^2_{\max}}$$
+
+capped at $\tau_{\max}$ when $\sigma^2 > \sigma^2_{\max}$. Default bounds are $\tau_{\min} = 0.5$ and $\tau_{\max} = 5.0$ (scaled to $5 \times 10^{17}$ and $5 \times 10^{18}$ in 18-decimal fixed point). When all providers report identical capacity, $\sigma^2 \to 0$ and $\tau \to \tau_{\min}$, producing near-deterministic routing. When capacity reports diverge, $\tau$ rises, spreading flow across more sinks.
+
+Setting $\tau_{\min} \geq 0.5$ prevents an oscillation trap: if $\tau_{\min}$ is too low, two sinks with nearly equal capacity alternate as the sole recipient each epoch. A floor of 0.5 plus the exploration bonus described in the next section eliminates this failure mode.
+
+The `TemperatureOracle` contract stores $\tau$ on-chain. An authorised updater (typically the `OffchainAggregator`) calls `updateTemperature(σ², σ²_max)`, which computes the equation above in fixed-point arithmetic and emits a `TemperatureUpdated` event.
+
+## Boltzmann routing
+
+Classical BPE assigns pool shares proportional to $C_{\text{smooth}} \cdot \sqrt{\text{stake}_s}$. Boltzmann routing replaces this with a probabilistic allocation: the share for sink $i$ with spare capacity $c_i$ is
+
+$$P(i) = \frac{e^{c_i / \tau}}{\sum_j e^{c_j / \tau}}$$
+
+Computing $e^x$ on-chain is expensive. We use a first-order Taylor approximation $e^{c/\tau} \approx 1 + c/\tau$, which is accurate when $c/\tau < 1$ (the common case—spare capacity is typically a fraction of $\tau_{\max}$). The `TemperatureOracle` exposes this as `boltzmannWeight(c)` $ = 10^{18} + (c \times 10^{18})/\tau$.
+
+Full Boltzmann weights are computed off-chain, signed under EIP-712 by the aggregator, and submitted via `BackpressurePool.rebalanceWithShares()`. On-chain, these shares are blended with a uniform exploration term:
+
+$$\text{share}_i = (1 - \varepsilon) \cdot P(i) + \varepsilon \cdot \frac{1}{N}$$
+
+where $\varepsilon$ defaults to 5% (capped at 20%). The exploration term guarantees that every connected sink receives at least $\varepsilon / N$ of the flow, preventing starvation even at low temperature. Shares are scaled to GDA units via $u_i = \lfloor \text{share}_i \times 10^9 / 10^{18} \rfloor$.
+
+This architecture keeps the expensive softmax off-chain while preserving verifiability: anyone can recompute the Boltzmann distribution from the signed capacity attestations and check the submitted shares.
+
+## Virial ratio and capital equilibrium
+
+In celestial mechanics, the virial theorem relates a system's kinetic and potential energy: $2K + U = 0$ at equilibrium. We adapt this to bound capital:
+
+$$V = \frac{2T}{S + E}$$
+
+where $T$ is epoch throughput (total tokens that flowed through pools), $S$ is total staked capital, and $E$ is total escrowed capital. The equilibrium target is $V = 1.0$: throughput and bound capital are balanced. $V > 1$ means the system is under-capitalised relative to throughput (a "bull" phase); $V < 1$ means excess capital is locked up with too little activity.
+
+The `VirialMonitor` contract stores $V$ and exposes two advisory functions. `recommendedDemurrageRate()` returns an adaptive decay rate $\delta$:
+
+$$\delta = \delta_{\min} + (\delta_{\max} - \delta_{\min}) \cdot \max(0, 1 - V)$$
+
+so that when $V \geq 1$ (healthy or bull), $\delta = \delta_{\min}$ ($\approx$1%/year), and when $V \ll 1$ (stagnant), $\delta$ rises toward $\delta_{\max}$ ($\approx$10%/year), taxing idle capital and pushing it back into circulation. `recommendedStakeAdjustment()` returns $V - V_{\text{target}}$ as a signed integer, signalling whether participants should add or withdraw stake.
+
+## Adaptive demurrage
+
+The `DemurrageToken` is an ERC-20 wrapper that applies continuous decay to idle balances. Given a fixed or virial-adaptive decay rate $\lambda$ and elapsed time $\Delta t$ since last rebase:
+
+$$\text{balance}_{\text{real}} = \text{balance}_{\text{nominal}} \cdot e^{-\lambda \Delta t}$$
+
+On-chain, a linear approximation avoids the exponential: $\text{decay} = \text{nominal} \cdot \lambda \cdot \Delta t / 10^{18}$. At the default 5%/year rate with hourly rebases, the approximation error is $< 6 \times 10^{-6}$, well within rounding noise.
+
+When `adaptiveDecayEnabled` is true and a `VirialMonitor` is attached, `getEffectiveDecayRate()` uses the monitor's recommended rate instead of the fixed $\lambda$. This closes a feedback loop: low activity ($V < 1$) raises demurrage, which pushes idle tokens into staking or spending, which raises throughput, which raises $V$ back toward equilibrium.
+
+Accounts marked `decayExempt` (staking contracts, escrow buffers) skip decay. Decayed value accrues to a configurable `decayRecipient`—typically a protocol treasury or burn address.
+
+## Osmotic escrow pressure
+
+The `EscrowBuffer` stores overflow payments when all sinks are saturated. We define escrow pressure as an osmotic analog:
+
+$$P = \frac{L}{M}$$
+
+where $L$ is the current buffer level and $M$ is the configured maximum. $P$ ranges from 0 (empty) to 1 (full), scaled to $10^{18}$. The buffer emits a `PressureChanged` event on every deposit, and the `SystemStateEmitter` reads $P$ when classifying system phase.
+
+Draining is permissionless: any caller can trigger `drain(taskTypeId)`, which distributes buffered tokens to sinks proportionally by capacity. This creates a pull-based pressure release—when downstream capacity returns, accumulated demand is served without coordinator intervention.
+
+## Circuit breakers and phase transitions
+
+The `Pipeline` contract composes multiple pool stages into a sequential workflow. Each stage carries a `CircuitBreakerState` that tracks its current phase. Five phases exist:
+
+| Phase | Code | Trigger |
+|---|---|---|
+| Steady | 0 | Default healthy state |
+| Bull | 1 | $V > 1.5$ |
+| Shock | 2 | $P > 0.80$ or $V < 0.2$ |
+| Recovery | 3 | $\tau > 3.0$ and $V < 0.8$ |
+| Collapse | 4 | $P > 0.95$ or $V > 5.0$ |
+
+Collapse triggers come in two flavours. An *immediate* collapse fires when throughput drops below 5% of declared capacity in a single epoch or escrow pressure exceeds 95%. A *gradual* collapse fires after three consecutive epochs where throughput stays below 20% of declared capacity or escrow pressure exceeds 90%.
+
+When a stage collapses, the pipeline *decouples* it: upstream effective capacity is capped at the downstream throughput observed before collapse, halting new flow into the failed segment. Recovery occurs when the stage's throughput ratio returns above 20% and escrow pressure drops below 90%. Decoupling prevents the cascade failure that typifies tightly coupled pipelines—a bottleneck in stage 3 of a 5-stage pipeline no longer starves stages 1 and 2 of routing information.
+
+## System state aggregation
+
+The `SystemStateEmitter` reads $\tau$, $V$, and $P$ from their respective contracts and emits a single `SystemStateUpdate(scope, τ, V, P, phase, timestamp)` event. Phase classification follows the table above: the emitter evaluates threshold conditions and assigns the highest-severity applicable phase. Any address can call `emitSystemState`—the function is permissionless, designed for keeper bots or cron jobs.
+
+Dashboards and off-chain agents subscribe to this event to make routing and capital allocation decisions without polling multiple contracts.
+
+## Connection to Lyapunov stability
+
+The throughput-optimality proof uses a Lyapunov function $L = \sum_\tau Q_\tau^2$ over virtual queue backlogs. Boltzmann routing preserves the drift bound because the exploration term $\varepsilon / N$ is bounded and the Boltzmann weights are proportional to spare capacity—the same monotonicity property that the original max-weight policy exploits. The temperature parameter $\tau$ controls the sharpness of the allocation but does not change the sign of the drift: for any $\tau > 0$, the expected drift remains negative outside the capacity region, which is sufficient for Foster–Lyapunov stability.
+
+Adaptive demurrage operates on a slower timescale (hours to days) than pool rebalancing (minutes). This separation of timescales means the demurrage feedback loop does not interfere with the per-epoch allocation proof: within any single epoch, $\lambda$ is constant and the balance dynamics reduce to the base case.

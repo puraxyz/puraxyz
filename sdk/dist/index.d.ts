@@ -1,6 +1,8 @@
 export { abis } from "./abis/index.js";
 export { addresses, getAddresses, type ChainAddresses } from "./addresses.js";
 export { getContracts, type BPEContracts } from "./contracts.js";
+export { route, deploy, monitor } from "./client.js";
+export type { RouteOptions, RouteResult, DeployOptions, ProtocolState } from "./client.js";
 export * as sink from "./actions/sink.js";
 export * as source from "./actions/source.js";
 export * as pool from "./actions/pool.js";
@@ -24,3 +26,4 @@ export * as temperature from "./actions/temperature.js";
 export * as virial from "./actions/virial.js";
 export * as systemState from "./actions/systemState.js";
 export * from "./signing.js";
+export * from "./schemas.js";

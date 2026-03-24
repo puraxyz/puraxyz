@@ -167,7 +167,7 @@ export default function Home() {
 
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Register a relay</h3>
-        <pre className={styles.compact}>{`import { relay, getAddresses } from "@pura/sdk";
+        <pre className={styles.compact}>{`import { relay, getAddresses } from "@puraxyz/sdk";
 
 const addrs = getAddresses(84532);
 await relay.registerRelay(walletClient, addrs,

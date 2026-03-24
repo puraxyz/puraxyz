@@ -7,7 +7,7 @@
     "dev": "next dev --webpack --port 3002",
     "build": "npm run sync-sdk && next build --webpack",
     "start": "next start",
-    "sync-sdk": "rm -rf node_modules/@pura/sdk && mkdir -p node_modules/@pura/sdk && cp -r ../sdk/dist node_modules/@pura/sdk/dist && cp ../sdk/package.json node_modules/@pura/sdk/package.json && sed -i.bak 's/.json\";/.json\" with { type: \"json\" };/g' node_modules/@pura/sdk/dist/abis/index.js && rm -f node_modules/@pura/sdk/dist/abis/index.js.bak",
+    "sync-sdk": "rm -rf node_modules/@puraxyz/sdk && mkdir -p node_modules/@puraxyz/sdk && cp -r ../sdk/dist node_modules/@puraxyz/sdk/dist && cp ../sdk/package.json node_modules/@puraxyz/sdk/package.json && sed -i.bak 's/.json\";/.json\" with { type: \"json\" };/g' node_modules/@puraxyz/sdk/dist/abis/index.js && rm -f node_modules/@puraxyz/sdk/dist/abis/index.js.bak",
     "setup": "tsx scripts/setup.ts"
   },
   "dependencies": {

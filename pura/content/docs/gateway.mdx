@@ -1,0 +1,109 @@
+---
+title: Gateway specification
+order: 2
+description: OpenAI-compatible routing endpoint — API reference, headers, rate limits
+---
+
+The Pura gateway (`api.pura.xyz`) is an OpenAI-compatible HTTP endpoint that routes inference requests across providers using on-chain capacity weights. Swap your `baseURL` and everything else stays the same.
+
+## Base URL
+
+```
+https://api.pura.xyz/v1
+```
+
+## Authentication
+
+All requests require a `pura_` prefixed API key in the Authorization header:
+
+```
+Authorization: Bearer pura_abc123...
+```
+
+Generate keys at [pura.xyz/deploy](/deploy).
+
+## Endpoints
+
+### POST /v1/chat/completions
+
+Standard OpenAI chat completion. Supports streaming.
+
+```bash
+curl https://api.pura.xyz/v1/chat/completions \
+  -H "Authorization: Bearer pura_your_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "hello"}],
+    "stream": true
+  }'
+```
+
+Request body follows the [OpenAI API spec](https://platform.openai.com/docs/api-reference/chat/create). The `model` field selects the downstream model. The gateway routes to whichever provider has spare capacity for that model.
+
+### GET /v1/models
+
+Returns gateway health and available providers.
+
+```json
+{
+  "status": "ok",
+  "service": "pura-gateway",
+  "version": "0.1.0",
+  "chain": "base-sepolia",
+  "timestamp": "2026-07-01T00:00:00.000Z"
+}
+```
+
+## Response headers
+
+Every response includes routing metadata:
+
+| Header | Description |
+|--------|-------------|
+| `X-Pura-Provider` | Which provider handled the request (e.g. `openai`, `anthropic`) |
+| `X-Pura-Request-Id` | Unique request identifier for on-chain receipt lookup |
+| `X-RateLimit-Remaining` | Requests remaining in the current rate limit window |
+
+On rate limit (429), the response includes a `Retry-After` header with seconds until the window resets.
+
+## Rate limits
+
+30 requests per minute per API key. Sliding window.
+
+## Routing
+
+The gateway reads capacity weights from the on-chain `CapacityRegistry` and routes using Boltzmann-weighted selection. Providers with more spare capacity are selected more often. If the selected provider fails, the gateway falls back to the next provider by weight.
+
+Each completion is recorded on-chain with the provider, model, and token count via the `CompletionLedger`.
+
+## SDK integration
+
+```typescript
+import { route } from '@puraxyz/sdk'
+
+const result = await route({
+  apiKey: 'pura_your_key',
+  messages: [{ role: 'user', content: 'What is BPE?' }],
+})
+
+console.log(result.content)
+console.log(result.provider)     // "openai" or "anthropic"
+console.log(result.requestId)    // on-chain receipt id
+```
+
+Or use the OpenAI SDK directly:
+
+```typescript
+import OpenAI from 'openai'
+
+const client = new OpenAI({ baseURL: 'https://api.pura.xyz/v1', apiKey: 'pura_your_key' })
+const completion = await client.chat.completions.create({
+  model: 'gpt-4o-mini',
+  messages: [{ role: 'user', content: 'hello' }],
+})
+```
+
+## CORS
+
+The gateway supports CORS for browser-based clients. Allowed origins, methods, and headers are configured to support standard fetch API usage.

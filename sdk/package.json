@@ -1,5 +1,5 @@
 {
-  "name": "@pura/sdk",
+  "name": "@puraxyz/sdk",
   "version": "0.1.0",
   "description": "TypeScript SDK for the Pura protocol — backpressure economics for decentralized networks",
   "type": "module",

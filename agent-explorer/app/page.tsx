@@ -224,7 +224,7 @@ export default function Home() {
 
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Register an agent</h3>
-        <pre className={styles.compact}>{`import { openclaw, getAddresses } from "@pura/sdk";
+        <pre className={styles.compact}>{`import { openclaw, getAddresses } from "@puraxyz/sdk";
 
 const addrs = getAddresses(84532);
 await openclaw.registerAgent(walletClient, addrs,
@@ -244,7 +244,7 @@ await openclaw.registerAgent(walletClient, addrs,
 
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Submit a verified completion (with vr.dev evidence)</h3>
-        <pre className={styles.compact}>{`import { verify, getAddresses } from "@pura/sdk";
+        <pre className={styles.compact}>{`import { verify, getAddresses } from "@puraxyz/sdk";
 
 const addrs = getAddresses(84532);
 // evidenceHash comes from a vr.dev verification pipeline

@@ -11,7 +11,7 @@ You need: a wallet with Base Sepolia ETH and test tokens.
 ## Install the SDK
 
 ```bash
-npm install @pura/sdk viem
+npm install @puraxyz/sdk viem
 ```
 
 ## Set up your wallet
@@ -20,7 +20,7 @@ npm install @pura/sdk viem
 import { createWalletClient, createPublicClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { baseSepolia } from 'viem/chains'
-import { getAddresses } from '@pura/sdk'
+import { getAddresses } from '@puraxyz/sdk'
 
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
 const wallet = createWalletClient({ account, chain: baseSepolia, transport: http() })
@@ -33,7 +33,7 @@ const addrs = getAddresses(84532)
 The UniversalCapacityAdapter accepts any domain-specific capacity signal and normalizes it to a 0-10,000 basis-point range that the core BPE engine understands. Your domain might be GPU compute capacity, file storage availability, bandwidth metering, or anything else that has variable supply.
 
 ```typescript
-import { normalizeCapacity, routeAttestation } from '@pura/sdk/actions/platform'
+import { normalizeCapacity, routeAttestation } from '@puraxyz/sdk/actions/platform'
 
 // Your domain identifier
 const domainId = '0x' + Buffer.from('gpu-compute').toString('hex').padEnd(64, '0') as `0x${string}`
@@ -66,7 +66,7 @@ Every participant that registers in your domain automatically accumulates reputa
 
 ```typescript
 import { getAggregateReputation, getStakeDiscount, getAccountDomains }
-  from '@pura/sdk/actions/platform'
+  from '@puraxyz/sdk/actions/platform'
 
 const rep = await getAggregateReputation(public_, addrs, account.address)
 console.log('Cross-domain reputation:', rep)
@@ -85,7 +85,7 @@ A participant who has earned reputation in the Lightning domain can stake less w
 The CrossProtocolRouter selects between Superfluid (streaming), Lightning (instant), and on-chain (settlement) based on payment amount, speed requirements, and available liquidity.
 
 ```typescript
-import { isProtocolAvailable } from '@pura/sdk/actions/platform'
+import { isProtocolAvailable } from '@puraxyz/sdk/actions/platform'
 
 // Check which protocols are available for routing
 // 0 = Superfluid, 1 = Lightning, 2 = On-chain

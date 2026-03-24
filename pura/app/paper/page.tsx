@@ -17,7 +17,7 @@ const MAIN_SECTIONS = [
   "conclusion",
 ];
 
-const SUBSECTIONS = ["offchain", "pricing", "verification"];
+const SUBSECTIONS = ["offchain", "pricing", "verification", "thermodynamic"];
 
 export default function PaperIndex() {
   const all = getAllContent("paper");

@@ -100,11 +100,11 @@ Contracts:
 
 Three settlement rails, chosen per sink preference:
 
-**Lightning** — for sinks that want instant settlement in sats. The adapter creates an HTLC with a 24-hour timeout. The sink reveals the preimage to claim payment. If the preimage isn't revealed in time, the escrow returns to the pool.
-
-**Superfluid streaming** — for sinks that want continuous cash flow. The adapter opens a GDA (General Distribution Agreement) stream. Revenue accrues linearly every second, withdrawable at any time.
-
-**Direct ERC-20** — for sinks that want simple token transfers. The adapter locks tokens in escrow on job acceptance and releases them on verified completion.
+| Rail | Mechanism |
+|------|-----------|
+| Lightning | HTLC with sha256 preimage and 24-hour timeout. The sink reveals the preimage to claim payment. If the preimage isn't revealed in time, the escrow returns to the pool. |
+| Superfluid streaming | GDA (General Distribution Agreement) stream with linear accrual per second, withdrawable at any time. |
+| Direct ERC-20 | Simple token transfer. The adapter locks tokens in escrow on job acceptance and releases them on verified completion. |
 
 The settlement plane emits SettlementReceipt objects, closing the loop.
 

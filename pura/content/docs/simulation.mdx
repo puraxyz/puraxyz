@@ -18,23 +18,23 @@ An agent-based simulation validates the theoretical claims of [BPE](/docs/contra
 
 ## Experiments
 
-### 1. Convergence & Efficiency
+### 1. Convergence and efficiency
 
 Measures allocation efficiency over time. BPE achieves **95.7%** versus 93.5% for round-robin and 79.7% for random allocation.
 
-### 2. Shock Response
+### 2. Shock response
 
 Simulates 20% node-kill events and measures recovery time. BPE recovers within **~50 steps**.
 
-### 3. EWMA Sweep
+### 3. EWMA sweep
 
 Sensitivity analysis of the smoothing parameter $\alpha \in [0.05, 0.95]$ on allocation efficiency and stability.
 
-### 4. Sybil Resistance
+### 4. Sybil resistance
 
 Confirms that stake fragmentation yields strictly negative net profit for all split counts $n > 1$ under the $\sqrt{\text{stake}}$ capacity cap.
 
-### 5. Buffer Utilization
+### 5. Buffer utilization
 
 With overflow escrow sized at one period of peak demand, buffer stall rates drop from 73% to **under 9%**.
 
@@ -59,8 +59,8 @@ Simulation source is on [GitHub](https://github.com/puraxyz/puraxyz/tree/main/si
 
 ---
 
-## See Also
+## See also
 
-- [Smart Contracts](/docs/contracts) — All 17 deployed contracts with addresses and source
+- [Smart Contracts](/docs/contracts) — All 32 deployed contracts with addresses and source
 - [TypeScript SDK](/docs/sdk) — Type-safe client for interacting with contracts
 - [NIP-XX](/docs/nip-xx) — Nostr relay economics specification

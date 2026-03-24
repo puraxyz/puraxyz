@@ -1,0 +1,53 @@
+---
+title: Why agent payment protocols need congestion control
+date: "2026-07-01"
+description: Every agent payment protocol solves settlement. None solve routing. That is the wrong order.
+---
+
+Every agent payment protocol released in the last two years solves the same problem: how do I pay a machine for work? HTTP 402 headers, streaming micropayments, payment channels, voucher redemption. The settlement question is answered six different ways.
+
+Nobody is solving routing.
+
+## The actual bottleneck
+
+When a client sends a request to an LLM provider, the hard part is not moving money. The hard part is picking which provider to send it to. Right now, the client either hardcodes a provider or uses a load balancer. Neither works once you add payment.
+
+A load balancer reads server health checks from behind a firewall. It has no public capacity signal. It cannot verify that work was completed. It does not adjust pricing based on congestion. And it requires the client and all providers to trust the same operator.
+
+Payment protocols like x402 bolt a 402 header onto HTTP. The client pays, the server responds. If the server is overloaded, the client finds out when the request times out. There is no pre-routing signal. No fallback.
+
+Tempo's multi-path payments split Lightning transactions across channels. This solves channel liquidity. It tells you nothing about whether the destination service has room.
+
+## Data networks solved this in 1988
+
+Van Jacobson published "Congestion Avoidance and Control" the same year the Morris Worm took out 10% of the internet. TCP was flooding the network because senders had no signal about receiver capacity. His fix: senders watch for packet loss (a congestion signal) and ratchet down their send rate.
+
+The principle: if the receiver cannot handle the load, the sender needs to know, and the sender needs to slow down.
+
+Thirty-seven years later, payment protocols for AI agents have the exact same problem TCP had before Jacobson. Senders push money with no signal about receiver capacity. The best providers get flooded. Mediocre providers sit idle. No feedback loop, no congestion response, no rerouting.
+
+## What congestion control looks like for payments
+
+Backpressure Economics (BPE) adapts the Tassiulas-Ephremides max-weight routing algorithm to monetary flows. Five primitives:
+
+1. Providers declare capacity on-chain. EWMA smoothing prevents gaming and dampens oscillation.
+
+2. Virtual queues track backlog per provider. No tokens locked — the queue is a bookkeeping signal.
+
+3. Max-weight routing splits incoming payment flow proportionally to capacity-weighted differential backlog. Overloaded providers get less. Providers with headroom get more.
+
+4. Overflow escrow buffers excess when aggregate demand exceeds aggregate capacity. Demurrage decays idle buffer funds.
+
+5. Dynamic pricing rises with congestion (EIP-1559-style base fee adjustment), creating economic backpressure before the buffer is needed.
+
+The throughput guarantee: for any demand vector strictly inside the capacity region, BPE finds the allocation and keeps overflow bounded. If providers collectively have enough capacity, every request lands somewhere with room.
+
+## What this means in practice
+
+You point your OpenAI SDK at `api.pura.xyz/v1`. The gateway reads on-chain capacity weights, picks a provider with spare room, streams the response back with headers showing which provider handled it. If that provider gets saturated, the next request goes somewhere else.
+
+No hardcoded provider. No blind retry. No load balancer you have to trust. The capacity signal is on-chain, the completion is dual-signed, and the routing math has a proof.
+
+Settlement is a solved problem. Routing is the bottleneck. That is what BPE is for.
+
+Read the [BPE Lite paper](/paper) or [try the gateway](/#demo).

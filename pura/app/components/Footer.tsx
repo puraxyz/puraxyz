@@ -8,7 +8,6 @@ const FOOTER_LINKS = [
   { href: "/deploy", label: "deploy" },
   { href: "/monitor", label: "monitor" },
   { href: "/simulate", label: "simulate" },
-  { href: "/pricing", label: "pricing" },
 ];
 
 export function Footer() {

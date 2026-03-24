@@ -1,5 +1,5 @@
 import { type Hash } from "viem";
-import { getAddresses, pool } from "@pura/sdk";
+import { getAddresses, pool } from "@puraxyz/sdk";
 import { publicClient, chainId } from "../shared/chain";
 import { getProviderConfigs, type Provider } from "./providers";
 

@@ -30,7 +30,7 @@ The primary use case is AI agent economies. When multiple agents provide similar
 
 ## What is deployed?
 
-25 Solidity contracts on Base Sepolia. 249 passing tests. TypeScript SDK with 18 action modules.
+32 Solidity contracts (12 on Base mainnet, 20 testnet-only research modules). 319 passing tests. TypeScript SDK with 23 action modules. Live gateway at gateway.pura.xyz with streaming completions routed through on-chain capacity pools.
 
 Core contracts:
 - CapacityRegistry: Agents register with multi-dimensional capacity vectors

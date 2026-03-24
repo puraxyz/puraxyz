@@ -1,10 +1,10 @@
 ---
 title: Smart Contracts
 order: 0
-description: 22 Solidity contracts deployed on Base Sepolia
+description: 32 Solidity contracts deployed on Base Sepolia
 ---
 
-Pura is implemented as 22 Solidity smart contracts deployed on Base Sepolia (L2). The core contracts handle capacity-weighted payment routing for AI agents. Additional research modules cover demurrage, Nostr relays, Lightning routing, and cross-domain composition.
+Pura is implemented as 32 Solidity smart contracts deployed on Base Sepolia (L2). The core contracts handle capacity-weighted payment routing for AI agents. Additional research modules cover demurrage, Nostr relays, Lightning routing, and cross-domain composition.
 
 ## Architecture
 
@@ -53,7 +53,7 @@ Time-decaying tokens that incentivize circulation over hoarding, layered with ve
 | [`DemurrageToken`](https://github.com/puraxyz/puraxyz/blob/main/contracts/src/DemurrageToken.sol) | ERC-20 Super Token with configurable decay rate per epoch |
 | [`VelocityMetrics`](https://github.com/puraxyz/puraxyz/blob/main/contracts/src/VelocityMetrics.sol) | Epoch-based monetary velocity and turnover rate tracking |
 
-## Nostr Relays (2 contracts)
+## Nostr relays (2 contracts)
 
 NIP-compliant relay capacity signaling and economic sustainability for relay operators.
 
@@ -85,7 +85,7 @@ The composition layer: universal adapter and cross-domain reputation.
 
 ## V2 Economy (5 contracts)
 
-Recursive composition, quality-weighted routing, and temporal token mechanics. See [EconomyFactory deep dive](/docs/economy-factory) for template details.
+Recursive composition, quality-weighted routing, and temporal token mechanics. See [EconomyFactory details](/docs/economy-factory) for template configuration.
 
 | Contract | Purpose |
 |----------|---------||
@@ -99,7 +99,7 @@ Recursive composition, quality-weighted routing, and temporal token mechanics. S
 
 Contracts are deployed on **Base Sepolia** (testnet). Deployment addresses are tracked in `contracts/deployments/base-sepolia.json`.
 
-### Build & Test
+### Build and test
 
 ```bash
 cd contracts
@@ -107,7 +107,7 @@ forge build
 forge test
 ```
 
-All 213 tests pass across 21 test suites. The test suite covers:
+All 319 tests pass across 32 test suites. The test suite covers:
 
 - Core BPE: capacity registration, EWMA, staking, escrow, pricing, completion tracking
 - Demurrage: wrap/unwrap, decay mechanics, epoch advancement, velocity metrics
@@ -124,8 +124,8 @@ Contract source code is on [GitHub](https://github.com/puraxyz/puraxyz/tree/main
 
 ## See also
 
-- [TypeScript SDK](/docs/sdk) — type-safe client for all 22 contracts
-- [EconomyFactory](/docs/economy-factory) — template deep dive and one-transaction deployment
+- [TypeScript SDK](/docs/sdk) — type-safe client for all 32 contracts
+- [EconomyFactory](/docs/economy-factory) — template details and one-transaction deployment
 - [Simulation](/docs/simulation) — agent-based validation of BPE theoretical claims
 - [NIP-XX](/docs/nip-xx) — Nostr relay economics specification
 - [Get started](/docs/getting-started) — deploy an economy in 5 minutes

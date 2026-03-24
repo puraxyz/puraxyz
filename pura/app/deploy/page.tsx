@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import Link from "next/link";
 import s from "./deploy.module.css";
 
 type AuthState =
@@ -20,44 +21,6 @@ interface RelayStatus {
   superfluidStreamId: string | null;
   createdAt: number;
 }
-
-const PLANS = [
-  {
-    id: "free",
-    name: "Free",
-    price: "$0",
-    features: [
-      "1 relay on pura.xyz subdomain",
-      "100 MB storage",
-      "10 allowed pubkeys",
-      "50 events/min rate limit",
-    ],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: "$9/mo stream",
-    features: [
-      "5 GB storage",
-      "Unlimited pubkeys",
-      "Custom domain support",
-      "On-chain relay registration",
-      "Payment pool revenue sharing",
-    ],
-  },
-  {
-    id: "operator",
-    name: "Operator",
-    price: "$29/mo stream",
-    features: [
-      "50 GB storage",
-      "Everything in Pro",
-      "Multiple relay configs",
-      "Advanced analytics",
-      "Priority support",
-    ],
-  },
-];
 
 export default function DeployPage() {
   const [auth, setAuth] = useState<AuthState>({ status: "unauthenticated" });
@@ -166,38 +129,85 @@ export default function DeployPage() {
           <hr className={s.rule} />
         </div>
 
-        <h1 className={s.title}>Deploy your Nostr relay</h1>
+        <h1 className={s.title}>Deploy a service on Pura</h1>
         <p className={s.subtitle}>
-          Your personal relay in 60 seconds. No email, no password. Sign in
-          with Nostr.
+          Nostr relays, NIP-90 DVMs, AI agent endpoints. Sign in with Nostr
+          to provision yours.
         </p>
 
-        <div className={s.plans}>
-          {PLANS.map((plan) => (
-            <div key={plan.id} className={s.planCard}>
-              <div className={s.planName}>{plan.name}</div>
-              <div className={s.planPrice}>{plan.price}</div>
+        {/* ── pricing model ── */}
+        <section style={{ marginBottom: "2rem" }}>
+          <div style={{ fontSize: "0.7rem", color: "#888", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.75rem" }}>
+            how pricing works
+          </div>
+          <div className={s.plans}>
+            <div className={s.planCard}>
+              <div className={s.planName}>Shadow mode</div>
+              <div className={s.planPrice}>Free</div>
               <ul className={s.planFeatures}>
-                {plan.features.map((f) => (
-                  <li key={f}>{f}</li>
-                ))}
+                <li>Install the <code>@puraxyz/shadow</code> sidecar</li>
+                <li>Capacity metrics collected locally</li>
+                <li>Simulated BPE allocation reports</li>
+                <li>No on-chain registration required</li>
               </ul>
             </div>
-          ))}
-        </div>
+            <div className={s.planCard} style={{ borderColor: "var(--color-deploy)" }}>
+              <div className={s.planName} style={{ color: "var(--color-deploy)" }}>On-chain</div>
+              <div className={s.planPrice}>Usage-based</div>
+              <ul className={s.planFeatures}>
+                <li>Protocol fees set by PricingCurve</li>
+                <li>Congestion-adjusted per task type</li>
+                <li>Settlement via Lightning, Superfluid, or ERC-20</li>
+                <li>Relay hosting on pura.xyz subdomain</li>
+                <li>Payment pool revenue sharing</li>
+              </ul>
+            </div>
+          </div>
+          <p style={{ fontSize: "0.68rem", color: "#666", lineHeight: 1.6, marginTop: "0.75rem" }}>
+            There are no flat monthly fees. The protocol&apos;s PricingCurve contract
+            sets fees dynamically based on network congestion: prices rise when
+            capacity is scarce, drop when it&apos;s abundant. Operators earn from
+            the payment pool proportional to their verified throughput.
+            Start with shadow mode to see projected earnings before registering on-chain.
+          </p>
+        </section>
 
-        <div className={s.authBlock}>
-          <button
-            className={s.btn}
-            onClick={signIn}
-            disabled={auth.status === "authenticating"}
-          >
-            {auth.status === "authenticating"
-              ? "signing in..."
-              : "sign in with nostr →"}
-          </button>
-          {error && <p className={s.error}>{error}</p>}
-        </div>
+        {/* ── DVM deploy link ── */}
+        <section style={{ marginBottom: "1.5rem" }}>
+          <div style={{ fontSize: "0.7rem", color: "#888", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.5rem" }}>
+            deploy a DVM
+          </div>
+          <p style={{ fontSize: "0.72rem", color: "#888", lineHeight: 1.6, marginBottom: "0.5rem" }}>
+            Register a NIP-90 Data Vending Machine with capacity monitoring,
+            completion verification, and congestion pricing.
+          </p>
+          <Link href="/deploy/dvm" style={{ fontSize: "0.72rem", color: "var(--color-deploy)" }}>
+            register a DVM →
+          </Link>
+        </section>
+
+        {/* ── relay deploy (sign in) ── */}
+        <section>
+          <div style={{ fontSize: "0.7rem", color: "#888", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.5rem" }}>
+            deploy a relay
+          </div>
+          <p style={{ fontSize: "0.72rem", color: "#888", lineHeight: 1.6, marginBottom: "0.75rem" }}>
+            Get a personal Nostr relay on a pura.xyz subdomain. No email, no
+            password.
+          </p>
+          <div className={s.authBlock}>
+            <button
+              className={s.btn}
+              onClick={signIn}
+              disabled={auth.status === "authenticating"}
+            >
+              {auth.status === "authenticating"
+                ? "signing in..."
+                : "sign in with nostr →"}
+            </button>
+            {error && <p className={s.error}>{error}</p>}
+          </div>
+        </section>
       </main>
     );
   }

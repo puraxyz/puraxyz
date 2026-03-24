@@ -1,21 +1,21 @@
-# @pura/sdk
+# @puraxyz/sdk
 
 TypeScript SDK for the [Pura](https://pura.xyz) protocol on Base Sepolia.
 
 ## Installation
 
 ```bash
-npm install @pura/sdk
+npm install @puraxyz/sdk
 ```
 
 ## Usage
 
 ```typescript
-import { getAddresses } from "@pura/sdk";
-import * as sink from "@pura/sdk/actions/sink";
-import * as pool from "@pura/sdk/actions/pool";
-import * as pricing from "@pura/sdk/actions/pricing";
-import * as lightning from "@pura/sdk/actions/lightning";
+import { getAddresses } from "@puraxyz/sdk";
+import * as sink from "@puraxyz/sdk/actions/sink";
+import * as pool from "@puraxyz/sdk/actions/pool";
+import * as pricing from "@puraxyz/sdk/actions/pricing";
+import * as lightning from "@puraxyz/sdk/actions/lightning";
 import { createPublicClient, createWalletClient, http } from "viem";
 import { baseSepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";

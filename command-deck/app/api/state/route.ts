@@ -9,7 +9,7 @@ export async function GET() {
   try {
     // Dynamic requires — SDK may not be synced in dev
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const sdk = require("@pura/sdk") as {
+    const sdk = require("@puraxyz/sdk") as {
       getAddresses: (chainId: number) => Record<string, unknown>;
       pool: {
         getTotalMembers: (...args: unknown[]) => Promise<bigint>;

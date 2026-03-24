@@ -4,26 +4,26 @@ order: 1
 description: Type-safe client for interacting with Pura contracts via viem
 ---
 
-The `@pura/sdk` package provides a TypeScript client for interacting with all 22 Pura [smart contracts](/docs/contracts).
+The `@puraxyz/sdk` package provides a TypeScript client for interacting with all 32 Pura [smart contracts](/docs/contracts).
 
 ## Installation
 
 ```bash
-npm install @pura/sdk
+npm install @puraxyz/sdk
 ```
 
 ## Features
 
-- Contract ABIs: pre-compiled ABIs for all 22 contracts
+- Contract ABIs: pre-compiled ABIs for all 32 contracts
 - Type-safe interactions: full TypeScript types via [viem](https://viem.sh/)
-- 18 action modules: Core BPE + Demurrage + Relay + Lightning + Platform + V2 Economy
+- 23 action modules: Core BPE + Demurrage + Relay + Lightning + Platform + V2 Economy + Thermodynamic
 - Address registry: deployed contract addresses for supported networks
 - EIP-712 signing: helpers for attestations and completion receipts
 
 ## Usage
 
 ```typescript
-import { addresses, contracts } from '@pura/sdk'
+import { addresses, contracts } from '@puraxyz/sdk'
 
 // Get contract addresses for Base Sepolia
 const { capacityRegistry, backpressurePool, stakeManager } = addresses.baseSepolia
@@ -80,6 +80,33 @@ const capacity = await client.readContract({
 | [`actions/velocityToken`](https://github.com/puraxyz/puraxyz/blob/main/sdk/src/actions/velocityToken.ts) | Wrap/unwrap with idle decay, stream exemption checks |
 | [`actions/urgencyToken`](https://github.com/puraxyz/puraxyz/blob/main/sdk/src/actions/urgencyToken.ts) | TTL-stamped deposits, consume, burn, batch operations |
 
+### Thermodynamic & Monitoring
+
+| Module | Description |
+|--------|-------------|
+| [`actions/temperature`](https://github.com/puraxyz/puraxyz/blob/main/sdk/src/actions/temperature.ts) | Read system temperature from capacity variance |
+| [`actions/virial`](https://github.com/puraxyz/puraxyz/blob/main/sdk/src/actions/virial.ts) | Virial ratio monitoring, capital equilibrium |
+| [`actions/systemState`](https://github.com/puraxyz/puraxyz/blob/main/sdk/src/actions/systemState.ts) | Aggregate system snapshots (temperature, virial, pressure) |
+| [`actions/verify`](https://github.com/puraxyz/puraxyz/blob/main/sdk/src/actions/verify.ts) | On-chain verification helpers |
+| [`actions/openclaw`](https://github.com/puraxyz/puraxyz/blob/main/sdk/src/actions/openclaw.ts) | OpenClaw agent registration and reputation |
+
+### High-level client
+
+The SDK also exports a high-level client with three convenience functions that wrap the lower-level action modules:
+
+```typescript
+import { route, deploy, monitor } from '@puraxyz/sdk'
+
+// Route an inference request through the gateway
+const result = await route({ apiKey: 'pura_...', messages: [...] })
+
+// Register as a provider (stake + register + connect to pool)
+const txs = await deploy(wallet, addresses, { taskTypeId, initialCapacity: 100n, stakeAmount: 400n * 10n ** 18n })
+
+// Read live protocol state
+const state = await monitor(client, addresses)
+```
+
 ## Source
 
 SDK source code is on [GitHub](https://github.com/puraxyz/puraxyz/tree/main/sdk/src).
@@ -88,7 +115,7 @@ SDK source code is on [GitHub](https://github.com/puraxyz/puraxyz/tree/main/sdk/
 
 ## See also
 
-- [Smart Contracts](/docs/contracts): all 22 deployed contracts with source
+- [Smart Contracts](/docs/contracts): all 32 deployed contracts with source
 - [EconomyFactory](/docs/economy-factory): one-transaction economy deployment
 - [Simulation](/docs/simulation): agent-based validation of BPE claims
 - [NIP-XX](/docs/nip-xx): Nostr relay economics specification

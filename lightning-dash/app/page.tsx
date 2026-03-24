@@ -240,7 +240,7 @@ export default function Home() {
 
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Register a node</h3>
-        <pre className={styles.compact}>{`import { lightning, getAddresses } from "@pura/sdk";
+        <pre className={styles.compact}>{`import { lightning, getAddresses } from "@puraxyz/sdk";
 
 const addrs = getAddresses(84532);
 await lightning.registerNode(walletClient, addrs, nodePubkey, 5_000_000n);

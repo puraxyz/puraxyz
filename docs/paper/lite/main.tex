@@ -1,0 +1,225 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[numbers]{natbib}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+
+\newcommand{\Csmooth}{\bar{C}}
+\newcommand{\Craw}{C}
+\newcommand{\tasktype}{\tau}
+
+\title{Backpressure Economics:\\
+Congestion Control for Agent Payment Flows}
+\author{Pura Protocol}
+\date{\today}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+% ═══════════════════════════════════════════════════
+% PAGE 1 — Problem + competitors
+% ═══════════════════════════════════════════════════
+
+\section{Problem}
+
+Streaming payment protocols let AI agents pay each other continuously, but none
+of them handle congestion. When a downstream provider is at capacity, payments
+pile up with no mechanism to reroute, buffer, or throttle. Data networks solved
+this decades ago with TCP congestion control. Payment networks have not.
+
+The result: the best providers get flooded while mediocre ones sit idle. Callers
+have no signal about who has spare capacity. Money flows in, but verified work
+does not always come out.
+
+\subsection{Existing approaches}
+
+\textbf{x402} (Coinbase, 2025) wraps HTTP 402 responses with crypto payment
+headers. No capacity signal, no routing, no flow control. The client pays and
+hopes the server has room.
+
+\textbf{Tempo MPP} adds a temporary multi-path payment layer to Lightning.
+Splits help with channel liquidity but provide zero information about
+downstream service capacity.
+
+\textbf{AP2/TAP} (The Graph) handles micropayments for indexed blockchain data.
+Fixed pricing, no congestion response, no capacity attestation.
+
+\textbf{Load balancers} (Nginx, HAProxy, cloud LBs) read server-side health
+checks and distribute requests. The capacity signal stays behind the firewall.
+No on-chain verification. No payment integration. No cross-org trust.
+
+None of these combine three things: a public capacity signal, cryptographic
+completion verification, and congestion-responsive routing.
+
+% ═══════════════════════════════════════════════════
+% PAGE 2 — Mechanism
+% ═══════════════════════════════════════════════════
+
+\section{Mechanism}
+
+Backpressure Economics (BPE) adapts the Tassiulas--Ephremides backpressure
+routing algorithm~\cite{tassiulas1992stability} from communication networks
+to monetary flows. Five on-chain primitives do the work.
+
+\subsection{Capacity signal (EWMA)}
+
+Each provider declares capacity $\Craw(k,t)$. A commit-reveal scheme prevents
+gaming. The protocol smooths raw signals with an exponentially weighted moving
+average:
+\begin{equation}
+\Csmooth(k,t) = \alpha \cdot \Craw(k,t) + (1-\alpha) \cdot \Csmooth(k,t-1)
+\end{equation}
+with $\alpha = 0.3$, matching Jacobson's TCP RTT estimator~\cite{jacobson1988congestion}.
+Smoothing damps oscillation while tracking real capacity shifts within a few epochs.
+
+\subsection{Virtual queue}
+
+For each provider $k$, a virtual queue tracks unprocessed payment backlog:
+\begin{equation}
+Q(k,t\!+\!1) = \max\{Q(k,t) + F(k,t) - \Csmooth(k,t),\; 0\}
+\end{equation}
+where $F(k,t)$ is payment flow routed to $k$ at time $t$. The queue is virtual
+--- no tokens are locked --- but it records how overloaded each provider is.
+
+\subsection{Max-weight routing}
+
+The total incoming payment flow $\Lambda(t)$ is split across providers
+proportionally to their capacity-weighted differential backlog:
+\begin{equation}
+F(k,t) = \frac{W(k,t)^{+} \cdot \Csmooth(k,t)}
+{\sum_{k'} W(k',t)^{+} \cdot \Csmooth(k',t)} \cdot \Lambda(t)
+\end{equation}
+where $W(k,t) = Q_{\text{source}}(t) - Q(k,t)$ is the differential backlog and
+$x^{+} = \max(x,0)$. In steady state (all backlogs similar), this reduces to
+proportional-to-capacity allocation --- the mechanism implemented in Superfluid's
+General Distribution Agreement.
+
+\subsection{Overflow buffer}
+
+Money cannot be dropped like a packet. When aggregate demand exceeds aggregate
+capacity, excess payment enters an on-chain escrow buffer $B(t)$. The buffer
+drains proportionally as capacity frees up. Demurrage ($\delta = 2.5\%$/yr)
+decays idle buffer funds, preventing permanent lockup.
+
+\subsection{Dynamic pricing}
+
+Price rises with congestion, following an EIP-1559-style adjustment:
+\begin{equation}
+p(k,t) = \beta(t) \cdot \left(1 + \gamma \cdot \frac{Q(k,t)}{\Csmooth(k,t)}\right)
+\end{equation}
+The base fee $\beta$ increases 12.5\% per epoch when demand exceeds capacity and
+decreases 12.5\% otherwise, converging to the shadow price from Kelly's
+proportional fairness framework~\cite{kelly1998rate}.
+
+% ═══════════════════════════════════════════════════
+% PAGE 3 — Guarantee
+% ═══════════════════════════════════════════════════
+
+\section{Throughput guarantee}
+
+The core result is that BPE serves every demand vector that the provider
+network can physically handle, with bounded overflow.
+
+\begin{theorem}[Throughput optimality]
+\label{thm:main}
+For any arrival rate vector $\boldsymbol{\lambda}$ strictly inside the capacity
+region (i.e., $\boldsymbol{\lambda} \in (1-\epsilon)\Lambda^{*}$ for some
+$\epsilon > 0$), max-weight payment routing stabilizes all virtual queues:
+\begin{equation}
+\limsup_{T \to \infty} \frac{1}{T} \sum_{t=0}^{T-1} \sum_{k}
+\mathbb{E}[Q(k,t)] \leq \frac{D}{\epsilon}
+\end{equation}
+where $D$ depends on maximum arrival and capacity rates.
+\end{theorem}
+
+\textit{Proof sketch.} Define the Lyapunov function $L(t) = \sum_k Q(k,t)^2$.
+From queue dynamics, the one-step drift satisfies
+$\Delta(t) \leq D + 2\sum_k Q(k,t) \cdot (F(k,t) - \Csmooth(k,t))$.
+Max-weight minimizes the second term over all feasible allocations. Since
+$\boldsymbol{\lambda}$ is strictly interior, a stationary policy exists with
+slack $\epsilon' > 0$. Max-weight does at least as well, yielding
+$\Delta(t) \leq D - \epsilon' \sum_k Q(k,t)$. Foster--Lyapunov gives
+positive recurrence; telescoping the drift gives the bound.
+See Neely~\cite{neely2010stochastic}, Ch.~4 for the full argument.
+
+The overflow buffer inherits the same bound via an augmented Lyapunov function
+$\tilde{L}(t) = L(t) + \sum_\tau B(\tau,t)^2$.
+
+\textit{What this means in practice:} if providers collectively have enough
+capacity to handle the incoming payment load, BPE will find the allocation.
+Requests land on providers with spare room. Payments flow where work actually
+gets done. The buffer stays small.
+
+% ═══════════════════════════════════════════════════
+% PAGE 4 — Implementation + results
+% ═══════════════════════════════════════════════════
+
+\section{Implementation}
+
+BPE is implemented as the Pura protocol: 32 Solidity contracts deployed on
+Base Sepolia, tested with 319 passing tests across 32 suites.
+
+\subsection{Contracts}
+
+The core contracts: \texttt{CapacityRegistry} (EWMA attestations),
+\texttt{CompletionLedger} (dual-signed receipt verification),
+\texttt{BackpressurePool} (Superfluid GDA wrapper with max-weight routing),
+\texttt{OverflowEscrow} (buffer with demurrage), and
+\texttt{QueueLengthPricing} (EIP-1559-style dynamic pricing).
+
+Extensions include \texttt{EconomyFactory} (one-tx pool deployment),
+\texttt{NestedPool} (pipeline composition with upstream congestion propagation),
+\texttt{QualityOracle}, and a thermodynamic layer (\texttt{TemperatureOracle},
+\texttt{VirialMonitor}) that maps attestation variance to system temperature
+and triggers phase-transition circuit breakers.
+
+\subsection{Gateway}
+
+The Pura gateway is an OpenAI-compatible HTTP endpoint (\texttt{api.pura.xyz})
+that routes inference requests across providers using on-chain capacity weights.
+Drop-in replacement: change \texttt{baseURL} to \texttt{https://api.pura.xyz/v1}
+in any OpenAI SDK client. Every completion is recorded on-chain with the
+provider, model, and token count.
+
+\subsection{Simulation results}
+
+Agent-based simulations over 1,000-step horizons with market-phase variation
+(bull, bear, shock, recovery):
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Metric & Round-robin & BPE \\
+\midrule
+Allocation efficiency & 93.5\% & 95.7\% \\
+Buffer stall rate & 73\% & $<$9\% \\
+Shock recovery & --- & 50 steps \\
+Sybil profitability & --- & negative $\forall n > 1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Buffer stall rate drops from 73\% to under 9\% with overflow escrow sized at
+one period of peak demand. Sybil analysis confirms stake fragmentation yields
+strictly negative profit for all split counts $n > 1$ due to the concave-sqrt
+weighting function.
+
+\subsection{Status}
+
+Testnet contracts are live. The gateway routes real inference requests. SDK
+(\texttt{@puraxyz/sdk}) provides 23 action modules covering all contract
+interactions. Mainnet deployment is next, pending audit.
+
+Full paper, source code, and simulation: \url{https://pura.xyz}
+
+\bibliographystyle{plainnat}
+\bibliography{../bpe}
+
+\end{document}

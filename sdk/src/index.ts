@@ -1,8 +1,12 @@
-// @pura/sdk - TypeScript SDK for Pura
+// @puraxyz/sdk - TypeScript SDK for Pura
 
 export { abis } from "./abis/index.js";
 export { addresses, getAddresses, type ChainAddresses } from "./addresses.js";
 export { getContracts, type BPEContracts } from "./contracts.js";
+
+// High-level client
+export { route, deploy, monitor } from "./client.js";
+export type { RouteOptions, RouteResult, DeployOptions, ProtocolState } from "./client.js";
 
 // Action modules: Core BPE
 export * as sink from "./actions/sink.js";

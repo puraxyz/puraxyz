@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAddresses, temperature, virial } from "@pura/sdk";
+import { getAddresses, temperature, virial } from "@puraxyz/sdk";
 import { publicClient, chainId } from "@/lib/shared/chain";
 
 export const runtime = "nodejs";

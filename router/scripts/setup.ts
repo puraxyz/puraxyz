@@ -12,7 +12,7 @@ import {
   sink,
   pool,
   stake as stakeModule,
-} from "@pura/sdk";
+} from "@puraxyz/sdk";
 import { publicClient, chainId } from "../lib/chain";
 import { getWallets } from "../lib/wallets";
 import { agents, agentList, TASK_TYPE_ID } from "../lib/agents";

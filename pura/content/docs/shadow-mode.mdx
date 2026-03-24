@@ -1,7 +1,7 @@
 ---
 title: "Shadow mode"
 order: 15
-description: Install the @pura/shadow sidecar to measure what BPE would do for your service — before committing to on-chain registration.
+description: Install the @puraxyz/shadow sidecar to measure what BPE would do for your service — before committing to on-chain registration.
 ---
 
 Shadow mode lets you instrument any existing DVM, relay, LLM endpoint, or agent service with capacity metrics. You get a BPE comparison report showing how many requests would be rerouted, what congestion pricing would look like, and the revenue delta — without touching the blockchain.
@@ -9,7 +9,7 @@ Shadow mode lets you instrument any existing DVM, relay, LLM endpoint, or agent 
 ## Install
 
 ```bash
-npm install @pura/shadow
+npm install @puraxyz/shadow
 ```
 
 Zero external dependencies for the core metrics engine.
@@ -17,7 +17,7 @@ Zero external dependencies for the core metrics engine.
 ## Quick start
 
 ```typescript
-import { createShadow } from "@pura/shadow";
+import { createShadow } from "@puraxyz/shadow";
 
 const shadow = createShadow({ windowMs: 60_000 });
 
@@ -53,7 +53,7 @@ If your service runs on Express or Hono, the middleware mode records events auto
 
 ```typescript
 import express from "express";
-import { createShadow } from "@pura/shadow";
+import { createShadow } from "@puraxyz/shadow";
 
 const app = express();
 const shadow = createShadow();
@@ -76,7 +76,7 @@ Set the `X-Sink-Id` header on incoming requests to break metrics out per sink.
 For remote monitoring, start the built-in metrics server:
 
 ```typescript
-import { createShadow, startServer } from "@pura/shadow";
+import { createShadow, startServer } from "@puraxyz/shadow";
 
 const shadow = createShadow();
 startServer(shadow, { port: 3099, host: "127.0.0.1" });
@@ -122,7 +122,7 @@ const shadow = createShadow({
 When the numbers make sense, upgrading from shadow mode to full on-chain registration takes one SDK call:
 
 ```typescript
-import { registerSink } from "@pura/sdk/actions/capacity";
+import { registerSink } from "@puraxyz/sdk/actions/capacity";
 
 await registerSink(walletClient, {
   taskTypeId: keccak256(toBytes("nip90:5000")),

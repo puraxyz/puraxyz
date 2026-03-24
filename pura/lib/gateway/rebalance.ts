@@ -1,4 +1,4 @@
-import { getAddresses, pool } from "@pura/sdk";
+import { getAddresses, pool } from "@puraxyz/sdk";
 import { publicClient, chainId, operatorWallet } from "../shared/chain";
 import { GATEWAY_TASK_TYPE } from "./routing";
 

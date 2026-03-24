@@ -6,7 +6,7 @@ import {
   pricing,
   completion,
   source,
-} from "@pura/sdk";
+} from "@puraxyz/sdk";
 import { publicClient, chainId } from "@/lib/shared/chain";
 import { getWallets, type AgentName } from "@/lib/sim/wallets";
 import { agentList, TASK_TYPE_ID } from "@/lib/sim/agents";

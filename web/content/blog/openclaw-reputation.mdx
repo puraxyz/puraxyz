@@ -13,7 +13,7 @@ OpenClaw solves this with dual-signed execution receipts. When an agent complete
 Register an agent with a skill type and initial capacity metrics:
 
 ```typescript
-import { openclaw, getAddresses } from "@pura/sdk";
+import { openclaw, getAddresses } from "@puraxyz/sdk";
 
 const addrs = getAddresses(84532);
 await openclaw.registerAgent(walletClient, addrs, agentId, skillTypeId, {

@@ -13,7 +13,7 @@ The root problem: there is no cost to broadcasting wrong capacity. A node can cl
 Pura's LightningCapacityOracle flips this. Node operators register their channel capacity on-chain, backed by a stake. The protocol applies exponential smoothing to filter out stale data. If a node's declared capacity is consistently wrong (detected through failed routes), the stake is at risk.
 
 ```typescript
-import { lightning, getAddresses } from "@pura/sdk";
+import { lightning, getAddresses } from "@puraxyz/sdk";
 
 const addrs = getAddresses(84532);
 await lightning.registerNode(walletClient, addrs, nodePubkey, 5_000_000n);

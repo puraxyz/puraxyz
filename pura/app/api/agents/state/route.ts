@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAddresses, openclaw, completion, platform } from "@pura/sdk";
+import { getAddresses, openclaw, completion, platform } from "@puraxyz/sdk";
 import { publicClient, chainId } from "@/lib/shared/chain";
 import { keccak256, toHex } from "viem";
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAddresses, lightning } from "@pura/sdk";
+import { getAddresses, lightning } from "@puraxyz/sdk";
 import { publicClient, chainId } from "@/lib/shared/chain";
 
 export const runtime = "nodejs";

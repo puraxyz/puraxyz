@@ -20,84 +20,205 @@ export interface ApiKeyRecord {
   createdAt: string;
 }
 
+function hashKey(raw: string): string {
+  return createHash("sha256").update(raw).digest("hex");
+}
+
+// ─── Storage backend selection ───
+// Uses Upstash Redis when UPSTASH_REDIS_REST_URL is set, otherwise JSON file.
+
+function useRedis(): boolean {
+  return !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
+}
+
+async function redisGet(key: string): Promise<string | null> {
+  const res = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` },
+  });
+  const data = await res.json() as { result: string | null };
+  return data.result;
+}
+
+async function redisSet(key: string, value: string): Promise<void> {
+  await fetch(`${process.env.UPSTASH_REDIS_REST_URL}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(["SET", key, value]),
+  });
+}
+
+async function redisSMembers(key: string): Promise<string[]> {
+  const res = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(["SMEMBERS", key]),
+  });
+  const data = await res.json() as { result: string[] };
+  return data.result ?? [];
+}
+
+async function redisSAdd(key: string, member: string): Promise<void> {
+  await fetch(`${process.env.UPSTASH_REDIS_REST_URL}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(["SADD", key, member]),
+  });
+}
+
+// ─── JSON file backend (local dev / fallback) ───
+
 function ensureDataDir() {
   if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
 }
 
-function loadKeys(): ApiKeyRecord[] {
+function loadKeysFile(): ApiKeyRecord[] {
   ensureDataDir();
   if (!existsSync(KEYS_FILE)) return [];
   return JSON.parse(readFileSync(KEYS_FILE, "utf-8"));
 }
 
-function saveKeys(keys: ApiKeyRecord[]) {
+function saveKeysFile(keys: ApiKeyRecord[]) {
   ensureDataDir();
   writeFileSync(KEYS_FILE, JSON.stringify(keys, null, 2));
 }
 
-function hashKey(raw: string): string {
-  return createHash("sha256").update(raw).digest("hex");
-}
+// ─── Public API ───
 
-/**
- * Generate a new API key. Returns the raw key (shown once) and the record.
- */
 export function generateKey(label = ""): { raw: string; record: ApiKeyRecord } {
-  const raw = `bp_${randomBytes(24).toString("hex")}`;
+  const raw = `pura_${randomBytes(24).toString("hex")}`;
   const record: ApiKeyRecord = {
     hash: hashKey(raw),
-    prefix: raw.slice(0, 11),
+    prefix: raw.slice(0, 13),
     label,
     wallet: null,
     requests: 0,
     createdAt: new Date().toISOString(),
   };
 
-  const keys = loadKeys();
-  keys.push(record);
-  saveKeys(keys);
+  if (useRedis()) {
+    // Fire-and-forget: store record and add hash to index set
+    const h = record.hash;
+    redisSet(`pura:key:${h}`, JSON.stringify(record)).catch(() => {});
+    redisSAdd("pura:keys", h).catch(() => {});
+  } else {
+    const keys = loadKeysFile();
+    keys.push(record);
+    saveKeysFile(keys);
+  }
 
   return { raw, record };
 }
 
-/**
- * Validate an API key and return its record, or null if invalid.
- */
 export function validateKey(raw: string): ApiKeyRecord | null {
   const hash = hashKey(raw);
-  const keys = loadKeys();
+
+  if (useRedis()) {
+    // Synchronous path not possible with fetch — use a cached approach.
+    // The chat route already hashes the key; we do a sync lookup from the
+    // in-memory cache populated on first hit (see validateKeyAsync).
+    return keyCache.get(hash) ?? null;
+  }
+
+  const keys = loadKeysFile();
   return keys.find((k) => k.hash === hash) ?? null;
 }
 
-/**
- * Increment request count for an API key.
- */
+// Async validation for Redis backend (called from auth.ts)
+export async function validateKeyAsync(raw: string): Promise<ApiKeyRecord | null> {
+  const hash = hashKey(raw);
+
+  if (useRedis()) {
+    const data = await redisGet(`pura:key:${hash}`);
+    if (!data) return null;
+    const record = JSON.parse(data) as ApiKeyRecord;
+    keyCache.set(hash, record);
+    return record;
+  }
+
+  const keys = loadKeysFile();
+  return keys.find((k) => k.hash === hash) ?? null;
+}
+
+// Per-request cache so validateKey (sync) works after validateKeyAsync loads the record
+const keyCache = new Map<string, ApiKeyRecord>();
+
 export function incrementRequests(raw: string): void {
   const hash = hashKey(raw);
-  const keys = loadKeys();
+
+  if (useRedis()) {
+    // Read-modify-write via Redis
+    (async () => {
+      const data = await redisGet(`pura:key:${hash}`);
+      if (!data) return;
+      const record = JSON.parse(data) as ApiKeyRecord;
+      record.requests++;
+      await redisSet(`pura:key:${hash}`, JSON.stringify(record));
+      keyCache.set(hash, record);
+    })().catch(() => {});
+    return;
+  }
+
+  const keys = loadKeysFile();
   const key = keys.find((k) => k.hash === hash);
   if (key) {
     key.requests++;
-    saveKeys(keys);
+    saveKeysFile(keys);
   }
 }
 
-/**
- * Link a wallet address to an API key.
- */
 export function linkWallet(raw: string, wallet: string): boolean {
   const hash = hashKey(raw);
-  const keys = loadKeys();
+
+  if (useRedis()) {
+    (async () => {
+      const data = await redisGet(`pura:key:${hash}`);
+      if (!data) return;
+      const record = JSON.parse(data) as ApiKeyRecord;
+      record.wallet = wallet;
+      await redisSet(`pura:key:${hash}`, JSON.stringify(record));
+      keyCache.set(hash, record);
+    })().catch(() => {});
+    return true;
+  }
+
+  const keys = loadKeysFile();
   const key = keys.find((k) => k.hash === hash);
   if (!key) return false;
   key.wallet = wallet;
-  saveKeys(keys);
+  saveKeysFile(keys);
   return true;
 }
 
-/**
- * Get all API key records (for admin/dashboard).
- */
 export function listKeys(): ApiKeyRecord[] {
-  return loadKeys();
+  if (useRedis()) {
+    // Return cached keys (populated lazily); full list requires async
+    return Array.from(keyCache.values());
+  }
+  return loadKeysFile();
+}
+
+export async function listKeysAsync(): Promise<ApiKeyRecord[]> {
+  if (useRedis()) {
+    const hashes = await redisSMembers("pura:keys");
+    const records: ApiKeyRecord[] = [];
+    for (const h of hashes) {
+      const data = await redisGet(`pura:key:${h}`);
+      if (data) {
+        const record = JSON.parse(data) as ApiKeyRecord;
+        keyCache.set(h, record);
+        records.push(record);
+      }
+    }
+    return records;
+  }
+  return loadKeysFile();
 }

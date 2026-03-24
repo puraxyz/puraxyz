@@ -1,7 +1,7 @@
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
-import { lightning, getAddresses } from "@pura/sdk";
+import { lightning, getAddresses } from "@puraxyz/sdk";
 
 const pk = process.env.OPERATOR_PRIVATE_KEY;
 if (!pk) {

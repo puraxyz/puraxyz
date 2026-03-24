@@ -1,0 +1,34 @@
+\begin{thebibliography}{4}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Jacobson(1988)]{jacobson1988congestion}
+Van Jacobson.
+\newblock Congestion avoidance and control.
+\newblock In \emph{Proceedings of ACM SIGCOMM}, pages 314--329. ACM, 1988.
+
+\bibitem[Kelly et~al.(1998)Kelly, Maulloo, and Tan]{kelly1998rate}
+Frank~P. Kelly, Aman~K. Maulloo, and David K.~H. Tan.
+\newblock Rate control for communication networks: Shadow prices, proportional
+  fairness and stability.
+\newblock \emph{Journal of the Operational Research Society}, 49\penalty0
+  (3):\penalty0 237--252, 1998.
+
+\bibitem[Neely(2010)]{neely2010stochastic}
+Michael~J. Neely.
+\newblock \emph{Stochastic Network Optimization with Application to
+  Communication and Queueing Systems}.
+\newblock Synthesis Lectures on Communication Networks. Morgan \& Claypool,
+  2010.
+
+\bibitem[Tassiulas and Ephremides(1992)]{tassiulas1992stability}
+Leandros Tassiulas and Anthony Ephremides.
+\newblock Stability properties of constrained queueing systems and scheduling
+  policies for maximum throughput in multihop radio networks.
+\newblock \emph{IEEE Transactions on Automatic Control}, 37\penalty0
+  (12):\penalty0 1936--1948, 1992.
+
+\end{thebibliography}

@@ -11,7 +11,7 @@ You need: a Nostr keypair, a wallet with Base Sepolia ETH, and test tokens for s
 ## Install the SDK
 
 ```bash
-npm install @pura/sdk viem
+npm install @puraxyz/sdk viem
 ```
 
 ## Set up your wallet
@@ -20,7 +20,7 @@ npm install @pura/sdk viem
 import { createWalletClient, createPublicClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { baseSepolia } from 'viem/chains'
-import { getAddresses } from '@pura/sdk'
+import { getAddresses } from '@puraxyz/sdk'
 
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
 const wallet = createWalletClient({ account, chain: baseSepolia, transport: http() })
@@ -33,8 +33,8 @@ const addrs = getAddresses(84532)
 Your Nostr public key (hex, 32 bytes) identifies your relay on-chain. You declare three capacity dimensions that combine into a composite score (50% throughput, 25% storage, 25% bandwidth by default).
 
 ```typescript
-import { registerRelay } from '@pura/sdk/actions/relay'
-import { stake } from '@pura/sdk/actions/stake'
+import { registerRelay } from '@puraxyz/sdk/actions/relay'
+import { stake } from '@puraxyz/sdk/actions/stake'
 
 // Stake first — capacity cap = sqrt(stake / unit)
 await stake(wallet, addrs, 400n * 10n ** 18n)
@@ -56,7 +56,7 @@ The registry applies EWMA smoothing ($\alpha = 0.3$) to your capacity declaratio
 Three pool types exist, one per relay function. Join whichever your relay supports:
 
 ```typescript
-import { joinRelayPool } from '@pura/sdk/actions/relay'
+import { joinRelayPool } from '@puraxyz/sdk/actions/relay'
 
 // Pool types: 0 = WRITE, 1 = READ, 2 = STORE
 await joinRelayPool(wallet, addrs, 0, nostrPubkey)  // join the WRITE pool
@@ -69,7 +69,7 @@ Once joined, you receive streaming payments from the Superfluid GDA pool. Your s
 The protocol supports per-pool anti-spam minimums. Events below this threshold get rejected, protecting your relay from spam without manual moderation.
 
 ```typescript
-import { setAntiSpamMinimum } from '@pura/sdk/actions/relay'
+import { setAntiSpamMinimum } from '@puraxyz/sdk/actions/relay'
 
 // Minimum payment of 100 units per event on the WRITE pool
 await setAntiSpamMinimum(wallet, addrs, 0, 100n)
@@ -80,7 +80,7 @@ Anti-spam pricing scales with congestion. At low load (under 50% capacity) the b
 ## Verify your standing
 
 ```typescript
-import { getCompositeCapacity, getAntiSpamMinimum } from '@pura/sdk/actions/relay'
+import { getCompositeCapacity, getAntiSpamMinimum } from '@puraxyz/sdk/actions/relay'
 
 const composite = await getCompositeCapacity(public_, addrs, nostrPubkey)
 console.log('Composite capacity score:', composite)

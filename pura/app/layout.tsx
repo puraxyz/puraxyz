@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Pura — Pura Products",
+  title: "Pura — Capacity-aware routing for the machine economy",
   description:
-    "Relay capacity, Lightning routing, agent reputation, LLM gateway, and 1-click relay hosting. Powered by Pura on Base.",
+    "Route payments through on-chain capacity signals. Boltzmann-weighted routing, verified completions, overflow buffering. TCP-style congestion control for agent economies.",
 };
 
 export default function RootLayout({

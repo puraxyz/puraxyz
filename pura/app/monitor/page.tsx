@@ -290,7 +290,7 @@ export default function MonitorPage() {
 
       <div className={s.shadow}>
         Connect a live shadow sidecar:{" "}
-        <code>npm i @pura/shadow</code> — see{" "}
+        <code>npm i @puraxyz/shadow</code> — see{" "}
         <Link href="/docs" style={{ color: "var(--amber, #d97706)" }}>
           integration guide
         </Link>

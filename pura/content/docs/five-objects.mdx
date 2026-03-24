@@ -4,7 +4,7 @@ order: 16
 description: JobIntent, CapacityAttestation, VerificationReceipt, PriceSignal, and SettlementReceipt — the five JSON objects that every Pura message passes through.
 ---
 
-Every request that enters the Pura protocol goes through five standard objects. Each one has a JSON Schema in the SDK (`sdk/schemas/`) and a TypeScript type in `@pura/sdk`.
+Every request that enters the Pura protocol goes through five standard objects. Each one has a JSON Schema in the SDK (`sdk/schemas/`) and a TypeScript type in `@puraxyz/sdk`.
 
 ```
 JobIntent → CapacityAttestation → VerificationReceipt → PriceSignal → SettlementReceipt
@@ -37,7 +37,7 @@ A source publishes a JobIntent to request work from the network. This maps to a 
 The SDK type:
 
 ```typescript
-import type { JobIntent } from "@pura/sdk";
+import type { JobIntent } from "@puraxyz/sdk";
 ```
 
 ## 2. CapacityAttestation
@@ -63,7 +63,7 @@ $$s_{t+1} = \alpha \cdot r_t + (1 - \alpha) \cdot s_t$$
 Where $r_t$ is the raw capacity reading and $s_t$ is the previous smoothed value. This dampens flash capacity spikes and prevents gaming.
 
 ```typescript
-import type { CapacityAttestationWithMetrics } from "@pura/sdk";
+import type { CapacityAttestationWithMetrics } from "@puraxyz/sdk";
 ```
 
 ## 3. VerificationReceipt
@@ -86,7 +86,7 @@ When a sink completes a job and the result is dual-signed (by both the sink and 
 Dual signatures prevent unilateral claims. The sink signs the result, then an independent oracle validates and countersigns. Both EIP-712 typed data signatures must verify on-chain before the CompletionTracker records the completion.
 
 ```typescript
-import type { VerificationReceipt } from "@pura/sdk";
+import type { VerificationReceipt } from "@puraxyz/sdk";
 ```
 
 ## 4. PriceSignal
@@ -111,7 +111,7 @@ $$\text{effectivePrice} = \text{baseFee} \times \left(1 + \gamma \cdot \frac{\te
 Where $\gamma$ is the congestion sensitivity parameter. When load exceeds capacity, prices rise smoothly. When load drops, prices fall back toward the base fee.
 
 ```typescript
-import type { PriceSignal } from "@pura/sdk";
+import type { PriceSignal } from "@puraxyz/sdk";
 ```
 
 ## 5. SettlementReceipt
@@ -138,7 +138,7 @@ Three settlement rails:
 | direct | DirectSettlementAdapter | ERC-20 transfer from escrow |
 
 ```typescript
-import type { SettlementReceipt, SettlementRail } from "@pura/sdk";
+import type { SettlementReceipt, SettlementRail } from "@puraxyz/sdk";
 ```
 
 ## JSON Schema validation
@@ -146,11 +146,11 @@ import type { SettlementReceipt, SettlementRail } from "@pura/sdk";
 All five schemas are available as JSON Schema draft-07 files for runtime validation:
 
 ```typescript
-import jobSchema from "@pura/sdk/schemas/job-intent.json";
-import capacitySchema from "@pura/sdk/schemas/capacity-attestation.json";
-import verificationSchema from "@pura/sdk/schemas/verification-receipt.json";
-import priceSchema from "@pura/sdk/schemas/price-signal.json";
-import settlementSchema from "@pura/sdk/schemas/settlement-receipt.json";
+import jobSchema from "@puraxyz/sdk/schemas/job-intent.json";
+import capacitySchema from "@puraxyz/sdk/schemas/capacity-attestation.json";
+import verificationSchema from "@puraxyz/sdk/schemas/verification-receipt.json";
+import priceSchema from "@puraxyz/sdk/schemas/price-signal.json";
+import settlementSchema from "@puraxyz/sdk/schemas/settlement-receipt.json";
 ```
 
 Use with any JSON Schema validator (Ajv, Zod schema adapters, etc.) to validate messages at service boundaries.

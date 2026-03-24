@@ -9,7 +9,7 @@ import {
   signCapacityAttestation,
   signCompletionReceipt,
   type SignedAttestation,
-} from "@pura/sdk";
+} from "@puraxyz/sdk";
 import { publicClient, chainId } from "../shared/chain";
 import { getWallets } from "./wallets";
 import { agents, agentList, TASK_TYPE_ID } from "./agents";

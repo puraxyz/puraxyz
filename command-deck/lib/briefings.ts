@@ -305,7 +305,7 @@ export const briefings: Briefing[] = [
     elevator:
       "The TypeScript SDK wraps every contract function with a consistent API: getAddresses(chainId) loads all ABIs and addresses, then you call module-namespaced functions like pool.getMemberUnits(publicClient, addrs, taskTypeId, address). Modules: sink, source, pool, stake, buffer, pricing, completion, aggregator, demurrage, relay, lightning, platform, plus 6 v2 modules. All return bigint (Viem native type). Every reference app uses the same pattern, so you can fork one and start building.",
     detail:
-      "Installation: npm install @pura/sdk (or use the monorepo sync-sdk script). Chain setup: create a Viem publicClient for Base Sepolia, get chainId. Then getAddresses(chainId) returns every contract ABI and address. Example: to check how much capacity a sink has, call sink.getCapacity(publicClient, addrs, taskTypeId, sinkAddress). To register as a sink: sink.register(walletClient, addrs, taskTypeId, capacityAmount). The SDK handles ABI encoding, function selection, and type conversion.",
+      "Installation: npm install @puraxyz/sdk (or use the monorepo sync-sdk script). Chain setup: create a Viem publicClient for Base Sepolia, get chainId. Then getAddresses(chainId) returns every contract ABI and address. Example: to check how much capacity a sink has, call sink.getCapacity(publicClient, addrs, taskTypeId, sinkAddress). To register as a sink: sink.register(walletClient, addrs, taskTypeId, capacityAmount). The SDK handles ABI encoding, function selection, and type conversion.",
     sources: [
       "sdk/README.md",
       "sdk/src/",

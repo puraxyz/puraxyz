@@ -11,7 +11,7 @@ You need: an LND or CLN node, a wallet with Base Sepolia ETH, and test tokens fo
 ## Install the SDK
 
 ```bash
-npm install @pura/sdk viem
+npm install @puraxyz/sdk viem
 ```
 
 ## Set up your wallet
@@ -20,7 +20,7 @@ npm install @pura/sdk viem
 import { createWalletClient, createPublicClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { baseSepolia } from 'viem/chains'
-import { getAddresses } from '@pura/sdk'
+import { getAddresses } from '@puraxyz/sdk'
 
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
 const wallet = createWalletClient({ account, chain: baseSepolia, transport: http() })
@@ -33,8 +33,8 @@ const addrs = getAddresses(84532)
 Your Lightning node's public key identifies it on-chain. You declare outbound liquidity in satoshis.
 
 ```typescript
-import { registerNode } from '@pura/sdk/actions/lightning'
-import { stake } from '@pura/sdk/actions/stake'
+import { registerNode } from '@puraxyz/sdk/actions/lightning'
+import { stake } from '@puraxyz/sdk/actions/stake'
 
 // Stake first
 await stake(wallet, addrs, 400n * 10n ** 18n)
@@ -52,7 +52,7 @@ The oracle applies EWMA smoothing ($\alpha = 0.3$) to capacity updates. Attestat
 The LightningCapacityOracle accepts batch-signed attestations covering outbound liquidity, channel count, and pending HTLCs. You sign these off-chain using EIP-712 and submit via the OffchainAggregator.
 
 ```typescript
-import { signCapacityAttestation } from '@pura/sdk/signing'
+import { signCapacityAttestation } from '@puraxyz/sdk/signing'
 
 const attestation = await signCapacityAttestation(wallet, 84532, addrs.offchainAggregator, {
   taskTypeId: nodePubkey,         // node pubkey doubles as task type
@@ -70,7 +70,7 @@ For LND nodes, you can extract current channel balances with `lncli listchannels
 The routing pool weights nodes by a combined capacity and congestion score. Balanced channels (roughly equal inbound and outbound) score higher.
 
 ```typescript
-import { joinRoutingPool } from '@pura/sdk/actions/lightning'
+import { joinRoutingPool } from '@puraxyz/sdk/actions/lightning'
 
 await joinRoutingPool(wallet, addrs, nodePubkey)
 ```
@@ -81,7 +81,7 @@ The pool computes multi-hop routes (up to 10 nodes) that minimize fees while max
 
 ```typescript
 import { getOptimalRoute, getSmoothedCapacity, getRoutingFee }
-  from '@pura/sdk/actions/lightning'
+  from '@puraxyz/sdk/actions/lightning'
 
 // Find best route for 100k sats across up to 5 hops
 const route = await getOptimalRoute(public_, addrs, 100_000n, 5n)
@@ -101,7 +101,7 @@ console.log('Current routing fee:', fee)
 Anyone can trigger a rebalance. This updates GDA pool member units based on current smoothed capacities.
 
 ```typescript
-import { rebalanceRoutingPool } from '@pura/sdk/actions/lightning'
+import { rebalanceRoutingPool } from '@puraxyz/sdk/actions/lightning'
 
 await rebalanceRoutingPool(wallet, addrs)
 ```
@@ -111,7 +111,7 @@ await rebalanceRoutingPool(wallet, addrs)
 The CrossProtocolRouter can route payments across Superfluid streams (continuous), Lightning (instant), and on-chain settlement. The router picks the best protocol based on amount, speed requirements, and available liquidity.
 
 ```typescript
-import { isProtocolAvailable } from '@pura/sdk/actions/platform'
+import { isProtocolAvailable } from '@puraxyz/sdk/actions/platform'
 
 // Protocol types: 0 = Superfluid, 1 = Lightning, 2 = On-chain
 const lnAvailable = await isProtocolAvailable(public_, addrs, 1)

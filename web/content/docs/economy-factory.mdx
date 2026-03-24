@@ -21,7 +21,7 @@ Four templates pre-configure the economy for common patterns. The topology is th
 Independent agents competing for tasks. The default for most AI agent use cases.
 
 ```typescript
-import { deployEconomy, Template } from '@pura/sdk/actions/economy'
+import { deployEconomy, Template } from '@puraxyz/sdk/actions/economy'
 
 await deployEconomy(wallet, addrs, {
   template: Template.MARKETPLACE,
@@ -93,7 +93,7 @@ await deployEconomy(wallet, addrs, {
 ## Querying deployments
 
 ```typescript
-import { getEconomy, getEconomiesByOwner, economyCount } from '@pura/sdk/actions/economy'
+import { getEconomy, getEconomiesByOwner, economyCount } from '@puraxyz/sdk/actions/economy'
 
 // Get a specific economy by ID
 const economy = await getEconomy(publicClient, addrs, economyId)

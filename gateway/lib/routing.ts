@@ -1,5 +1,5 @@
 import { type Hash } from "viem";
-import { getAddresses, pool } from "@pura/sdk";
+import { getAddresses, pool } from "@puraxyz/sdk";
 import { publicClient, chainId } from "./chain";
 import { getProviderConfigs, type Provider } from "./providers";
 
@@ -25,6 +25,10 @@ const PROVIDER_SINKS: ProviderSink[] = [
     provider: "anthropic",
     address: (process.env.ANTHROPIC_SINK_ADDRESS ?? "0x0000000000000000000000000000000000000002") as `0x${string}`,
   },
+  {
+    provider: "groq",
+    address: (process.env.GROQ_SINK_ADDRESS ?? "0x0000000000000000000000000000000000000003") as `0x${string}`,
+  },
 ];
 
 /**
@@ -38,6 +42,7 @@ export async function selectProvider(requestModel?: string): Promise<Provider> {
   if (requestModel) {
     if (requestModel.startsWith("gpt") || requestModel.startsWith("o")) return "openai";
     if (requestModel.startsWith("claude")) return "anthropic";
+    if (requestModel.startsWith("llama") || requestModel.startsWith("mixtral") || requestModel.startsWith("gemma")) return "groq";
   }
 
   // Check which providers are actually configured
@@ -71,4 +76,13 @@ export async function selectProvider(requestModel?: string): Promise<Provider> {
     const idx = Math.floor(Date.now() / 1000) % available.length;
     return available[idx].name;
   }
+}
+
+/**
+ * Pick the first available provider that isn't the one that just failed.
+ */
+export function getFallbackProvider(failed: Provider): Provider {
+  const available = getProviderConfigs();
+  const alt = available.find((c) => c.name !== failed);
+  return alt?.name ?? "openai";
 }

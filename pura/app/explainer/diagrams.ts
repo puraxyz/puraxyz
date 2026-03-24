@@ -368,3 +368,157 @@ export const bitcoinDiagram: DiagramProps = {
     { from: "D", to: "E" },
   ],
 };
+
+/* ═══════════ NEW DIAGRAMS (Phases 3–4) ═══════════ */
+
+// ── #17  Four planes architecture ───────────────────────────────
+export const fourPlanesDiagram: DiagramProps = {
+  direction: "TB",
+  height: 380,
+  ariaLabel: "Four architectural planes stacked: Capacity, Verification, Pricing, Settlement. Data flows up, control signals flow down.",
+  nodes: [
+    { id: "cap",    label: "CAPACITY PLANE\nCapacityRegistry · Staking · EWMA",           x: 0.50, y: 0.05, color: "#2563eb" },
+    { id: "ver",    label: "VERIFICATION PLANE\nCompletionTracker · Dual-signed receipts", x: 0.50, y: 0.30, color: "#6366f1" },
+    { id: "price",  label: "PRICING PLANE\nPricingCurve · TemperatureOracle τ",            x: 0.50, y: 0.55, color: "#d97706" },
+    { id: "settle", label: "SETTLEMENT PLANE\nLightning · Superfluid · ERC-20",            x: 0.50, y: 0.80, color: "#0d9488" },
+  ],
+  edges: [
+    { from: "cap",   to: "ver",    label: "attestations ↑" },
+    { from: "ver",   to: "price",  label: "receipts ↑" },
+    { from: "price", to: "settle", label: "price signals ↑" },
+    { from: "settle", to: "price", label: "backpressure ↓", dashed: true, color: "#be123c" },
+    { from: "price",  to: "ver",   label: "feedback ↓",     dashed: true, color: "#be123c" },
+  ],
+};
+
+// ── #18  Five standard objects flow ─────────────────────────────
+export const fiveObjectsDiagram: DiagramProps = {
+  direction: "LR",
+  height: 200,
+  ariaLabel: "Five objects flow left to right: JobIntent, CapacityAttestation, VerificationReceipt, PriceSignal, SettlementReceipt",
+  nodes: [
+    { id: "job",    label: "JobIntent",              x: 0.04, y: 0.50, color: "#6366f1", shape: "pill" },
+    { id: "cap",    label: "Capacity\nAttestation",  x: 0.25, y: 0.50, color: "#2563eb", shape: "pill" },
+    { id: "ver",    label: "Verification\nReceipt",  x: 0.47, y: 0.50, color: "#7c3aed", shape: "pill" },
+    { id: "price",  label: "Price\nSignal",          x: 0.69, y: 0.50, color: "#d97706", shape: "pill" },
+    { id: "settle", label: "Settlement\nReceipt",    x: 0.92, y: 0.50, color: "#0d9488", shape: "pill" },
+  ],
+  edges: [
+    { from: "job",   to: "cap" },
+    { from: "cap",   to: "ver" },
+    { from: "ver",   to: "price" },
+    { from: "price", to: "settle" },
+  ],
+};
+
+// ── #19  Thermodynamic feedback loop ────────────────────────────
+export const thermoDiagram: DiagramProps = {
+  direction: "TB",
+  height: 400,
+  ariaLabel: "Thermodynamic feedback: CapacityRegistry feeds TemperatureOracle and VirialMonitor. Temperature controls Boltzmann routing. Virial drives adaptive demurrage. EscrowBuffer creates osmotic pressure. SystemStateEmitter broadcasts all signals.",
+  nodes: [
+    { id: "reg",    label: "CapacityRegistry\nraw capacity data",     x: 0.50, y: 0.03, color: "#2563eb" },
+    { id: "temp",   label: "TemperatureOracle τ\nvariance → temp",   x: 0.22, y: 0.28, color: "#be123c" },
+    { id: "virial", label: "VirialMonitor V\nthroughput / capital",   x: 0.78, y: 0.28, color: "#be123c" },
+    { id: "boltz",  label: "Boltzmann Routing\nP(i) = exp(cᵢ/τ) / Σ", x: 0.22, y: 0.55, color: "#d97706" },
+    { id: "demur",  label: "Adaptive Demurrage\nδ varies with V",    x: 0.78, y: 0.55, color: "#d97706" },
+    { id: "escrow", label: "EscrowBuffer\nosmotic pressure",         x: 0.50, y: 0.55, color: "#a16207" },
+    { id: "emit",   label: "SystemStateEmitter\nKind 1090 broadcast", x: 0.50, y: 0.82, color: "#0d9488" },
+  ],
+  edges: [
+    { from: "reg",    to: "temp"   },
+    { from: "reg",    to: "virial" },
+    { from: "temp",   to: "boltz"  },
+    { from: "virial", to: "demur"  },
+    { from: "boltz",  to: "emit"   },
+    { from: "demur",  to: "emit"   },
+    { from: "escrow", to: "emit"   },
+    { from: "escrow", to: "boltz", label: "price feedback", dashed: true },
+  ],
+};
+
+// ── #20  DVM adapter bridge ─────────────────────────────────────
+export const dvmAdapterDiagram: DiagramProps = {
+  direction: "LR",
+  height: 300,
+  ariaLabel: "NIP-90 DVM connected to three adapter contracts which feed into the core Pura protocol",
+  nodes: [
+    { id: "dvm",   label: "Your DVM\nNIP-90 kinds\n5000–5250",          x: 0.05, y: 0.50, color: "#6366f1" },
+    { id: "cap",   label: "DVMCapacity\nAdapter",                        x: 0.38, y: 0.15, color: "#2563eb" },
+    { id: "comp",  label: "DVMCompletion\nVerifier",                     x: 0.38, y: 0.50, color: "#7c3aed" },
+    { id: "price", label: "DVMPricing\nCurve",                           x: 0.38, y: 0.85, color: "#d97706" },
+    { id: "core",  label: "Core Protocol\nPool · Registry · Tracker",    x: 0.80, y: 0.50, color: "#0d9488" },
+  ],
+  edges: [
+    { from: "dvm", to: "cap",   label: "capacity" },
+    { from: "dvm", to: "comp",  label: "completions" },
+    { from: "dvm", to: "price", label: "job results" },
+    { from: "cap",   to: "core" },
+    { from: "comp",  to: "core" },
+    { from: "price", to: "core" },
+  ],
+};
+
+// ── #21  Settlement rails ───────────────────────────────────────
+export const settlementRailsDiagram: DiagramProps = {
+  direction: "TB",
+  height: 320,
+  ariaLabel: "Three settlement rails: Lightning (instant, sats), Superfluid (streaming, per-second), Direct ERC-20 (simple, per-job)",
+  nodes: [
+    { id: "pool",  label: "PaymentPool\nverified completions",   x: 0.50, y: 0.05, color: "#0d9488" },
+    { id: "ln",    label: "Lightning HTLC\n~2s · sats · preimage", x: 0.17, y: 0.60, color: "#d97706" },
+    { id: "sf",    label: "Superfluid GDA\ncontinuous · per-sec",  x: 0.50, y: 0.60, color: "#6366f1" },
+    { id: "erc",   label: "Direct ERC-20\nper-job · escrow",       x: 0.83, y: 0.60, color: "#2563eb" },
+    { id: "sink",  label: "Sink receives\npayment",                x: 0.50, y: 0.92, color: "#374151" },
+  ],
+  edges: [
+    { from: "pool", to: "ln",  label: "instant" },
+    { from: "pool", to: "sf",  label: "streaming" },
+    { from: "pool", to: "erc", label: "direct" },
+    { from: "ln",   to: "sink" },
+    { from: "sf",   to: "sink" },
+    { from: "erc",  to: "sink" },
+  ],
+};
+
+// ── #22  Shadow mode sidecar ────────────────────────────────────
+export const shadowModeDiagram: DiagramProps = {
+  direction: "LR",
+  height: 240,
+  ariaLabel: "Your service connects to the shadow sidecar, which simulates BPE locally and outputs metrics to the monitor dashboard",
+  nodes: [
+    { id: "svc",     label: "Your Service\nDVM · Relay · Agent",   x: 0.05, y: 0.50, color: "#374151" },
+    { id: "shadow",  label: "@puraxyz/shadow\nEWMA · Boltzmann sim", x: 0.40, y: 0.50, color: "#6366f1" },
+    { id: "monitor", label: "Monitor Dashboard\nτ · V · phase",     x: 0.78, y: 0.25, color: "#0d9488" },
+    { id: "chain",   label: "On-chain\n(when ready)",               x: 0.78, y: 0.75, color: "#d97706" },
+  ],
+  edges: [
+    { from: "svc",    to: "shadow",  label: "metrics" },
+    { from: "shadow", to: "monitor", label: "simulated state" },
+    { from: "shadow", to: "chain",   label: "register", dashed: true },
+  ],
+};
+
+// ── #23  Circuit breaker phase transitions ──────────────────────
+export const circuitBreakerSequence: SequenceProps = {
+  height: 340,
+  ariaLabel: "Circuit breaker phases: system starts Steady, load increases to Bull, overload triggers Shock, then recovers or collapses",
+  participants: [
+    { id: "sys",     label: "System",        color: "#0d9488" },
+    { id: "oracle",  label: "TemperatureOracle", color: "#be123c" },
+    { id: "breaker", label: "CircuitBreaker", color: "#d97706" },
+    { id: "pool",    label: "Pipeline",       color: "#6366f1" },
+  ],
+  messages: [
+    { from: "sys",     to: "oracle",  label: "capacity variance rises" },
+    { from: "oracle",  to: "breaker", label: "τ exceeds threshold" },
+    { from: "breaker", to: "breaker", label: "Steady → Bull → Shock", self: true },
+    { from: "breaker", to: "pool",    label: "decouple stage from pipeline" },
+    { from: "sys",     to: "oracle",  label: "throughput recovers" },
+    { from: "oracle",  to: "breaker", label: "3 healthy epochs observed" },
+    { from: "breaker", to: "pool",    label: "recouple stage" },
+  ],
+  notes: [
+    { over: "breaker", text: "V < 0.2 or V > 5 also triggers phase change" },
+  ],
+};

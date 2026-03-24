@@ -34,7 +34,7 @@ This registers three demo agents on Base Sepolia with two skill types (code-gene
 
 ## Architecture
 
-Next.js 16 + viem + @pura/sdk + CSS Modules. The `/api/state` endpoint reads agent data from the CapacityAdapter, CompletionVerifier, and ReputationBridge contracts, plus fetches verification evidence from the vr.dev API. Client polls every 30 seconds.
+Next.js 16 + viem + @puraxyz/sdk + CSS Modules. The `/api/state` endpoint reads agent data from the CapacityAdapter, CompletionVerifier, and ReputationBridge contracts, plus fetches verification evidence from the vr.dev API. Client polls every 30 seconds.
 
 ## vr.dev verification integration
 

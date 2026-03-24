@@ -33,7 +33,7 @@ This registers three demo nodes on Base Sepolia and joins the routing pool.
 
 ## Architecture
 
-Next.js 16 + viem + @pura/sdk + CSS Modules. Two API routes:
+Next.js 16 + viem + @puraxyz/sdk + CSS Modules. Two API routes:
 
 - `/api/state` — returns all registered nodes with smoothed capacity and fees
 - `/api/route?amount=100000&maxNodes=5` — calls `getOptimalRoute` and returns the computed path

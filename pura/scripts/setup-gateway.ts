@@ -1,7 +1,7 @@
 import { createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
-import { getAddresses, sink, pool } from "@pura/sdk";
+import { getAddresses, sink, pool } from "@puraxyz/sdk";
 
 const rpcUrl = process.env.RPC_URL ?? "https://sepolia.base.org";
 

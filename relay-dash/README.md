@@ -33,7 +33,7 @@ This registers three demo relays on Base Sepolia and joins the write pool.
 
 ## Architecture
 
-Same stack as all Pura reference products: Next.js 16 + viem + @pura/sdk + CSS Modules. The `/api/state` endpoint reads relay data from the CapacityRegistry and PaymentPool contracts, and the client polls every 30 seconds.
+Same stack as all Pura reference products: Next.js 16 + viem + @puraxyz/sdk + CSS Modules. The `/api/state` endpoint reads relay data from the CapacityRegistry and PaymentPool contracts, and the client polls every 30 seconds.
 
 ## SDK functions used
 

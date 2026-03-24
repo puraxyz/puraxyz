@@ -1,11 +1,11 @@
 # TypeScript SDK
 
-The `@pura/sdk` package provides a TypeScript client for interacting with BPE smart contracts.
+The `@puraxyz/sdk` package provides a TypeScript client for interacting with BPE smart contracts.
 
 ## Installation
 
 ```bash
-npm install @pura/sdk
+npm install @puraxyz/sdk
 ```
 
 ## Features
@@ -18,7 +18,7 @@ npm install @pura/sdk
 ## Usage
 
 ```typescript
-import { addresses, contracts } from '@pura/sdk'
+import { addresses, contracts } from '@puraxyz/sdk'
 
 // Get contract addresses for Base Sepolia
 const { capacityRegistry, backpressurePool, stakeManager } = addresses.baseSepolia

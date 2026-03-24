@@ -4,14 +4,14 @@ order: -0.3
 description: Wrap tokens with time-decay, quality scoring, and hierarchical economies
 ---
 
-Pura's v2 contracts give DeFi builders three mechanisms that don't exist elsewhere: tokens that decay when idle, quality-weighted capacity routing, and hierarchical nested economies. This guide walks through each.
+Pura's v2 contracts give DeFi builders four mechanisms that don't exist elsewhere: tokens that decay when idle, tokens that decay only when not streaming, quality-weighted capacity routing, and hierarchical nested economies. This guide walks through each.
 
 You need: a wallet with Base Sepolia ETH and test tokens.
 
 ## Install the SDK
 
 ```bash
-npm install @pura/sdk viem
+npm install @puraxyz/sdk viem
 ```
 
 ## Set up your wallet
@@ -20,7 +20,7 @@ npm install @pura/sdk viem
 import { createWalletClient, createPublicClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { baseSepolia } from 'viem/chains'
-import { getAddresses } from '@pura/sdk'
+import { getAddresses } from '@puraxyz/sdk'
 
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
 const wallet = createWalletClient({ account, chain: baseSepolia, transport: http() })
@@ -33,7 +33,7 @@ const addrs = getAddresses(84532)
 The DemurrageToken wraps any ERC-20 with a configurable decay rate per epoch. Balances decrease over time, incentivizing holders to spend or stream rather than sit idle.
 
 ```typescript
-import { wrap, realBalanceOf, nominalBalanceOf, decayRate } from '@pura/sdk/actions/demurrage'
+import { wrap, realBalanceOf, nominalBalanceOf, decayRate } from '@puraxyz/sdk/actions/demurrage'
 
 // Wrap 1000 tokens into demurrage form
 await wrap(wallet, addrs, 1000n * 10n ** 18n)
@@ -56,7 +56,7 @@ Where DemurrageToken decays uniformly, VelocityToken only penalizes idle balance
 
 ```typescript
 import { wrap as wrapVelocity, realBalanceOf as velBalance, idleDuration, isStreamExempt }
-  from '@pura/sdk/actions/velocityToken'
+  from '@puraxyz/sdk/actions/velocityToken'
 
 // Wrap tokens into velocity form
 await wrapVelocity(wallet, addrs, 500n * 10n ** 18n)
@@ -83,7 +83,7 @@ A sink with 100 declared capacity and a 75% quality score has an effective capac
 
 ```typescript
 import { reportLatency, reportSatisfaction, computeQuality, getQualityScore, getEffectiveCapacity }
-  from '@pura/sdk/actions/quality'
+  from '@puraxyz/sdk/actions/quality'
 
 const taskTypeId = '0x...' as `0x${string}`
 const sinkAddr = '0x...' as `0x${string}`
@@ -107,7 +107,7 @@ NestedPool lets a sink in one economy be itself a child economy. This creates hi
 
 ```typescript
 import { registerChild, rebalanceHierarchy, getEffectiveCapacity as nestedCapacity, getChildren }
-  from '@pura/sdk/actions/nestedPool'
+  from '@puraxyz/sdk/actions/nestedPool'
 
 const parentTask = '0x...' as `0x${string}`
 const childTask = '0x...' as `0x${string}`
@@ -137,5 +137,5 @@ A typical DeFi integration combines several of these:
 
 - [EconomyFactory](/docs/economy-factory) — one-transaction deployment with templates
 - [Smart Contracts](/docs/contracts) — v2 contract source and architecture
-- [TypeScript SDK](/docs/sdk) — all 18 action modules
+- [TypeScript SDK](/docs/sdk) — all 23 action modules
 - [Get started: AI agents](/docs/getting-started) — deploy a standard agent economy

@@ -77,7 +77,7 @@ contracts/              Solidity smart contracts (Foundry)
   script/               Full-stack deployment script
   deployments/          Deployed addresses (Base Sepolia)
 
-sdk/                    TypeScript SDK (@pura/sdk)
+sdk/                    TypeScript SDK (@puraxyz/sdk)
   src/actions/          18 action modules (sink, source, pool, stake, buffer,
                         pricing, completion, aggregator, demurrage, relay,
                         lightning, platform, openclaw, economy, nestedPool,

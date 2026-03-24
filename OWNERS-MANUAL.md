@@ -14,7 +14,7 @@ pura/
 │   ├── script/         Deploy.s.sol (full-stack deployment)
 │   ├── deployments/    Recorded addresses per network
 │   └── foundry.toml    Solc 0.8.26, Cancun EVM, remappings
-├── sdk/                TypeScript SDK (@pura/sdk)
+├── sdk/                TypeScript SDK (@puraxyz/sdk)
 │   ├── src/actions/    13 action modules
 │   ├── src/abis/       17 contract ABIs (JSON)
 │   └── src/addresses.ts  Per-chain deployed addresses
@@ -215,7 +215,7 @@ npm run build
 npm publish --access public
 ```
 
-Package name: `@pura/sdk`. Not yet published to npm. Publish when ready.
+Package name: `@puraxyz/sdk`. Not yet published to npm. Publish when ready.
 
 ### Adding a New Contract
 

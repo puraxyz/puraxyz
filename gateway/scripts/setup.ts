@@ -4,13 +4,21 @@
  * Run once: npx tsx scripts/setup.ts
  */
 
-import { createPublicClient, createWalletClient, http } from "viem";
+import { createPublicClient, createWalletClient, http, type Chain } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { baseSepolia } from "viem/chains";
-import { getAddresses, sink, pool } from "@pura/sdk";
+import { baseSepolia, base } from "viem/chains";
+import { getAddresses, sink, pool } from "@puraxyz/sdk";
 
-const rpcUrl = process.env.RPC_URL ?? "https://sepolia.base.org";
 const chainId = Number(process.env.CHAIN_ID ?? 84532);
+
+function getChain(): Chain {
+  if (chainId === 8453) return base;
+  return baseSepolia;
+}
+
+const rpcUrl =
+  process.env.RPC_URL ??
+  (chainId === 8453 ? "https://mainnet.base.org" : "https://sepolia.base.org");
 
 async function main() {
   const pk = process.env.OPERATOR_PRIVATE_KEY;
@@ -20,7 +28,7 @@ async function main() {
   }
 
   const account = privateKeyToAccount(pk as `0x${string}`);
-  const chain = baseSepolia;
+  const chain = getChain();
 
   const publicClient = createPublicClient({ chain, transport: http(rpcUrl) });
   const walletClient = createWalletClient({

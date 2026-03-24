@@ -5,7 +5,8 @@
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem[Adams et~al.(2021)Adams, Zinsmeister, Salem, Keefer, and Robinson]{adams2021uniswap}
+\bibitem[Adams et~al.(2021)Adams, Zinsmeister, Salem, Keefer, and
+  Robinson]{adams2021uniswap}
 Hayden Adams, Noah Zinsmeister, Moody Salem, River Keefer, and Dan Robinson.
 \newblock Uniswap v3 core.
 \newblock In \emph{Uniswap Labs Technical Report}, 2021.
@@ -28,18 +29,22 @@ Hangyeol Cha, Taewook Kim, Hoyoung Kim, Donghyun Lee, and Yongjae Park.
 
 \bibitem[Dong et~al.(2020)Dong, Zhong, Zhong, Yang, and Li]{dong2020celer}
 Mo~Dong, Qingkai Zhong, Jian Zhong, Junda Yang, and Xiaoyu Li.
-\newblock Celerpay: Generalized state channel network with efficient off-chain token transfer.
-\newblock In \emph{IEEE International Conference on Blockchain and Cryptocurrency (ICBC)}. IEEE, 2020.
+\newblock Celerpay: Generalized state channel network with efficient off-chain
+  token transfer.
+\newblock In \emph{IEEE International Conference on Blockchain and
+  Cryptocurrency (ICBC)}. IEEE, 2020.
 
 \bibitem[Fisher(1933)]{fisher1933stamp}
 Irving Fisher.
 \newblock \emph{Stamp Scrip}.
 \newblock Adelphi Company, 1933.
 
-\bibitem[Georgiadis et~al.(2006)Georgiadis, Neely, and Tassiulas]{georgiadis2006resource}
+\bibitem[Georgiadis et~al.(2006)Georgiadis, Neely, and
+  Tassiulas]{georgiadis2006resource}
 Leonidas Georgiadis, Michael~J. Neely, and Leandros Tassiulas.
 \newblock Resource allocation and cross-layer control in wireless networks.
-\newblock \emph{Foundations and Trends in Networking}, 1\penalty0 (1):\penalty0 1--144, 2006.
+\newblock \emph{Foundations and Trends in Networking}, 1\penalty0 (1):\penalty0
+  1--144, 2006.
 
 \bibitem[Gesell(1916)]{gesell1916natural}
 Silvio Gesell.
@@ -64,13 +69,18 @@ Daniel Kang, Tatsunori Hashimoto, Ion Stoica, and Yi~Sun.
 
 \bibitem[Kelly et~al.(1998)Kelly, Maulloo, and Tan]{kelly1998rate}
 Frank~P. Kelly, Aman~K. Maulloo, and David K.~H. Tan.
-\newblock Rate control for communication networks: Shadow prices, proportional fairness and stability.
-\newblock \emph{Journal of the Operational Research Society}, 49\penalty0 (3):\penalty0 237--252, 1998.
+\newblock Rate control for communication networks: Shadow prices, proportional
+  fairness and stability.
+\newblock \emph{Journal of the Operational Research Society}, 49\penalty0
+  (3):\penalty0 237--252, 1998.
 
-\bibitem[Malavolta et~al.(2017)Malavolta, Moreno-Sanchez, Kate, Maffei, and Ravi]{malavolta2017concurrency}
-Giulio Malavolta, Pedro Moreno-Sanchez, Aniket Kate, Matteo Maffei, and Srivatsan Ravi.
+\bibitem[Malavolta et~al.(2017)Malavolta, Moreno-Sanchez, Kate, Maffei, and
+  Ravi]{malavolta2017concurrency}
+Giulio Malavolta, Pedro Moreno-Sanchez, Aniket Kate, Matteo Maffei, and
+  Srivatsan Ravi.
 \newblock Concurrency and privacy with payment-channel networks.
-\newblock \emph{Proceedings of the 2017 ACM SIGSAC Conference on Computer and Communications Security}, pages 455--471, 2017.
+\newblock \emph{Proceedings of the 2017 ACM SIGSAC Conference on Computer and
+  Communications Security}, pages 455--471, 2017.
 
 \bibitem[Meyn and Tweedie(2009)]{meyn2009markov}
 Sean~P. Meyn and Richard~L. Tweedie.
@@ -79,8 +89,10 @@ Sean~P. Meyn and Richard~L. Tweedie.
 
 \bibitem[Neely(2010)]{neely2010stochastic}
 Michael~J. Neely.
-\newblock \emph{Stochastic Network Optimization with Application to Communication and Queueing Systems}.
-\newblock Synthesis Lectures on Communication Networks. Morgan \& Claypool, 2010.
+\newblock \emph{Stochastic Network Optimization with Application to
+  Communication and Queueing Systems}.
+\newblock Synthesis Lectures on Communication Networks. Morgan \& Claypool,
+  2010.
 
 \bibitem[{OpenAI} and {Stripe}(2025)]{openai2025acp}
 {OpenAI} and {Stripe}.
@@ -89,13 +101,18 @@ Michael~J. Neely.
 
 \bibitem[Roughgarden(2021)]{roughgarden2021eip1559}
 Tim Roughgarden.
-\newblock Transaction fee mechanism design for the {Ethereum} blockchain: An economic analysis of {EIP-1559}.
-\newblock In \emph{Proceedings of the 2021 ACM Conference on Economics and Computation (EC)}, pages 782--782. ACM, 2021.
+\newblock Transaction fee mechanism design for the {Ethereum} blockchain: An
+  economic analysis of {EIP-1559}.
+\newblock In \emph{Proceedings of the 2021 ACM Conference on Economics and
+  Computation (EC)}, pages 782--782. ACM, 2021.
 
-\bibitem[Sivaraman et~al.(2020)Sivaraman, Venkatakrishnan, Ruan, Negi, Yang, Alizadeh, and Balakrishnan]{sivaraman2020spider}
-Vibhaalakshmi Sivaraman, Shaileshh~Bojja Venkatakrishnan, Kathleen Ruan, Parimarjan Negi, Lei Yang, Mohammad Alizadeh, and Hari Balakrishnan.
+\bibitem[Sivaraman et~al.(2020)Sivaraman, Venkatakrishnan, Ruan, Negi, Yang,
+  Alizadeh, and Balakrishnan]{sivaraman2020spider}
+Vibhaalakshmi Sivaraman, Shaileshh~Bojja Venkatakrishnan, Kathleen Ruan,
+  Parimarjan Negi, Lei Yang, Mohammad Alizadeh, and Hari Balakrishnan.
 \newblock High throughput cryptocurrency routing in payment channel networks.
-\newblock In \emph{17th USENIX Symposium on Networked Systems Design and Implementation (NSDI 20)}, pages 777--796. USENIX Association, 2020.
+\newblock In \emph{17th USENIX Symposium on Networked Systems Design and
+  Implementation (NSDI 20)}, pages 777--796. USENIX Association, 2020.
 
 \bibitem[Srikant(2004)]{srikant2004mathematics}
 R.~Srikant.
@@ -109,8 +126,10 @@ R.~Srikant.
 
 \bibitem[Tassiulas and Ephremides(1992)]{tassiulas1992stability}
 Leandros Tassiulas and Anthony Ephremides.
-\newblock Stability properties of constrained queueing systems and scheduling policies for maximum throughput in multihop radio networks.
-\newblock \emph{IEEE Transactions on Automatic Control}, 37\penalty0 (12):\penalty0 1936--1948, 1992.
+\newblock Stability properties of constrained queueing systems and scheduling
+  policies for maximum throughput in multihop radio networks.
+\newblock \emph{IEEE Transactions on Automatic Control}, 37\penalty0
+  (12):\penalty0 1936--1948, 1992.
 
 \bibitem[{Visa}(2025)]{visa2025tap}
 {Visa}.

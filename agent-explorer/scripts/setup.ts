@@ -1,7 +1,7 @@
 import { createWalletClient, http, keccak256, toHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
-import { openclaw, getAddresses } from "@pura/sdk";
+import { openclaw, getAddresses } from "@puraxyz/sdk";
 
 const pk = process.env.OPERATOR_PRIVATE_KEY;
 if (!pk) {

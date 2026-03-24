@@ -5,6 +5,7 @@ import styles from "./page.module.css";
 import { AsciiBar } from "./components/AsciiBar";
 import { StatusDot } from "./components/StatusDot";
 import { RoutingViz } from "./components/RoutingViz";
+import { DemoTerminal } from "./components/DemoTerminal";
 import {
   generateRelaySeedState,
   generateLightningSeedState,
@@ -81,72 +82,65 @@ function SectionHead({
   );
 }
 
-const PROBLEMS = [
+const STEPS = [
   {
-    label: "overload without signal",
-    body: "The best relays and DVMs get all the traffic. They overload silently. Mediocre services sit idle. No signal telling callers who has room.",
+    num: "1",
+    name: "connect",
+    desc: "Point your HTTP endpoint at api.pura.xyz, or add one SDK line. Drop-in OpenAI-compatible.",
   },
   {
-    label: "payments without proof",
-    body: "Streaming payments keep flowing to saturated providers. Money goes in. Completed work doesn't come out. Nobody verifies actual output.",
+    num: "2",
+    name: "route",
+    desc: "Pura reads on-chain capacity attestations and routes to spare capacity via Boltzmann weighting.",
   },
   {
-    label: "reputation without portability",
-    body: "A reliable relay operator gets no credit when they also run a DVM. Track records are siloed. Good actors can't prove history across services.",
+    num: "3",
+    name: "verify",
+    desc: "Dual-signed receipt goes on-chain. Cryptographic proof the work actually happened.",
   },
 ];
 
-const SERVICES = [
+const BUILD_CARDS = [
   {
-    label: "nostr relays",
-    color: "var(--color-relays)",
-    body: "Deploy a relay on yourname.pura.xyz. Register capacity on-chain. Earn from the relay payment pool proportional to verified throughput.",
+    label: "inference router",
+    color: "var(--color-gateway)",
+    body: "OpenAI-compatible API that routes across providers based on real-time capacity. Saturated provider? Requests go to whoever has room. Every completion recorded on-chain.",
     href: "/deploy",
   },
   {
-    label: "nip-90 dvms",
-    color: "var(--amber)",
-    body: "Run a Data Vending Machine for on-demand computation. Register capacity. Get routed jobs when you have headroom. Earn from verified work.",
+    label: "agent marketplace",
+    color: "var(--color-agents)",
+    body: "Deploy an economy where agents compete on capacity. Register skills, stake against throughput claims, earn proportional to verified completions.",
     href: "/deploy/dvm",
   },
   {
-    label: "llm endpoints",
-    color: "var(--color-gateway)",
-    body: "Multi-provider inference endpoint that routes requests based on real-time capacity. OpenAI-compatible API. Saturated provider? Requests go to whoever has room.",
-    href: "/deploy",
+    label: "pipeline orchestrator",
+    color: "var(--color-sim)",
+    body: "Multi-stage workflows with backpressure. Chain pools into pipelines. If stage 3 is overwhelmed, stages 1 and 2 slow down automatically.",
+    href: "/docs/contracts",
   },
-  {
-    label: "agent services",
-    color: "var(--color-agents)",
-    body: "Register AI agent skills with throughput, latency, and error rate. Dual-signed completions build portable reputation across service types.",
-    href: "/deploy",
-  },
-];
-
-const PIPELINE = [
-  { step: "declare", desc: "operators sign capacity attestations" },
-  { step: "verify", desc: "dual-signed completions, on-chain proof" },
-  { step: "price", desc: "congestion-driven dynamic pricing" },
-  { step: "route", desc: "Boltzmann allocation to spare capacity" },
-  { step: "buffer", desc: "escrow absorbs overflow, demurrage decays idle funds" },
 ];
 
 const COMPARE_ROWS = [
   {
-    metric: "Capacity awareness",
-    vals: ["None", "None", "Server-side only", "On-chain, signed"],
+    metric: "Flow control",
+    vals: ["None", "Temp MPP", "None", "None", "Backpressure + Boltzmann"],
+  },
+  {
+    metric: "Capacity signal",
+    vals: ["None", "None", "Server-side", "None", "On-chain, EWMA-smoothed"],
   },
   {
     metric: "Completion verification",
-    vals: ["None", "None", "None", "Dual-signed + vr.dev"],
+    vals: ["None", "None", "None", "None", "Dual-signed receipts"],
   },
   {
-    metric: "Economic incentives",
-    vals: ["None", "None", "None", "Streaming payments"],
+    metric: "Dynamic pricing",
+    vals: ["None", "None", "None", "Fixed", "Congestion-driven"],
   },
   {
-    metric: "Cross-service reputation",
-    vals: ["None", "None", "None", "Portable, weighted"],
+    metric: "Settlement",
+    vals: ["HTTP 402", "ILP", "Stripe", "HTTP 402", "Lightning + Superfluid + ERC-20"],
   },
 ];
 
@@ -197,17 +191,16 @@ export default function Dashboard() {
       {/* ═══════════ HERO ═══════════ */}
       <header className={styles.hero}>
         <h1 className={styles.title}>
-          The operator platform for verified machine services.
+          Capacity-aware routing for the machine economy.
         </h1>
         <p className={styles.subtitle}>
-          Deploy Nostr relays, NIP-90 DVMs, LLM endpoints, and AI agents.
-          Monitor real-time capacity. Verify completions. Earn proportional
-          to verified throughput. Built on Base, settled via Lightning or
-          Superfluid.
+          Point payments at Pura. We read on-chain capacity, route to spare
+          providers via Boltzmann weighting, verify completions, and buffer
+          overflow. TCP/IP-style congestion control for monetary flows.
         </p>
         <div className={styles.heroCtas}>
-          <a href="/deploy" className={styles.ctaPrimary}>deploy a service →</a>
-          <a href="/monitor" className={styles.ctaSecondary}>try shadow mode →</a>
+          <a href="#demo" className={styles.ctaPrimary}>route your first request →</a>
+          <a href="/paper" className={styles.ctaSecondary}>read the paper →</a>
         </div>
         <RoutingViz />
       </header>
@@ -216,9 +209,9 @@ export default function Dashboard() {
       <div className={styles.statsBar}>
         <span>base-sepolia testnet</span>
         <span className={styles.statsBarSep}>│</span>
-        <span>25 contracts</span>
+        <span>32 contracts</span>
         <span className={styles.statsBarSep}>│</span>
-        <span>249 tests passing</span>
+        <span>319 tests passing</span>
         {thermo && (
           <>
             <span className={styles.statsBarSep}>│</span>
@@ -231,37 +224,16 @@ export default function Dashboard() {
 
       <hr className={styles.divider} />
 
-      {/* ═══════════ PROBLEM ═══════════ */}
-      <section className={styles.problemSection}>
-        <SectionHead label="the problem" color="var(--red)" />
-        <div className={styles.problemGrid}>
-          {PROBLEMS.map((p) => (
-            <div key={p.label} className={styles.problemCard}>
-              <span className={styles.problemLabel}>
-                {"── "}{p.label.toUpperCase()}
-              </span>
-              <p className={styles.problemBody}>{p.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <hr className={styles.divider} />
-
-      {/* ═══════════ SOLUTION PIPELINE ═══════════ */}
+      {/* ═══════════ HOW IT WORKS — 3 STEPS ═══════════ */}
       <section className={styles.section}>
-        <SectionHead label="the solution" color="var(--green)" />
-        <p className={styles.solutionHeadline}>
-          Pura makes capacity observable, completions verifiable, and payments
-          proportional.
-        </p>
+        <SectionHead label="how it works" color="var(--green)" />
         <div className={styles.pipeline}>
-          {PIPELINE.map((p, i) => (
-            <div key={p.step} className={styles.pipelineStep}>
-              <span className={styles.pipelineNum}>{i + 1}</span>
-              <span className={styles.pipelineName}>{p.step}</span>
-              <span className={styles.pipelineDesc}>{p.desc}</span>
-              {i < PIPELINE.length - 1 && (
+          {STEPS.map((s, i) => (
+            <div key={s.name} className={styles.pipelineStep}>
+              <span className={styles.pipelineNum}>{s.num}</span>
+              <span className={styles.pipelineName}>{s.name}</span>
+              <span className={styles.pipelineDesc}>{s.desc}</span>
+              {i < STEPS.length - 1 && (
                 <span className={styles.pipelineArrow}>→</span>
               )}
             </div>
@@ -271,18 +243,36 @@ export default function Dashboard() {
 
       <hr className={styles.divider} />
 
-      {/* ═══════════ SERVICE TYPES ═══════════ */}
+      {/* ═══════════ LIVE DEMO ═══════════ */}
+      <section className={styles.section} id="demo">
+        <SectionHead label="try it" color="var(--amber)" />
+        <p className={styles.desc}>
+          Send a request through the Pura gateway. The response streams back
+          with X-Pura headers showing which provider was selected and how much
+          capacity remains. Same endpoint works as a drop-in for the OpenAI SDK.
+        </p>
+        <DemoTerminal />
+        <div className={styles.codeSnippet}>
+          <SectionHead label="one-line integration" color="var(--text-dim)" />
+          <pre className={styles.codePre}>{`// swap your base URL — everything else stays the same
+const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
+        </div>
+      </section>
+
+      <hr className={styles.divider} />
+
+      {/* ═══════════ WHAT YOU CAN BUILD ═══════════ */}
       <section className={styles.section}>
-        <SectionHead label="what you can deploy" color="var(--amber)" />
+        <SectionHead label="what you can build" color="var(--amber)" />
         <div className={styles.serviceGrid}>
-          {SERVICES.map((s) => (
-            <div key={s.label} className={styles.serviceCard}>
-              <span className={styles.serviceLabel} style={{ color: s.color }}>
-                {"── "}{s.label.toUpperCase()}
+          {BUILD_CARDS.map((c) => (
+            <div key={c.label} className={styles.serviceCard}>
+              <span className={styles.serviceLabel} style={{ color: c.color }}>
+                {"── "}{c.label.toUpperCase()}
               </span>
-              <p className={styles.serviceBody}>{s.body}</p>
-              <a href={s.href} className={styles.docLink}>
-                deploy →
+              <p className={styles.serviceBody}>{c.body}</p>
+              <a href={c.href} className={styles.docLink}>
+                learn more →
               </a>
             </div>
           ))}
@@ -294,48 +284,48 @@ export default function Dashboard() {
       {/* ═══════════ COMPARISON TABLE ═══════════ */}
       <section className={styles.section}>
         <SectionHead label="how it compares" color="var(--text-dim)" />
-        <table className={styles.tbl}>
-          <thead>
-            <tr>
-              <th>metric</th>
-              <th>no coordination</th>
-              <th>round-robin</th>
-              <th>load balancer</th>
-              <th className={styles.highlightCol}>pura</th>
-            </tr>
-          </thead>
-          <tbody>
-            {COMPARE_ROWS.map((r) => (
-              <tr key={r.metric}>
-                <td>{r.metric}</td>
-                {r.vals.map((v, i) => (
-                  <td
-                    key={i}
-                    className={i === 3 ? styles.highlightCol : undefined}
-                  >
-                    {v}
-                  </td>
-                ))}
+        <div style={{ overflowX: "auto" }}>
+          <table className={styles.tbl}>
+            <thead>
+              <tr>
+                <th></th>
+                <th>x402</th>
+                <th>Tempo MPP</th>
+                <th>load balancer</th>
+                <th>AP2 / TAP</th>
+                <th className={styles.highlightCol}>pura</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {COMPARE_ROWS.map((r) => (
+                <tr key={r.metric}>
+                  <td>{r.metric}</td>
+                  {r.vals.map((v, i) => (
+                    <td
+                      key={i}
+                      className={i === 4 ? styles.highlightCol : undefined}
+                    >
+                      {v}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <hr className={styles.divider} />
 
-      {/* ═══════════ LIVE PROTOCOL STATE ═══════════ */}
-      <SectionHead label="live protocol state" color="var(--amber)" />
-
-      {/* ── SYSTEM STATE — thermodynamic overview ── */}
+      {/* ═══════════ PROTOCOL STATE ═══════════ */}
       <section className={styles.section} id="thermo">
-        <SectionHead label="system state" color="var(--amber)" />
+        <SectionHead label="live protocol state" color="var(--amber)" />
         <p className={styles.desc}>
           Three thermodynamic signals on-chain. Temperature (τ) from
           attestation variance drives exploratory routing. Virial ratio V
-          measures stake-throughput equilibrium (V=1 at balance). Escrow
-          pressure P tracks buffer fill. Together they drive adaptive pricing,
-          demurrage, and circuit breakers.
+          measures stake-throughput equilibrium. Escrow pressure P tracks
+          buffer fill. Together they drive adaptive pricing, demurrage,
+          and circuit breakers.
         </p>
         {thermo ? (
           <>
@@ -362,275 +352,45 @@ export default function Dashboard() {
               </span>
               {thermo.seed && <span className={styles.seedTag}>[seed]</span>}
             </div>
-            <div className={styles.stats}>
-              <span className={styles.kv}>
-                <span className={styles.k}>τ range</span>{" "}
-                <span className={styles.v}>{thermo.tauMin} – {thermo.tauMax}</span>
-              </span>
-              <span className={styles.kv}>
-                <span className={styles.k}>V target</span>{" "}
-                <span className={styles.v}>{thermo.equilibriumTarget}</span>
-              </span>
-              <span className={styles.kv}>
-                <span className={styles.k}>contracts</span>{" "}
-                <span className={styles.v}>TemperatureOracle · VirialMonitor · SystemStateEmitter</span>
-              </span>
-            </div>
           </>
         ) : (
           <p className={styles.wait}>connecting...</p>
         )}
-        <a href="/docs/contracts" className={styles.docLink}>
-          thermodynamic plan →
+        <a href="/explainer#thermo" className={styles.docLink}>
+          thermodynamic layer →
         </a>
       </section>
 
       <hr className={styles.divider} />
 
-      {/* ── DEPLOY — primary conversion ── */}
-      <section className={styles.deployBlock} id="deploy">
-        <SectionHead label="deploy a service" color="var(--color-deploy)" />
-        <p className={styles.desc}>
-          Get a Nostr relay running on yourname.pura.xyz in under a minute.
-          Sign in with any NIP-07 extension (Alby, nos2x), pick a plan, done.
-          Or deploy a NIP-90 DVM and start earning from verified completions.
+      {/* ═══════════ PROTOCOL — brief ═══════════ */}
+      <section className={styles.section}>
+        <SectionHead label="the protocol" color="var(--text-dim)" />
+        <p className={styles.desc} style={{ maxWidth: 620 }}>
+          Built on the Pura protocol (MIT). Backpressure Economics adapts
+          congestion control from data networks to monetary flows. Five
+          on-chain primitives: declare capacity, verify completions, price
+          dynamically, route to spare capacity, buffer overflow.
         </p>
-        <div className={styles.deployTiers}>
-          <div className={styles.tier}>
-            <span className={styles.tierName}>free</span>
-            <span className={styles.tierPrice}>$0</span>
-            <span className={styles.tierDetail}>100 MB storage, 10 allowed pubkeys, 50 events/min</span>
-          </div>
-          <div className={styles.tier}>
-            <span className={styles.tierName}>pro</span>
-            <span className={styles.tierPrice}>$9/mo</span>
-            <span className={styles.tierDetail}>
-              5 GB storage, unlimited pubkeys, custom domain, on-chain
-              registration, payment pool revenue
-            </span>
-          </div>
-          <div className={styles.tier}>
-            <span className={styles.tierName}>operator</span>
-            <span className={styles.tierPrice}>$29/mo</span>
-            <span className={styles.tierDetail}>
-              50 GB storage, multi-relay configs, advanced analytics,
-              priority support
-            </span>
-          </div>
-        </div>
         <div className={styles.heroCtas}>
-          <a href="/deploy" className={styles.deployCta}>deploy relay →</a>
-          <a href="/deploy/dvm" className={styles.deployCta}>deploy dvm →</a>
+          <a href="/paper" className={styles.ctaSecondary}>paper →</a>
+          <a href="/explainer" className={styles.ctaSecondary}>explainer →</a>
+          <a href="/docs" className={styles.ctaSecondary}>docs →</a>
+          <a href="https://github.com/puraxyz/puraxyz" target="_blank" rel="noopener noreferrer" className={styles.ctaSecondary}>github →</a>
         </div>
       </section>
 
       <hr className={styles.divider} />
 
+      {/* ═══════════ SERVICE DATA (demoted) ═══════════ */}
+      <SectionHead label="live service data" color="var(--text-dim)" />
+
       <div className={styles.grid}>
         {/* ── left column ── */}
-        <div>
-          {/* RELAYS */}
-          <section className={styles.section} id="relays">
-            <SectionHead label="relay capacity" color="var(--color-relays)" />
-            <p className={styles.desc}>
-              On-chain registry of Nostr relay capacity. Operators register
-              events/sec, storage, and bandwidth and stake against those numbers.
-              Payment streams distribute proportional to verified capacity.
-            </p>
-            {relays ? (
-              <>
-                <div className={styles.stats}>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>total</span>{" "}
-                    <span className={styles.v}>{relays.totalRelays}</span>
-                  </span>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>anti-spam w/r/s</span>{" "}
-                    <span className={styles.v}>
-                      {relays.antiSpamMinimums.write}/
-                      {relays.antiSpamMinimums.read}/
-                      {relays.antiSpamMinimums.store}
-                    </span>
-                  </span>
-                  {seed("relays")}
-                </div>
-                <table className={styles.tbl}>
-                  <thead>
-                    <tr>
-                      <th>pubkey</th>
-                      <th>operator</th>
-                      <th>capacity</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {relays.relays.map((r) => (
-                      <tr key={r.pubkey}>
-                        <td className={styles.trunc}>{truncHex(r.pubkey)}</td>
-                        <td className={styles.trunc}>{truncHex(r.operator)}</td>
-                        <td>
-                          <AsciiBar
-                            value={Number(r.capacity)}
-                            max={1000}
-                            width={12}
-                            color="var(--color-relays)"
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            ) : (
-              <p className={styles.wait}>connecting...</p>
-            )}
-            <a href="/docs/contracts" className={styles.docLink}>
-              protocol spec →
-            </a>
-          </section>
-
-          {/* LIGHTNING */}
-          <section className={styles.section} id="lightning">
-            <SectionHead label="lightning routing" color="var(--color-lightning)" />
-            <p className={styles.desc}>
-              Capacity-weighted route finding for Lightning. Nodes register
-              channel liquidity on-chain backed by stake. EWMA smoothing
-              prevents gaming. Operators earn routing fees proportional to
-              registered capacity.
-            </p>
-            {lightning ? (
-              <>
-                <div className={styles.stats}>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>nodes</span>{" "}
-                    <span className={styles.v}>{lightning.totalNodes}</span>
-                  </span>
-                  {seed("lightning")}
-                </div>
-                <table className={styles.tbl}>
-                  <thead>
-                    <tr>
-                      <th>pubkey</th>
-                      <th>capacity</th>
-                      <th>fee</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lightning.nodes.map((n) => (
-                      <tr key={n.pubkey}>
-                        <td className={styles.trunc}>{truncHex(n.pubkey)}</td>
-                        <td>{fmtNum(n.capacity)}</td>
-                        <td>{n.fee} sat</td>
-                        <td>
-                          <StatusDot
-                            color={n.active ? "var(--green)" : "var(--text-dim)"}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            ) : (
-              <p className={styles.wait}>connecting...</p>
-            )}
-            <a href="/docs/contracts" className={styles.docLink}>
-              protocol spec →
-            </a>
-          </section>
-
-          {/* AGENTS */}
-          <section className={styles.section} id="agents">
-            <SectionHead label="agent reputation" color="var(--color-agents)" />
-            <p className={styles.desc}>
-              AI agent registry on OpenClaw. Agents publish throughput, latency,
-              and error rate. Each completion is dual-signed and on-chain,
-              producing a composite reputation score.
-            </p>
-            {agents ? (
-              <>
-                <div className={styles.stats}>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>registered</span>{" "}
-                    <span className={styles.v}>{agents.totalAgents}</span>
-                  </span>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>protocol</span>{" "}
-                    <StatusDot
-                      color={
-                        agents.protocolAvailable
-                          ? "var(--green)"
-                          : "var(--red)"
-                      }
-                      label={agents.protocolAvailable ? "live" : "off"}
-                    />
-                  </span>
-                  {seed("agents")}
-                </div>
-                <table className={styles.tbl}>
-                  <thead>
-                    <tr>
-                      <th>id</th>
-                      <th>reputation</th>
-                      <th>completions</th>
-                      <th>gap</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {agents.agents.map((a) => (
-                      <tr key={a.id}>
-                        <td className={styles.trunc}>{truncHex(a.id)}</td>
-                        <td>
-                          {a.reputation ? (
-                            <AsciiBar
-                              value={Number(a.reputation.score)}
-                              max={100}
-                              width={10}
-                              color="var(--color-agents)"
-                            />
-                          ) : (
-                            "\u2014"
-                          )}
-                        </td>
-                        <td>{a.reputation?.completions ?? "\u2014"}</td>
-                        <td>
-                          {a.measurabilityGap != null
-                            ? `${a.measurabilityGap}%`
-                            : "\u2014"}
-                        </td>
-                        <td>
-                          <StatusDot
-                            color={
-                              a.active ? "var(--green)" : "var(--text-dim)"
-                            }
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            ) : (
-              <p className={styles.wait}>connecting...</p>
-            )}
-            <a href="/docs/contracts" className={styles.docLink}>
-              openclaw spec →
-            </a>
-          </section>
-        </div>
-
-        {/* ── right column ── */}
         <div>
           {/* GATEWAY */}
           <section className={styles.section} id="gateway">
             <SectionHead label="llm gateway" color="var(--color-gateway)" />
-            <p className={styles.desc}>
-              Multi-provider LLM API that routes requests across OpenAI and
-              Anthropic based on real-time on-chain capacity weights.
-              OpenAI-compatible. Saturated provider? Requests go to whoever
-              has headroom. Every completion recorded on-chain.
-            </p>
             {gateway ? (
               <>
                 <div className={styles.stats}>
@@ -683,57 +443,39 @@ export default function Dashboard() {
             ) : (
               <p className={styles.wait}>connecting...</p>
             )}
-            <a href="/docs/contracts" className={styles.docLink}>
-              gateway docs →
-            </a>
           </section>
 
-          {/* SIMULATOR */}
-          <section className={styles.section} id="sim">
-            <SectionHead label="simulator" color="var(--color-sim)" />
-            <p className={styles.desc}>
-              Live agent-based simulation. Multiple agents with different
-              strategies compete for capacity allocation across market phases
-              (bull, bear, shock, recovery). Truthful reporting is the
-              dominant strategy.
-            </p>
-            {sim ? (
+          {/* RELAYS */}
+          <section className={styles.section} id="relays">
+            <SectionHead label="relay capacity" color="var(--color-relays)" />
+            {relays ? (
               <>
                 <div className={styles.stats}>
                   <span className={styles.kv}>
-                    <span className={styles.k}>tick</span>{" "}
-                    <span className={styles.v}>{sim.tickNumber}</span>
+                    <span className={styles.k}>total</span>{" "}
+                    <span className={styles.v}>{relays.totalRelays}</span>
                   </span>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>phase</span>{" "}
-                    <span className={styles.v}>{sim.phase}</span>
-                  </span>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>flow</span>{" "}
-                    <span className={styles.v}>{sim.flowRateMultiplier}×</span>
-                  </span>
+                  {seed("relays")}
                 </div>
                 <table className={styles.tbl}>
                   <thead>
                     <tr>
-                      <th>agent</th>
-                      <th>stake</th>
-                      <th>rate</th>
-                      <th>load</th>
+                      <th>pubkey</th>
+                      <th>operator</th>
+                      <th>capacity</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.entries(sim.agents).map(([name, a]) => (
-                      <tr key={name}>
-                        <td>{name}</td>
-                        <td>{fmtNum(a.stake)}</td>
-                        <td>{fmtNum(a.completionRate)}</td>
+                    {relays.relays.map((r) => (
+                      <tr key={r.pubkey}>
+                        <td className={styles.trunc}>{truncHex(r.pubkey)}</td>
+                        <td className={styles.trunc}>{truncHex(r.operator)}</td>
                         <td>
                           <AsciiBar
-                            value={Number(a.queueLoad)}
-                            max={100}
-                            width={10}
-                            color="var(--color-sim)"
+                            value={Number(r.capacity)}
+                            max={1000}
+                            width={12}
+                            color="var(--color-relays)"
                           />
                         </td>
                       </tr>
@@ -742,13 +484,108 @@ export default function Dashboard() {
                 </table>
               </>
             ) : (
-              <p className={styles.offline}>
-                sim offline — requires agent wallets
-              </p>
+              <p className={styles.wait}>connecting...</p>
             )}
-            <a href="/docs/simulation" className={styles.docLink}>
-              simulation design →
-            </a>
+          </section>
+        </div>
+
+        {/* ── right column ── */}
+        <div>
+          {/* LIGHTNING */}
+          <section className={styles.section} id="lightning">
+            <SectionHead label="lightning routing" color="var(--color-lightning)" />
+            {lightning ? (
+              <>
+                <div className={styles.stats}>
+                  <span className={styles.kv}>
+                    <span className={styles.k}>nodes</span>{" "}
+                    <span className={styles.v}>{lightning.totalNodes}</span>
+                  </span>
+                  {seed("lightning")}
+                </div>
+                <table className={styles.tbl}>
+                  <thead>
+                    <tr>
+                      <th>pubkey</th>
+                      <th>capacity</th>
+                      <th>fee</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lightning.nodes.map((n) => (
+                      <tr key={n.pubkey}>
+                        <td className={styles.trunc}>{truncHex(n.pubkey)}</td>
+                        <td>{fmtNum(n.capacity)}</td>
+                        <td>{n.fee} sat</td>
+                        <td>
+                          <StatusDot
+                            color={n.active ? "var(--green)" : "var(--text-dim)"}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            ) : (
+              <p className={styles.wait}>connecting...</p>
+            )}
+          </section>
+
+          {/* AGENTS */}
+          <section className={styles.section} id="agents">
+            <SectionHead label="agent reputation" color="var(--color-agents)" />
+            {agents ? (
+              <>
+                <div className={styles.stats}>
+                  <span className={styles.kv}>
+                    <span className={styles.k}>registered</span>{" "}
+                    <span className={styles.v}>{agents.totalAgents}</span>
+                  </span>
+                  {seed("agents")}
+                </div>
+                <table className={styles.tbl}>
+                  <thead>
+                    <tr>
+                      <th>id</th>
+                      <th>reputation</th>
+                      <th>completions</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {agents.agents.map((a) => (
+                      <tr key={a.id}>
+                        <td className={styles.trunc}>{truncHex(a.id)}</td>
+                        <td>
+                          {a.reputation ? (
+                            <AsciiBar
+                              value={Number(a.reputation.score)}
+                              max={100}
+                              width={10}
+                              color="var(--color-agents)"
+                            />
+                          ) : (
+                            "\u2014"
+                          )}
+                        </td>
+                        <td>{a.reputation?.completions ?? "\u2014"}</td>
+                        <td>
+                          <StatusDot
+                            color={
+                              a.active ? "var(--green)" : "var(--text-dim)"
+                            }
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            ) : (
+              <p className={styles.wait}>connecting...</p>
+            )}
           </section>
         </div>
       </div>
@@ -757,14 +594,14 @@ export default function Dashboard() {
 
       {/* ═══════════ ECOSYSTEM ═══════════ */}
       <footer className={styles.ecosystem}>
-        <span>Built on Backproto (MIT)</span>
+        <span>The Pura Protocol (MIT)</span>
         <span className={styles.ecosystemSep}>·</span>
-        <span>Verified by vr.dev</span>
+        <span>Backpressure Economics</span>
         <span className={styles.ecosystemSep}>·</span>
-        <span>Settled via Superfluid + Lightning</span>
+        <span>Settled via Lightning + Superfluid</span>
         <span className={styles.ecosystemSep}>·</span>
         <a
-          href="https://github.com/puraxyz"
+          href="https://github.com/puraxyz/puraxyz"
           target="_blank"
           rel="noopener noreferrer"
           className={styles.ecosystemLink}

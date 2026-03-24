@@ -1,4 +1,4 @@
-import { getAddresses, completion } from "@pura/sdk";
+import { getAddresses, completion } from "@puraxyz/sdk";
 import { chainId, operatorWallet } from "../shared/chain";
 import { GATEWAY_TASK_TYPE } from "./routing";
 import type { Provider } from "./providers";

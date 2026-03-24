@@ -24,12 +24,12 @@ Third, the AI agent ecosystem on Base is growing. Pura provides infrastructure t
 
 ## What is deployed?
 
-25 Solidity contracts on Base Sepolia:
+32 Solidity contracts (12 on Base mainnet, 20 testnet-only research modules):
 
 - Core (8 contracts): CapacityRegistry, BackpressurePool, CompletionTracker, StakeManager, PricingCurve, EscrowBuffer, OffchainAggregator, Pipeline
-- Research modules (14 contracts): demurrage tokens, Nostr relay economics, Lightning routing incentives, cross-domain composition
+- Research modules (20 contracts): demurrage tokens, velocity metrics, Nostr relay economics, Lightning routing incentives, platform economics, cross-domain composition, V2 extensions
 
-All contracts verified on Basescan. 249 passing tests. TypeScript SDK with 18 action modules.
+All contracts verified on Basescan. 319 passing tests. TypeScript SDK with 23 action modules. Live gateway at gateway.pura.xyz with three LLM providers (OpenAI, Anthropic, Groq).
 
 Router contract: 0x8e999a246afea241cf3c1d400dd7786cf591fa88
 

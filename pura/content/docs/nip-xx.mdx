@@ -19,9 +19,9 @@ Current Nostr relay economics are unsustainable:
 - No spam resistance without censorship
 - No incentive alignment between relay operators and users
 
-## How It Works
+## How it works
 
-### 1. Capacity Declaration
+### 1. Capacity declaration
 
 Relays register on-chain and declare three dimensions:
 
@@ -33,15 +33,15 @@ Relays register on-chain and declare three dimensions:
 
 These combine into a **composite score** (default weights: 50% throughput, 25% storage, 25% bandwidth).
 
-### 2. Capacity Verification
+### 2. Capacity verification
 
 Relay capacity claims are verified through EIP-712 signed attestations, EWMA-smoothed (α = 0.3) for stability. Attestations that differ more than 50% from the current smoothed value are dampened to resist manipulation.
 
-### 3. Payment Distribution
+### 3. Payment distribution
 
 A Superfluid GDA pool distributes streaming payments proportional to verified capacity. Relays that meet the anti-spam minimum receive continuous micropayments from users publishing events.
 
-### 4. Anti-Spam Pricing
+### 4. Anti-spam pricing
 
 Dynamic per-event pricing based on relay congestion:
 
@@ -51,7 +51,7 @@ Dynamic per-event pricing based on relay congestion:
 
 This makes spam economically unviable at scale without requiring content filtering.
 
-## New Event Kinds
+## New event kinds
 
 | Kind | Description |
 |------|-------------|
@@ -66,10 +66,10 @@ Two [contracts](/docs/contracts) implement this NIP:
 - **RelayCapacityRegistry**: Relay registration, EIP-712 attestation verification, EWMA smoothing, composite capacity scoring
 - **RelayPaymentPool**: Anti-spam minimum enforcement, BPE-weighted payment distribution via Superfluid GDA
 
-## [SDK](/docs/sdk) Support
+## [SDK](/docs/sdk) support
 
 ```typescript
-import * as relay from "@pura/sdk/actions/relay";
+import * as relay from "@puraxyz/sdk/actions/relay";
 
 // Register a relay
 await relay.registerRelay(walletClient, addrs, "wss://relay.example.com", 100n);
@@ -81,14 +81,14 @@ await relay.setAntiSpamMinimum(walletClient, addrs, 50n);
 const cap = await relay.getCompositeCapacity(publicClient, addrs, relayAddress);
 ```
 
-## Full Specification
+## Full specification
 
 The complete NIP-XX specification with all protocol details, message formats, and implementation requirements is in the [docs/nips](https://github.com/puraxyz/puraxyz/blob/main/docs/nips/NIP-XX-backpressure-relay-economics.md) directory.
 
 ---
 
-## See Also
+## See also
 
-- [Smart Contracts](/docs/contracts) — All 17 deployed contracts including RelayCapacityRegistry and RelayPaymentPool
+- [Smart Contracts](/docs/contracts) — All 32 deployed contracts including RelayCapacityRegistry and RelayPaymentPool
 - [TypeScript SDK](/docs/sdk) — Type-safe relay action modules
 - [Simulation](/docs/simulation) — Agent-based validation of BPE claims

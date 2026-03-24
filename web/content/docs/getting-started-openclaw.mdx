@@ -11,7 +11,7 @@ You need: a wallet with Base Sepolia ETH and test tokens for staking.
 ## Install the SDK
 
 ```bash
-npm install @pura/sdk viem
+npm install @puraxyz/sdk viem
 ```
 
 ## Set up your wallet
@@ -20,7 +20,7 @@ npm install @pura/sdk viem
 import { createWalletClient, createPublicClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { baseSepolia } from 'viem/chains'
-import { getAddresses, openclaw } from '@pura/sdk'
+import { getAddresses, openclaw } from '@puraxyz/sdk'
 
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
 const wallet = createWalletClient({ account, chain: baseSepolia, transport: http() })

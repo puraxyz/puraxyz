@@ -30,7 +30,7 @@ The result is throughput-optimal payment routing under any stabilizable demand v
 
 ## What is deployed?
 
-25 contracts on Base Sepolia. 249 passing tests across all contracts. TypeScript SDK with 18 action modules.
+32 contracts (12 on Base mainnet, 20 testnet-only research modules). 319 passing tests across all contracts. TypeScript SDK with 23 action modules. Live gateway at gateway.pura.xyz.
 
 Simulation results (50 agents, 100 time steps):
 - 95.7% allocation efficiency vs 93.5% round-robin

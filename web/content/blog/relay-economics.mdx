@@ -13,7 +13,7 @@ Pura changes the formula. Relay operators register three capacity dimensions on-
 You register your relay with a Nostr pubkey and initial capacity declaration:
 
 ```typescript
-import { relay, getAddresses } from "@pura/sdk";
+import { relay, getAddresses } from "@puraxyz/sdk";
 
 const addrs = getAddresses(84532);
 await relay.registerRelay(walletClient, addrs, nostrPubkey, {

@@ -135,6 +135,6 @@ Events are ephemeral (not stored by relays). Recommended publish rate: once per 
 
 - Contracts: `TemperatureOracle.sol`, `VirialMonitor.sol`, `SystemStateEmitter.sol`, `DVMCapacityAdapter.sol`, `DVMCompletionVerifier.sol`, `DVMPricingCurve.sol`
 - Settlement adapters: `SuperfluidSettlementAdapter.sol`, `LightningSettlementAdapter.sol`, `DirectSettlementAdapter.sol`
-- SDK: `@pura/sdk` — `temperature`, `virial`, `systemState` action modules, schema types (`JobIntent`, `PriceSignal`, `SettlementReceipt`)
+- SDK: `@puraxyz/sdk` — `temperature`, `virial`, `systemState` action modules, schema types (`JobIntent`, `PriceSignal`, `SettlementReceipt`)
 - Shadow sidecar: `@pura/shadow` — zero-config metrics collection, BPE comparison engine
 - Simulation: `simulation/bpe_sim.py` experiment E6 (Boltzmann temperature sweep)
