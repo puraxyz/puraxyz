@@ -34,15 +34,24 @@ export default function PaperIndex() {
       <p className={styles.subtitle}>
         Capacity-constrained monetary flow control for agent economies
       </p>
-      <p className={styles.pdfLink}>
+      <div className={styles.pdfLinks}>
         <a
           href="https://github.com/puraxyz/puraxyz/blob/main/docs/paper/main.pdf"
           target="_blank"
           rel="noopener noreferrer"
+          className={styles.pdfLink}
         >
-          Download full paper (PDF)
+          Full paper (PDF)
         </a>
-      </p>
+        <a
+          href="https://github.com/puraxyz/puraxyz/blob/main/docs/paper/lite/main.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.pdfLink}
+        >
+          Lite paper (4-page PDF)
+        </a>
+      </div>
 
       <ol className={styles.sectionList}>
         {main.map((s, i) => (

@@ -16,11 +16,14 @@
   margin-bottom: 0.75rem;
 }
 
-.pdfLink {
+.pdfLinks {
+  display: flex;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
-.pdfLink a {
+.pdfLink {
   display: inline-block;
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -32,7 +35,7 @@
   transition: background 0.15s, color 0.15s;
 }
 
-.pdfLink a:hover {
+.pdfLink:hover {
   background: #d97706;
   color: #000;
 }

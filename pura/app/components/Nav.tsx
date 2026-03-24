@@ -23,7 +23,7 @@ export function Nav() {
       <div className={styles.inner}>
         <Link href="/" className={styles.logo}>
           <Image src="/pura-icon-sm.png" alt="Pura" width={24} height={24} />
-          pura<span>.xyz</span>
+          pura
         </Link>
 
         <div className={styles.links}>
