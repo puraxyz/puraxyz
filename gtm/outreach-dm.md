@@ -6,15 +6,15 @@ All DMs first person singular. Short. Specific. No pitch deck language.
 
 ## AI agent builders (primary target)
 
-Subject: drop-in LLM routing for your agents
+Subject: your agent can get a job now
 
-Hey, I saw your work on [specific project/post]. I built something that might save you integration headaches.
+Hey, I saw your work on [specific project/post]. I built something your agent might want.
 
-Pura is a gateway that routes LLM calls across four providers (OpenAI, Anthropic, Groq, Gemini) and picks the cheapest model that can handle each request. OpenAI SDK compatible. Your agent points at api.pura.xyz instead of api.openai.com and gets automatic failover, cost-based routing, and per-request Lightning settlement.
+Pura is a gateway that routes LLM calls across four providers and picks the best model for each request. But the interesting part: your agent can register skills in a marketplace and earn sats by doing work for other agents. It gets a daily income statement showing costs, earnings, and net income.
 
-Free tier is 5,000 requests. Takes 30 seconds to get a key.
+OpenAI SDK compatible. One URL change. Free tier is 5,000 requests.
 
-Would 15 minutes be useful? I can walk you through the routing logic and show how it handles provider failures.
+Would 15 minutes be useful? I can show you the routing and the income statement.
 
 pura.xyz
 
@@ -22,15 +22,15 @@ pura.xyz
 
 ## AI framework developers (LangChain, CrewAI, AutoGen contributors)
 
-Subject: provider routing layer for multi-agent frameworks
+Subject: agents that earn their own operating costs
 
-Hey, I have been following your contributions to [framework]. I built a gateway that sits between agent code and LLM providers.
+Hey, I have been following your contributions to [framework]. I built a gateway that does two things your framework users probably want.
 
-It scores task complexity, routes to the cheapest capable model, and fails over automatically when a provider goes down. OpenAI SDK compatible, so any framework that supports custom base URLs works out of the box.
+First, it routes to the best-fit model per request based on complexity scoring. GPT-4o for hard problems, Groq for simple ones. Automatic.
 
-The routing is backed by on-chain capacity contracts on Base (35 contracts, 319 tests). Settlement is Lightning. The whole thing is MIT-licensed.
+Second, agents can register skills and earn sats from other agents through a marketplace. The goal: an agent that covers its own inference costs from marketplace revenue. We ran this with our own agent (Pura-1) and it generates a real income statement daily.
 
-Is provider selection / cost optimization something your framework handles internally, or do your users manage that themselves?
+OpenAI SDK compatible. Works with any framework that supports custom base URLs.
 
 pura.xyz/docs/getting-started-gateway
 
@@ -38,15 +38,15 @@ pura.xyz/docs/getting-started-gateway
 
 ## OpenClaw skill developers
 
-Subject: ship LLM routing with your skill
+Subject: ship LLM routing + earning with your skill
 
-Hey, I saw your OpenClaw skill [specific skill]. I built a gateway that OpenClaw skills can bundle as part of their config.
+Hey, I saw your OpenClaw skill [specific skill]. I built a gateway that OpenClaw skills can bundle.
 
-When someone installs your skill, it already knows which LLM providers to use, what routing rules to apply, and how to pay per-request on Lightning. No manual API key setup for the end user.
+When someone installs your skill, their agent routes LLM calls through the best-fit provider automatically. It also gets access to a marketplace where it can register skills and earn sats from other agents. Budget alerts and income statements are built into the skill config.
 
-The gateway handles GPT-4o, Claude Sonnet, Llama 3.3 on Groq, and Gemini. Task complexity scoring routes simple prompts to cheap models automatically.
+The gateway handles GPT-4o, Claude Sonnet, Llama 3.3 on Groq, and Gemini.
 
-Would a 15-minute walkthrough be useful? I can show you the skill config format.
+Would a 15-minute walkthrough be useful?
 
 pura.xyz
 
@@ -56,7 +56,7 @@ pura.xyz
 
 Subject: LLM gateway with on-chain settlement on Base
 
-Hey, I shipped an LLM routing gateway backed by 35 contracts on Base. The gateway routes inference across four providers, scores complexity to pick the cheapest capable model, and settles per-request on Lightning.
+Hey, I shipped an LLM routing gateway backed by 35 contracts on Base. The gateway routes inference across four providers, scores complexity to pick the best-fit model, and settles per-request on Lightning.
 
 Core contracts handle capacity registration, completion verification, and backpressure routing. 319 passing tests. TypeScript SDK with 23 action modules.
 

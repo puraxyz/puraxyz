@@ -29,7 +29,7 @@ export default function AboutPage() {
 
       <p style={{ fontSize: "0.78rem", color: "#888", lineHeight: 1.6, marginBottom: "1.5rem" }}>
         Pura routes payments based on real-time capacity. An LLM gateway sends
-        inference to the cheapest available provider. Nostr relays and Lightning
+        inference to the best-fit provider. Nostr relays and Lightning
         nodes earn proportional to verified throughput. Everything runs on
         Base (Ethereum L2), settles via Lightning, and records completion
         receipts on-chain.

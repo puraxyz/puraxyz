@@ -1,16 +1,16 @@
 ---
-title: We built 32 contracts. The first product is an LLM gateway.
-description: Pura routes inference across OpenAI, Anthropic, Groq, and Gemini. It picks the cheapest model that fits your task, settles on Lightning, and distributes to agents via OpenClaw.
-date: "2026-03-28"
+title: We built 35 contracts. The first product is an LLM gateway.
+description: Pura routes inference across OpenAI, Anthropic, Groq, and Gemini. It picks the best model for your task, settles on Lightning, and distributes to agents via OpenClaw.
+date: "2026-03-24"
 ---
 
-We spent a year building a throughput-optimal payment routing protocol. 32 contracts. 319 tests. Lyapunov proofs. Superfluid GDA pools with dynamic unit rebalancing. A thermodynamic layer that computes system temperature from capacity variance.
+We spent a year building a throughput-optimal payment routing protocol. 35 contracts. 319 tests. Lyapunov proofs. Superfluid GDA pools with dynamic unit rebalancing. A thermodynamic layer that computes system temperature from capacity variance.
 
 And then we built the product.
 
 ## The gateway
 
-`api.pura.xyz` is an OpenAI-compatible endpoint. You send a chat completion request. The gateway scores your task's complexity, picks the cheapest provider that can handle it, streams the response back, and tells you what it cost.
+`api.pura.xyz` is an OpenAI-compatible endpoint. You send a chat completion request. The gateway scores your task's complexity, picks the best provider for it, streams the response back, and tells you what it cost.
 
 ```bash
 curl https://api.pura.xyz/api/chat \
@@ -33,7 +33,7 @@ Four providers today: OpenAI (gpt-4o), Anthropic (claude-sonnet-4-20250514), Gro
 
 ## Why this exists
 
-Every agent framework eventually needs to call an LLM. Most hard-code a single provider. Some let you configure a fallback. None of them score the task and route to the cheapest option automatically.
+Every agent framework eventually needs to call an LLM. Most hard-code a single provider. Some let you configure a fallback. None of them score the task and route to the best-fit option automatically.
 
 The cost difference is real. Groq charges $0.0003 per 1K tokens. OpenAI charges $0.005. For the same "what is 2+2?" query, routing to Groq saves 94%. Across thousands of overnight agent runs, that compounds.
 
@@ -90,7 +90,7 @@ curl https://api.pura.xyz/api/report \
 
 ## From protocol to product
 
-The 32 contracts still matter. BackpressurePool, CapacityRegistry, CompletionTracker, PricingCurve — they're the mechanism underneath. When more providers stake into the pool, the routing gets better. When completion receipts accumulate, the complexity classifier gets calibrated against real data.
+The 35 contracts still matter. BackpressurePool, CapacityRegistry, CompletionTracker, PricingCurve — they're the mechanism underneath. When more providers stake into the pool, the routing gets better. When completion receipts accumulate, the complexity classifier gets calibrated against real data.
 
 But the product is the gateway. One endpoint. Automatic model selection. Per-request cost tracking. Lightning settlement. OpenClaw distribution.
 

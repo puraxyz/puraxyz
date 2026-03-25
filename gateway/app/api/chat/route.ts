@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/auth";
 import { incrementRequests } from "@/lib/keys";
 import { selectProvider, getFallbackProvider } from "@/lib/routing";
+import type { RoutingHints } from "@/lib/routing";
 import { streamChat } from "@/lib/stream";
 import { recordCompletionEpoch } from "@/lib/completion";
 import { maybeRebalance } from "@/lib/rebalance";
@@ -21,7 +22,7 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Provider-Key",
   "Access-Control-Expose-Headers":
-    "X-Pura-Provider, X-Pura-Capacity, X-Pura-Request-Id, X-Pura-Model, X-Pura-Cost, X-Pura-Budget-Remaining, X-Pura-Routed, X-Pura-Tier, X-RateLimit-Remaining",
+    "X-Pura-Provider, X-Pura-Capacity, X-Pura-Request-Id, X-Pura-Model, X-Pura-Cost, X-Pura-Budget-Remaining, X-Pura-Routed, X-Pura-Tier, X-Pura-Quality, X-Pura-Explored, X-Pura-Experimental, X-RateLimit-Remaining",
 };
 
 export async function OPTIONS() {
@@ -73,7 +74,7 @@ export async function POST(request: Request) {
   }
 
   // --- Parse body ---
-  let body: { messages?: ChatMessage[]; model?: string; stream?: boolean };
+  let body: { messages?: ChatMessage[]; model?: string; stream?: boolean; routing?: RoutingHints };
   try {
     body = await request.json();
   } catch {
@@ -110,10 +111,14 @@ export async function POST(request: Request) {
   // --- Route ---
   let provider;
   let tier;
+  let explored = false;
+  let experimentalFields: string[] = [];
   try {
-    const result = await selectProvider(body.model, messages);
+    const result = await selectProvider(body.model, messages, body.routing);
     provider = result.provider;
     tier = result.tier;
+    explored = result.explored;
+    experimentalFields = result.experimentalFields;
   } catch (e) {
     return NextResponse.json(
       { error: { message: (e as Error).message } },
@@ -190,7 +195,7 @@ export async function POST(request: Request) {
   // Record spend and metrics (fire-and-forget)
   recordSpend(keyHash, provider, promptTokens * 2).catch(() => {});
 
-  const puraHeaders = {
+  const puraHeaders: Record<string, string> = {
     ...CORS_HEADERS,
     "X-Pura-Provider": provider,
     "X-Pura-Model": body.model ?? provider,
@@ -201,6 +206,16 @@ export async function POST(request: Request) {
     "X-Pura-Request-Id": requestId,
     "X-RateLimit-Remaining": String(rl.remaining),
   };
+
+  if (body.routing?.quality) {
+    puraHeaders["X-Pura-Quality"] = body.routing.quality;
+  }
+  if (explored) {
+    puraHeaders["X-Pura-Explored"] = "true";
+  }
+  if (experimentalFields.length > 0) {
+    puraHeaders["X-Pura-Experimental"] = experimentalFields.join(", ");
+  }
 
   const latencyMs = Date.now() - startMs;
   recordRequest(provider, latencyMs, true);

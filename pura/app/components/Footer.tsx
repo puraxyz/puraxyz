@@ -30,6 +30,13 @@ export function Footer() {
             >
               github
             </a>
+            <a
+              href="https://github.com/puraxyz/puraxyz/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              report an issue
+            </a>
           </div>
         </div>
         <div className={styles.bottom}>

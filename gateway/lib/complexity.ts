@@ -59,3 +59,18 @@ export function tierToProviders(tier: ComplexityTier): string[] {
       return ["anthropic", "openai", "gemini"];
   }
 }
+
+const TIER_ORDER: ComplexityTier[] = ["cheap", "mid", "premium"];
+
+/**
+ * Shift a complexity tier up or down based on a quality preference.
+ * "high" bumps up (cheap→mid, mid→premium, premium stays).
+ * "low" pushes down (premium→mid, mid→cheap, cheap stays).
+ * "balanced" or undefined returns the tier unchanged.
+ */
+export function adjustTier(tier: ComplexityTier, quality?: "low" | "balanced" | "high"): ComplexityTier {
+  if (!quality || quality === "balanced") return tier;
+  const idx = TIER_ORDER.indexOf(tier);
+  if (quality === "high") return TIER_ORDER[Math.min(idx + 1, TIER_ORDER.length - 1)];
+  return TIER_ORDER[Math.max(idx - 1, 0)];
+}

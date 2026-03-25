@@ -52,7 +52,7 @@ Simulations over 1,000-step horizons show 95.7% allocation efficiency (vs 93.5% 
 
 ## Live on testnet
 
-Pura is deployed and verified on Base Sepolia. 25 contracts, 249 passing tests, a TypeScript SDK with 18 action modules, and a research paper with formal proofs. MIT licensed.
+Pura is deployed and verified on Base Sepolia. 35 contracts, 319 passing tests, a TypeScript SDK with 23 action modules, and a research paper with formal proofs. MIT licensed.
 
 The thermodynamic layer adds three contracts (TemperatureOracle, VirialMonitor, SystemStateEmitter) and modifies three existing ones (BackpressurePool with Boltzmann routing, Pipeline with circuit breakers, DemurrageToken with virial-adaptive decay).
 

@@ -12,9 +12,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Pura — Capacity-aware routing for the machine economy",
+  title: "Pura — Smart routing for AI agents. Earn sats.",
   description:
-    "Route payments through on-chain capacity signals. Boltzmann-weighted routing, verified completions, overflow buffering. TCP-style congestion control for agent economies.",
+    "One API endpoint routes across four LLM providers. Automatic model selection by task complexity. Your agent earns sats by doing work for other agents. Settle on Lightning.",
   icons: {
     icon: "/pura-icon-sm.png",
     apple: "/pura-icon.png",

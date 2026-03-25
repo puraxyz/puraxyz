@@ -9,14 +9,14 @@ Three pieces work together. The gateway routes inference. The OpenClaw skill dis
 ```
 Agent (via OpenClaw skill)
   → api.pura.xyz (gateway)
-    → cheapest available LLM provider
+    → best-fit LLM provider
     → completion recorded on Base Sepolia
     → cost deducted from Lightning wallet
 ```
 
 ## Gateway — LLM inference routing
 
-An OpenAI-compatible API at `api.pura.xyz`. Scores task complexity and routes to the cheapest provider (OpenAI, Anthropic, Groq, Gemini) that fits. Per-request cost headers, daily budget caps, overnight spend reports.
+An OpenAI-compatible API at `api.pura.xyz`. Scores task complexity and routes to the best-fit provider (OpenAI, Anthropic, Groq, Gemini). Per-request cost headers, daily budget caps, overnight spend reports.
 
 - API: `https://api.pura.xyz/api/chat`
 - Provider status: [pura.xyz/status](/status)

@@ -10,6 +10,19 @@ const CURL_COMMAND = `curl -X POST ${API_BASE}/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -d '{"messages":[{"role":"user","content":"What is backpressure routing?"}]}'`;
 
+const CANNED_RESPONSE: DemoResult = {
+  output:
+    "Backpressure routing is a scheduling algorithm that routes work to the queue with the most spare capacity, originally from Tassiulas-Ephremides (1992), adapted here to route LLM inference across providers based on on-chain capacity signals.",
+  provider: "groq",
+  model: "llama-3.3-70b-versatile",
+  cost: "0.0003",
+  tier: "cheap",
+  requestId: "demo0000",
+  rateRemaining: null,
+  latencyMs: 0,
+  isDemo: true,
+};
+
 interface DemoResult {
   output: string;
   provider: string | null;
@@ -19,6 +32,7 @@ interface DemoResult {
   requestId: string | null;
   rateRemaining: string | null;
   latencyMs: number;
+  isDemo?: boolean;
 }
 
 export function DemoTerminal() {
@@ -34,6 +48,9 @@ export function DemoTerminal() {
     const start = Date.now();
 
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+
       const res = await fetch(`${API_BASE}/v1/chat/completions`, {
         method: "POST",
         headers: {
@@ -46,7 +63,10 @@ export function DemoTerminal() {
           ],
           stream: true,
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeout);
 
       if (!res.ok) {
         const body = await res.text();
@@ -105,7 +125,12 @@ export function DemoTerminal() {
         latencyMs: Date.now() - start,
       });
     } catch (e) {
-      setError((e as Error).message);
+      // Network error or timeout — show canned fallback
+      if ((e as Error).name === "AbortError" || !(e as Error).message?.match(/^\d{3}:/)) {
+        setResult(CANNED_RESPONSE);
+      } else {
+        setError((e as Error).message);
+      }
     } finally {
       setRunning(false);
     }
@@ -119,7 +144,7 @@ export function DemoTerminal() {
           <span className={styles.dot} />
           <span className={styles.dot} />
         </span>
-        <span className={styles.titleText}>api.pura.xyz</span>
+        <span className={styles.titleText}>api.pura.xyz{result?.isDemo ? " (demo)" : ""}</span>
       </div>
 
       <div className={styles.body}>

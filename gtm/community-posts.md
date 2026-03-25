@@ -22,8 +22,8 @@ The math is from Lyapunov drift analysis, provably throughput-optimal for any st
 
 What is deployed:
 
-- 25 contracts on Base Sepolia (L2), 249 passing tests
-- TypeScript SDK with 18 action modules
+- 35 contracts on Base Sepolia (L2), 319 passing tests
+- TypeScript SDK with 23 action modules
 - Live router dashboard
 - Research paper with formal proofs
 
@@ -48,7 +48,7 @@ Pura adapts backpressure routing (Tassiulas-Ephremides, 1992) to handle this. Ag
 
 It is part of a stack: Buildlog captures what agents do, VR verifies outcomes, and Pura routes the money.
 
-Live on Base Sepolia with 25 contracts and a TypeScript SDK.
+Live on Base Sepolia with 35 contracts and a TypeScript SDK.
 
 - Docs: https://pura.xyz
 - Explainer: https://pura.xyz/explainer
@@ -62,7 +62,7 @@ What would this need to look like for it to be useful in your agent stack?
 
 Shipped Pura on Base Sepolia. Payment routing for AI agent economies.
 
-25 contracts. 249 tests. TypeScript SDK with 18 modules.
+35 contracts. 319 tests. TypeScript SDK with 23 modules.
 
 Agents declare capacity, stake tokens, get verified. Payments stream proportional to spare capacity. Overloaded agents get rerouted around. Overflow sits in escrow.
 
@@ -96,7 +96,7 @@ Pura is one layer in a three-project stack. Buildlog (buildlog.ai) captures agen
 
 Simulations show 95.7% allocation efficiency vs 93.5% round-robin. Formal throughput optimality proof via Lyapunov drift analysis.
 
-25 contracts on Base Sepolia, 249 tests, TypeScript SDK.
+35 contracts on Base Sepolia, 319 tests, TypeScript SDK.
 
 - Explainer: https://pura.xyz/explainer
 - GitHub (MIT): https://github.com/puraxyz/puraxyz
@@ -122,7 +122,7 @@ How it uses Superfluid:
 
 The core handles AI agent payment routing. Research modules extend the GDA pattern to Nostr relay economics and Lightning routing incentives, each with their own GDA pool.
 
-25 contracts on Base Sepolia. 249 tests. TypeScript SDK.
+35 contracts on Base Sepolia. 319 tests. TypeScript SDK.
 
 Any advice on rapid unit rebalancing across dynamic capacity changes? Interested in gotchas when multiple GDA pools share the same Super Token.
 
@@ -137,7 +137,7 @@ Subject: Pura — payment routing for AI agents on Base
 
 Shipped a protocol on Base Sepolia that does capacity-weighted payment routing for AI agent economies.
 
-25 contracts, 249 tests:
+35 contracts, 319 tests:
 
 - Core: 8 contracts for capacity-weighted streaming payments via Superfluid GDA
 - Research modules: demurrage tokens, Nostr relay economics, Lightning routing, cross-domain composition
@@ -146,7 +146,7 @@ Results: 95.7% allocation efficiency, 83.5% gas savings via off-chain attestatio
 
 Part of a three-project stack: Buildlog (agent workflow capture) + VR (outcome verification) + Pura (payment routing).
 
-TypeScript SDK with 18 action modules.
+TypeScript SDK with 23 action modules.
 
 - Docs: https://pura.xyz
 - GitHub: https://github.com/puraxyz/puraxyz
@@ -206,7 +206,7 @@ Payment networks for AI agents have no equivalent.
 
 I built one. Pura adapts backpressure routing to monetary flows between AI agents. Payments automatically reroute to agents with verified spare capacity. Overloaded agents get less. Available agents get more.
 
-25 contracts on Base. 249 tests. TypeScript SDK. MIT licensed.
+35 contracts on Base. 319 tests. TypeScript SDK. MIT licensed.
 
 pura.xyz
 
@@ -240,7 +240,7 @@ Today the answer is: they wait, they retry, or they fail silently. There is no p
 
 Pura makes capacity a first-class primitive. Agents declare how much work they can handle, the protocol verifies actual completion rates, and payments stream proportional to spare capacity. When an agent fills up, its price rises (EIP-1559 style) and demand shifts to agents with room.
 
-The math comes from network routing theory (Tassiulas-Ephremides, 1992). The implementation is 25 Solidity contracts on Base with a TypeScript SDK.
+The math comes from network routing theory (Tassiulas-Ephremides, 1992). The implementation is 35 Solidity contracts on Base with a TypeScript SDK.
 
 pura.xyz/explainer
 
@@ -252,15 +252,15 @@ Each block below is one standalone post. Pick and choose, reorder, or adapt.
 
 ---
 
-### 1. The reference product (Mandalay)
+### 1. The reference product (Pura Gateway)
 
 Built a reference product on top of Pura.
 
-Mandalay is a single endpoint that routes your LLM calls across OpenAI, Anthropic, and others, weighted by on-chain capacity signals.
+The Pura Gateway is a single endpoint that routes your LLM calls across OpenAI, Anthropic, and others, weighted by on-chain capacity signals.
 
 One curl. Automatic failover. No vendor lock-in.
 
-mandalay.dev
+pura.xyz
 
 ---
 
@@ -270,7 +270,7 @@ Your app calls one API. Behind it, a router checks which LLM providers actually 
 
 Payments stream to whoever can do the work. Overloaded providers get less. Available ones get more.
 
-That's Mandalay. pura.xyz
+That's the Pura Gateway. pura.xyz
 
 ---
 
@@ -306,7 +306,7 @@ If you're building anything that calls multiple LLM providers, you need a router
 
 Which provider actually has capacity right now? That is the question.
 
-mandalay.dev
+pura.xyz
 
 ---
 
@@ -314,8 +314,8 @@ mandalay.dev
 
 Shipped on Base Sepolia:
 
-- 25 contracts, 249 tests passing
-- TypeScript SDK with 18 modules
+- 35 contracts, 319 tests passing
+- TypeScript SDK with 23 modules
 - Live gateway with API key generation
 - Animated capacity dashboard
 - Research paper with formal proofs
@@ -342,7 +342,7 @@ Building multi-agent systems? The hard part isn't orchestration. It's what happe
 
 Pura gives you protocol-level flow control. Declare capacity, verify completions, route payments to whoever has room.
 
-Works with any streaming payment system. 25 contracts on Base. SDK ready.
+Works with any streaming payment system. 35 contracts on Base. SDK ready.
 
 ---
 
@@ -356,17 +356,17 @@ That's the core of Pura's pricing curve. pura.xyz/explainer
 
 ---
 
-### 10. The Mandalay quick start
+### 10. The Pura Gateway quick start
 
 ```
-curl mandalay.dev/api/chat \
+curl pura.xyz/api/chat \
   -H "Authorization: Bearer YOUR_KEY" \
   -d '{"messages":[{"role":"user","content":"Hello"}]}'
 ```
 
 One endpoint. Routes across providers by on-chain capacity. Automatic failover.
 
-Get a key at mandalay.dev.
+Get a key at pura.xyz.
 
 ---
 
@@ -386,7 +386,7 @@ Data networks solved this exact problem in 1992. Routers detect congestion. TCP 
 
 I built the same thing for AI agent payments. It is called Pura. Agents declare how much work they can handle. The protocol verifies actual completions. Payments automatically route to whoever has spare capacity. Overloaded agents get rerouted around.
 
-22 smart contracts on a public testnet. TypeScript SDK. Research paper with formal proofs. All open source.
+35 smart contracts on a public testnet. TypeScript SDK. Research paper with formal proofs. All open source.
 
 If you are building anything where multiple services call the same downstream provider, this is the plumbing layer that does not exist yet.
 
@@ -394,11 +394,11 @@ If you are building anything where multiple services call the same downstream pr
 
 ---
 
-### LinkedIn 2. The Mandalay product (post second)
+### LinkedIn 2. The Pura Gateway product (post second)
 
 I built a single API endpoint that routes LLM calls across OpenAI, Anthropic, and other providers based on which one actually has capacity right now.
 
-It is called Mandalay. You call one endpoint. Behind it, a router checks real-time capacity, verified on-chain. If one provider is saturated, your request goes to the next one. Automatic failover. No code changes. No vendor lock-in.
+It is the Pura Gateway. You call one endpoint. Behind it, a router checks real-time capacity, verified on-chain. If one provider is saturated, your request goes to the next one. Automatic failover. No code changes. No vendor lock-in.
 
 This started as a research project in network routing theory. I spent a year building the protocol layer (capacity verification, payment routing, dynamic pricing). Then I realized: nobody will use a protocol until they can see it working. So I built the reference product on top of it.
 
@@ -412,13 +412,13 @@ Looking for developers to try it and tell me what breaks.
 
 ### LinkedIn 3. Building in public (post third)
 
-I shipped 22 smart contracts, a TypeScript SDK, a research paper, a live gateway product, and a full documentation site. Solo.
+I shipped 35 smart contracts, a TypeScript SDK, a research paper, a live gateway product, and a full documentation site. Solo.
 
 Here is what I actually learned:
 
-The hardest part was not the code. It was deciding what the product was. I started with a protocol: formal proofs, simulation framework, 249 passing tests. Academically clean. Nobody could tell me what it did in one sentence.
+The hardest part was not the code. It was deciding what the product was. I started with a protocol: formal proofs, simulation framework, 319 passing tests. Academically clean. Nobody could tell me what it did in one sentence.
 
-So I built Mandalay on top of it. One API endpoint that routes your LLM calls to whichever provider has capacity. Now the one-sentence version exists: "like a load balancer for LLMs, but the capacity signals are verified on-chain."
+So I built the Pura Gateway on top of it. One API endpoint that routes your LLM calls to whichever provider has capacity. Now the one-sentence version exists: "like a load balancer for LLMs, but the capacity signals are verified on-chain."
 
 The protocol still matters. The math guarantees throughput optimality. But the protocol is not the product. The product is: your API calls do not fail when a provider gets overloaded.
 
@@ -452,17 +452,17 @@ All open source. Looking for feedback from anyone building multi-agent systems.
 
 Angle: lead with the product, not the protocol math. The March 2026 Show HN led with Tassiulas-Ephremides and Lyapunov proofs. Too academic for HN's "show me what it does" culture.
 
-Title: Show HN: Mandalay – one API for multiple LLM providers with capacity-aware routing
+Title: Show HN: Pura Gateway – one API for multiple LLM providers with capacity-aware routing
 
 Body:
 
-I built Mandalay, an API gateway that routes LLM calls across multiple providers (OpenAI, Anthropic, others) based on which one actually has capacity right now.
+I built the Pura Gateway, an API gateway that routes LLM calls across multiple providers (OpenAI, Anthropic, others) based on which one actually has capacity right now.
 
 You call one endpoint. Behind it, a router checks real-time provider capacity and sends your request to whichever provider can handle it. If one provider is saturated, you get automatic failover. No code changes.
 
 Quick start:
 
-    curl mandalay.dev/api/chat \
+    curl pura.xyz/api/chat \
       -H "Authorization: Bearer YOUR_KEY" \
       -d '{"messages":[{"role":"user","content":"Hello"}]}'
 
@@ -472,7 +472,7 @@ The protocol underneath (Pura) adapts backpressure routing from network theory. 
 
 Open source, MIT licensed. Looking for feedback from anyone calling multiple LLM providers.
 
-Website: https://mandalay.dev
+Website: https://pura.xyz
 GitHub: https://github.com/puraxyz/puraxyz
 Paper: https://pura.xyz/paper
 

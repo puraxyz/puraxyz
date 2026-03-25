@@ -1,4 +1,5 @@
 import styles from "../page.module.css";
+import { KeyGenerator } from "../components/KeyGenerator";
 
 export const metadata = {
   title: "Gateway — Pura",
@@ -12,11 +13,20 @@ export default function GatewayPage() {
         <h1 className={styles.title}>LLM inference gateway</h1>
         <p className={styles.subtitle}>
           One endpoint, four providers. Pura scores task complexity and routes
-          to the cheapest model that can handle it. You get per-request cost
+          to the best model for the task. You get per-request cost
           headers, daily budget caps, and overnight spend reports. Settlement
           runs on Lightning.
         </p>
       </header>
+
+      <hr className={styles.divider} />
+
+      <section className={styles.section}>
+        <h2 style={{ fontFamily: "var(--font-mono)", fontSize: "0.85rem", fontWeight: 600, color: "var(--text)", marginBottom: "0.6rem" }}>
+          Get an API key
+        </h2>
+        <KeyGenerator />
+      </section>
 
       <hr className={styles.divider} />
 
@@ -148,6 +158,7 @@ curl https://api.pura.xyz/api/wallet/balance \\
           <a href="/docs/getting-started" className={styles.ctaSecondary}>full documentation →</a>
           <a href="/status" className={styles.ctaSecondary}>provider status →</a>
           <a href="https://github.com/puraxyz/puraxyz" target="_blank" rel="noopener noreferrer" className={styles.ctaSecondary}>github →</a>
+          <a href="https://github.com/puraxyz/puraxyz/issues" target="_blank" rel="noopener noreferrer" className={styles.ctaSecondary}>report an issue →</a>
         </div>
       </section>
     </main>

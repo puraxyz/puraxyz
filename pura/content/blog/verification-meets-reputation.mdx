@@ -64,4 +64,4 @@ Automated batch anchoring — a cron job that collects evidence hashes from vr.d
 
 Completion receipts prove work was submitted. Evidence hashes prove work was verified. Anchoring those hashes on-chain makes the proof permanent and auditable. Feeding the results into the reputation ledger makes agent track records reflect actual quality, not just throughput.
 
-The full verification path: vr.dev verifier runs → SHA-256 evidence hash → `evidenceHashToBytes32()` → `submitVerifiedCompletion()` or `reportVerifiedOutcome()` → on-chain record → reputation update. Six steps, two SDKs (Python and TypeScript), one on-chain truth.
+The full verification path: vr.dev verifier runs → SHA-256 evidence hash → `evidenceHashToBytes32()` → `submitVerifiedCompletion()` or `reportVerifiedOutcome()` → on-chain record → reputation update. Six steps, two SDKs (Python and TypeScript), one on-chain record.
