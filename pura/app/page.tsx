@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import { AsciiBar } from "./components/AsciiBar";
 import { StatusDot } from "./components/StatusDot";
-import { RoutingViz } from "./components/RoutingViz";
+import AnimatedDiagram from "./components/AnimatedDiagram";
+import type { DiagramNode, DiagramEdge, DiagramGroup } from "./components/AnimatedDiagram";
 import { DemoTerminal } from "./components/DemoTerminal";
+import ProductGraph from "./components/ProductGraph";
 import {
   generateRelaySeedState,
   generateLightningSeedState,
@@ -81,6 +83,34 @@ function SectionHead({
     </div>
   );
 }
+
+/* ── Hero diagram data ── */
+
+const HERO_NODES: DiagramNode[] = [
+  { id: "agent",    label: "Your Agent",    x: 0.0,  y: 0.45, color: "#22d3ee", shape: "pill" },
+  { id: "gateway",  label: "Pura\nGateway",  x: 0.30, y: 0.45, color: "#f97316", shape: "rect" },
+  { id: "openai",   label: "OpenAI",        x: 0.60, y: 0.0,  color: "#4ade80", shape: "rect" },
+  { id: "anthropic", label: "Anthropic",    x: 0.60, y: 0.30, color: "#a78bfa", shape: "rect" },
+  { id: "groq",     label: "Groq",          x: 0.60, y: 0.60, color: "#f97316", shape: "rect" },
+  { id: "gemini",   label: "Gemini",        x: 0.60, y: 0.90, color: "#3b82f6", shape: "rect" },
+  { id: "lightning", label: "Lightning\nSettlement", x: 0.30, y: 0.95, color: "#fbbf24", shape: "diamond" },
+  { id: "market",   label: "Marketplace",   x: 0.92, y: 0.45, color: "#22d3ee", shape: "pill" },
+];
+
+const HERO_EDGES: DiagramEdge[] = [
+  { from: "agent",   to: "gateway",  color: "#22d3ee" },
+  { from: "gateway", to: "openai",   color: "#4ade80" },
+  { from: "gateway", to: "anthropic", color: "#a78bfa" },
+  { from: "gateway", to: "groq",     color: "#f97316" },
+  { from: "gateway", to: "gemini",   color: "#3b82f6" },
+  { from: "gateway", to: "lightning", color: "#fbbf24", dashed: true },
+  { from: "gateway", to: "market",   color: "#22d3ee", dashed: true },
+  { from: "market",  to: "agent",    color: "#22d3ee", dashed: true },
+];
+
+const HERO_GROUPS: DiagramGroup[] = [
+  { id: "providers", label: "LLM PROVIDERS", x: 0.55, y: 0.0, w: 0.15, h: 0.90, color: "#808090" },
+];
 
 const STEPS = [
   {
@@ -246,7 +276,14 @@ export default function Dashboard() {
           <a href="/gateway" className={styles.ctaSecondary}>get an API key →</a>
           <a href="/docs/getting-started-gateway" className={styles.ctaSecondary}>quickstart →</a>
         </div>
-        <RoutingViz />
+        <AnimatedDiagram
+          nodes={HERO_NODES}
+          edges={HERO_EDGES}
+          groups={HERO_GROUPS}
+          height={300}
+          direction="LR"
+          ariaLabel="Agent routing through Pura Gateway to LLM providers with Lightning settlement"
+        />
       </header>
 
       {/* ═══════════ LIVE STATS BAR ═══════════ */}
@@ -336,6 +373,19 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
 
       <hr className={styles.divider} />
 
+      {/* ═══════════ PRODUCT ECOSYSTEM ═══════════ */}
+      <section className={styles.section}>
+        <SectionHead label="how the pieces fit" color="var(--amber)" />
+        <p className={styles.desc}>
+          Gateway routes requests. OpenClaw gives agents the skill. Lightning
+          handles settlement. Smart contracts enforce the rules on Base.
+          Everything feeds the dashboard.
+        </p>
+        <ProductGraph />
+      </section>
+
+      <hr className={styles.divider} />
+
       {/* ═══════════ COMPARISON TABLE ═══════════ */}
       <section className={styles.section}>
         <SectionHead label="how it compares" color="var(--text-dim)" />
@@ -359,7 +409,13 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
                   {r.vals.map((v, i) => (
                     <td
                       key={i}
-                      className={i === 5 ? styles.highlightCol : undefined}
+                      className={
+                        i === 5
+                          ? styles.highlightCol
+                          : v === "None"
+                            ? styles.noneCell
+                            : undefined
+                      }
                     >
                       {v}
                     </td>

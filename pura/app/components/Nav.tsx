@@ -6,14 +6,12 @@ import Image from "next/image";
 import styles from "./Nav.module.css";
 
 const NAV_LINKS = [
+  { href: "/", label: "home" },
   { href: "/gateway", label: "gateway" },
-  { href: "/economy", label: "economy" },
+  { href: "/explainer", label: "how it works" },
   { href: "/docs", label: "docs" },
   { href: "/paper", label: "paper" },
   { href: "/blog", label: "blog" },
-  { href: "/explainer", label: "how it works" },
-  { href: "/status", label: "status" },
-  { href: "/monitor", label: "monitor" },
 ];
 
 export function Nav() {

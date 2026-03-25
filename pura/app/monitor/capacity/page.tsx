@@ -15,6 +15,8 @@ interface SinkCapacity {
 
 const TABS = [
   { href: "/monitor", label: "overview" },
+  { href: "/monitor/economy", label: "economy" },
+  { href: "/monitor/providers", label: "providers" },
   { href: "/monitor/capacity", label: "capacity" },
   { href: "/monitor/congestion", label: "congestion" },
   { href: "/monitor/audit", label: "audit" },

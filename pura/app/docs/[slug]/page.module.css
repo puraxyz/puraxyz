@@ -1,7 +1,18 @@
+.layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.sidebar {
+  min-width: 0;
+}
+
 .article {
   max-width: 760px;
-  margin: 0 auto;
-  padding: 3rem 1.5rem 4rem;
   line-height: 1.8;
 }
 
@@ -76,4 +87,15 @@
   border: none;
   border-top: 1px solid var(--border);
   margin: 2rem 0;
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  .sidebar {
+    order: -1;
+  }
 }

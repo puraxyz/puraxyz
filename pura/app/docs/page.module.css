@@ -1,5 +1,5 @@
 .page {
-  max-width: 760px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 3rem 1.5rem 4rem;
 }
@@ -11,9 +11,41 @@
 }
 
 .subtitle {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 1.05rem;
+  margin-bottom: 1.5rem;
+}
+
+.tocNav {
+  display: flex;
+  gap: 1rem;
   margin-bottom: 2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+
+.tocLink {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.tocLink:hover {
+  color: var(--text);
+}
+
+.category {
+  margin-bottom: 2.5rem;
+}
+
+.catHeading {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+  font-family: var(--font-mono);
 }
 
 .grid {
@@ -24,7 +56,7 @@
 .card {
   display: block;
   padding: 1.25rem 1.5rem;
-  background: var(--card-bg);
+  background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: 8px;
   text-decoration: none;
@@ -43,7 +75,7 @@
 }
 
 .cardDesc {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 0.9rem;
   line-height: 1.5;
 }

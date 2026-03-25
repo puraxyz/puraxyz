@@ -5,7 +5,14 @@ import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import { getContentSlugs, getContentSource } from "@/lib/content";
+import { extractHeadings } from "@/lib/extractHeadings";
+import TableOfContents from "../../components/TableOfContents";
+import ProductGraph from "../../components/ProductGraph";
 import styles from "./page.module.css";
+
+const mdxComponents = {
+  ProductGraph,
+};
 
 const katexMacros = {
   "\\R": "\\mathbb{R}",
@@ -48,6 +55,8 @@ export default async function DocPage({
     notFound();
   }
 
+  const headings = extractHeadings(source.content);
+
   const { content } = await compileMDX({
     source: source.content,
     options: {
@@ -56,12 +65,20 @@ export default async function DocPage({
         rehypePlugins: [[rehypeKatex, { macros: katexMacros }], rehypeSlug],
       },
     },
+    components: mdxComponents,
   });
 
   return (
-    <div className={styles.article}>
-      <h1>{source.meta.title}</h1>
-      {content}
+    <div className={styles.layout}>
+      {headings.length > 0 && (
+        <aside className={styles.sidebar}>
+          <TableOfContents sections={headings} />
+        </aside>
+      )}
+      <div className={styles.article}>
+        <h1>{source.meta.title}</h1>
+        {content}
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 .layout {
   display: grid;
   grid-template-columns: 200px 1fr;
-  max-width: 1040px;
+  max-width: 1200px;
   margin: 0 auto;
   gap: 2rem;
   padding: 3rem 1.5rem 4rem;
