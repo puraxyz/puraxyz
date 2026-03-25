@@ -41,6 +41,30 @@ curl https://api.pura.xyz/v1/chat/completions \
 
 Request body follows the [OpenAI API spec](https://platform.openai.com/docs/api-reference/chat/create). The `model` field selects the downstream model. The gateway routes to whichever provider has spare capacity for that model.
 
+#### Routing hints
+
+Pass an optional `routing` object in the request body to influence provider selection:
+
+```json
+{
+  "messages": [{"role": "user", "content": "Explain backpressure routing"}],
+  "routing": {
+    "quality": "high",
+    "prefer": "anthropic"
+  }
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `quality` | `"low"` / `"balanced"` / `"high"` | Shifts the complexity tier up or down. `"high"` bumps cheap tasks to mid-tier models and mid tasks to premium. `"low"` does the reverse. Default: `"balanced"` (no shift). |
+| `prefer` | `string` | Soft preference for a provider name (e.g. `"anthropic"`). Doubles that provider's capacity weight during selection. Not a hard lock — use `model` for that. |
+| `maxCost` | `number` | Experimental. Max cost per 1K tokens in USD. Filters out providers above this rate. |
+| `maxLatency` | `number` | Experimental. Max average latency in ms (5-minute window). Filters out providers above this threshold. |
+| `excludeProviders` | `string[]` | Experimental. Provider names to exclude from routing. |
+
+Experimental fields are accepted and honored. The response includes an `X-Pura-Experimental` header listing which experimental fields were used.
+
 ### GET /v1/models
 
 Returns gateway health and available providers.
@@ -63,6 +87,12 @@ Every response includes routing metadata:
 |--------|-------------|
 | `X-Pura-Provider` | Which provider handled the request (e.g. `openai`, `anthropic`) |
 | `X-Pura-Request-Id` | Unique request identifier for on-chain receipt lookup |
+| `X-Pura-Tier` | Complexity tier used for routing (`cheap`, `mid`, `premium`) |
+| `X-Pura-Cost` | Estimated request cost in USD |
+| `X-Pura-Budget-Remaining` | Daily budget remaining in USD |
+| `X-Pura-Quality` | Quality bias applied, if any (`low`, `balanced`, `high`) |
+| `X-Pura-Explored` | `true` when the router explored a non-preferred provider |
+| `X-Pura-Experimental` | Comma-separated list of experimental routing fields used |
 | `X-RateLimit-Remaining` | Requests remaining in the current rate limit window |
 
 On rate limit (429), the response includes a `Retry-After` header with seconds until the window resets.
@@ -73,9 +103,17 @@ On rate limit (429), the response includes a `Retry-After` header with seconds u
 
 ## Routing
 
-The gateway reads capacity weights from the on-chain `CapacityRegistry` and routes using Boltzmann-weighted selection. Providers with more spare capacity are selected more often. If the selected provider fails, the gateway falls back to the next provider by weight.
+The gateway scores each request for complexity (cheap/mid/premium) and reads capacity weights from the on-chain `CapacityRegistry`. Provider selection combines three signals:
 
-Each completion is recorded on-chain with the provider, model, and token count via the `CompletionLedger`.
+1. **Complexity tier** — maps to a preferred provider order (e.g. premium prefers Anthropic, cheap prefers Groq).
+2. **On-chain capacity** — providers with more spare capacity (GDA pool units) rank higher within a tier.
+3. **Quality score** — recent success rate and latency from the 1-hour metrics window multiply each provider's capacity weight.
+
+The `routing.quality` hint shifts the complexity tier up or down. The `routing.prefer` hint doubles a named provider's weight. Experimental filters (`maxCost`, `maxLatency`, `excludeProviders`) trim the candidate set before selection.
+
+Adaptive exploration sends ~5% of requests to a non-preferred provider to discover performance changes. The exploration rate doubles when any provider shows degraded performance (>20% error rate or >5s latency in the 5-minute window).
+
+If the selected provider fails, the gateway falls back to the next available provider. Each completion is recorded on-chain via the `CompletionLedger`.
 
 ## SDK integration
 

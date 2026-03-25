@@ -1,48 +1,45 @@
-# Mandalay
+# Pura Gateway
 
-Capacity-routed LLM API gateway powered by [Pura](https://pura.xyz) on Base.
+LLM API gateway on [Pura](https://pura.xyz), deployed on Base.
 
-Routes chat completions across OpenAI and Anthropic based on on-chain capacity weights from a BackpressurePool. Is a reference implementation, customer #1 for the protocol.
+Routes chat completions across OpenAI, Anthropic, Groq, and Gemini. A complexity scorer picks cheap models for simple tasks and premium models for hard ones. Capacity weights come from on-chain BackpressurePool contracts. This is the reference consumer of the protocol.
 
-See [BUSINESSPLAN.md](BUSINESSPLAN.md) for the full user journey, revenue model, and fork-and-deploy guide.
+See [BUSINESSPLAN.md](BUSINESSPLAN.md) for the user journey, revenue model, and fork-and-deploy guide.
 
 ## How it works
 
 ```
 POST /api/chat (API key + messages)
-  → Read capacity from BackpressurePool
-  → Route to provider with most spare capacity
+  → Score task complexity
+  → Check provider quality scores
+  → Route to best-fit model
   → Stream response back (OpenAI-compatible SSE)
   → Record completion receipt on-chain
   → Rebalance pool weights if threshold crossed
 ```
 
-Two LLM providers are registered as **sinks** in a BackpressurePool:
-- **OpenAI** (gpt-4o)
-- **Anthropic** (claude-sonnet)
+Four LLM providers are registered as sinks in a BackpressurePool:
 
-Each has capacity tracked via CapacityRegistry. Completions go through CompletionTracker. Pricing follows the PricingCurve.
+- OpenAI (gpt-4o)
+- Anthropic (claude-sonnet)
+- Groq (llama-3.3-70b)
+- Gemini (gemini-2.0-flash)
+
+Each has capacity tracked via CapacityRegistry, completions recorded through CompletionTracker, and pricing set by PricingCurve.
 
 ## Quick start
 
 ```bash
-# Install dependencies
 npm install
 
-# Copy env template
 cp .env.example .env
-# Fill in: OPENAI_API_KEY, ANTHROPIC_API_KEY, OPERATOR_PRIVATE_KEY
+# Fill in: OPENAI_API_KEY, ANTHROPIC_API_KEY, GROQ_API_KEY, GEMINI_API_KEY, OPERATOR_PRIVATE_KEY
 
 # Build SDK (from repo root)
 cd ../sdk && npm run build && cd ../gateway
 
-# Sync local SDK
 npm run sync-sdk
-
-# Run setup (register sinks + create pool, once)
-npm run setup
-
-# Start dev server
+npm run setup    # register sinks + create pool (once)
 npm run dev
 ```
 
@@ -65,20 +62,20 @@ OpenAI-compatible chat completions endpoint.
 ```bash
 curl -X POST http://localhost:3100/api/chat \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer bp_..." \
+  -H "Authorization: Bearer pura_..." \
   -d '{
     "messages": [{"role": "user", "content": "Hello!"}],
     "stream": true
   }'
 ```
 
-**Routing:** Provider is selected automatically based on pool capacity. Optionally pass `"model": "gpt-4o"` or `"model": "claude-sonnet-4-20250514"` to override.
+The provider is selected automatically based on complexity score and pool capacity. Pass `"model": "gpt-4o"` or `"model": "claude-sonnet-4-20250514"` to override.
 
-**Free tier:** 100 requests per key. After that, link a wallet:
+5,000 free requests per key. After that, fund a Lightning wallet and pay per-request in sats:
 
 ```bash
 curl -X POST http://localhost:3100/api/wallet \
-  -H "Authorization: Bearer bp_..." \
+  -H "Authorization: Bearer pura_..." \
   -H "Content-Type: application/json" \
   -d '{"wallet": "0x..."}'
 ```
@@ -87,32 +84,51 @@ curl -X POST http://localhost:3100/api/wallet \
 
 Pool state, provider capacity, key stats.
 
+### `GET /api/income`
+
+24h income summary for the authenticated key.
+
+### `GET /api/report`
+
+Cost breakdown by provider over the last 24 hours.
+
 ## Architecture
 
 ```
 gateway/
 ├── app/
 │   ├── api/
-│   │   ├── chat/route.ts      # Main endpoint
-│   │   ├── keys/route.ts      # Key generation
-│   │   ├── state/route.ts     # Pool state
-│   │   └── wallet/route.ts    # Link wallet
-│   ├── page.tsx               # Dashboard
-│   └── layout.tsx             # Root layout
+│   │   ├── chat/route.ts        # Main endpoint
+│   │   ├── keys/route.ts        # Key generation
+│   │   ├── income/route.ts      # Income summary
+│   │   ├── marketplace/         # Skill registration, listing, hiring, completion
+│   │   ├── report/route.ts      # Cost report
+│   │   ├── state/route.ts       # Pool state
+│   │   └── wallet/route.ts      # Link wallet
+│   ├── economy/page.tsx         # Economy dashboard
+│   ├── page.tsx                 # Gateway dashboard
+│   └── layout.tsx               # Root layout
 ├── lib/
-│   ├── auth.ts                # API key validation + free tier check
-│   ├── chain.ts               # Viem clients (Base Sepolia)
-│   ├── completion.ts          # Record completions on-chain
-│   ├── keys.ts                # Key storage (JSON file for MVP)
-│   ├── providers.ts           # Provider config
+│   ├── auth.ts                  # API key validation + free tier check
+│   ├── chain.ts                 # Viem clients (Base Sepolia)
+│   ├── completion.ts            # Record completions on-chain
+│   ├── complexity.ts            # Task complexity scoring
+│   ├── income.ts                # Income tracking
+│   ├── keys.ts                  # Key storage (JSON file for MVP)
+│   ├── marketplace.ts           # Skill marketplace logic
+│   ├── providers.ts             # Provider config
 │   ├── providers/
-│   │   ├── openai.ts          # OpenAI streaming via fetch
-│   │   └── anthropic.ts       # Anthropic streaming → OpenAI SSE format
-│   ├── rebalance.ts           # Trigger pool rebalance
-│   ├── routing.ts             # Capacity-based provider selection
-│   └── stream.ts              # Unified stream interface
+│   │   ├── openai.ts            # OpenAI streaming
+│   │   ├── anthropic.ts         # Anthropic streaming → OpenAI SSE format
+│   │   ├── groq.ts              # Groq streaming
+│   │   └── gemini.ts            # Gemini streaming
+│   ├── quality.ts               # Provider quality scoring
+│   ├── rebalance.ts             # Trigger pool rebalance
+│   ├── routing.ts               # Quality-weighted provider selection
+│   ├── settlement.ts            # Lightning settlement
+│   └── stream.ts                # Unified stream interface
 └── scripts/
-    └── setup.ts               # Register sinks + create pool
+    └── setup.ts                 # Register sinks + create pool
 ```
 
 ## On-chain integration

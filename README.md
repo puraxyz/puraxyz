@@ -1,6 +1,6 @@
 # Pura
 
-**LLM routing gateway with on-chain capacity contracts and Lightning settlement**
+**Smart routing for AI agents. Earn sats.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.26-363636.svg)](https://soliditylang.org/)
@@ -9,11 +9,11 @@
 
 ---
 
-Pura routes LLM inference across providers, settles per-request on Lightning, and distributes via OpenClaw skills. One API endpoint. OpenAI SDK compatible.
+One API endpoint routes your agent's LLM calls across four providers. Automatic model selection by task complexity. Your agent registers skills in a marketplace, earns sats from other agents, and gets a daily income statement. Settlement on Lightning. OpenAI SDK compatible.
 
 ## Gateway
 
-The gateway sits between your agent and LLM providers. It scores each request for task complexity, routes to the cheapest capable model, streams the response, and tracks cost.
+The gateway sits between your agent and LLM providers. It scores each request for task complexity, routes to the best-fit model, streams the response, and tracks cost.
 
 ```python
 from openai import OpenAI
@@ -66,7 +66,7 @@ Per-request Lightning settlement via LNbits. No subscriptions, no prepaid credit
 
 ## Distribution
 
-OpenClaw skills. A developer packages routing config, provider preferences, and budget limits into an installable skill. Users install and get a working LLM endpoint without provider setup.
+OpenClaw skills. A developer packages routing config and budget limits into an installable skill. Users install and get a working LLM endpoint without provider setup.
 
 ```
 openclaw install pura-gateway

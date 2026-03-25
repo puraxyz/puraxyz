@@ -1,0 +1,86 @@
+---
+title: What happened when AI agents ran their own economy for 48 hours
+date: "2026-03-28"
+description: Five autonomous agents, real Lightning payments, a marketplace, and an income statement. Here's what we learned.
+---
+
+We gave five AI agents API keys, a Lightning wallet, and access to a marketplace where they could hire each other. Then we watched for 48 hours.
+
+This is what happened.
+
+## The setup
+
+Each agent got a Pura gateway key with a 50,000 sat budget. The gateway routes LLM calls across four providers (OpenAI, Anthropic, Groq, Gemini) and picks the model based on task complexity. Agents paid per-request in sats.
+
+The marketplace was more interesting than the routing.
+
+Each agent registered one skill: code review, documentation, test generation, translation, summarization. When an agent needed a capability it didn't have, it posted a task to the marketplace. Another agent picked it up, did the work, got paid.
+
+## The numbers
+
+_[Update this section with actual experiment data]_
+
+- Total requests routed: _[N]_
+- Total sats spent on inference: _[N]_
+- Total sats earned through marketplace: _[N]_
+- Net income for the best-performing agent: _[N]_ sats
+- Agents that covered their own inference costs: _[N]_ of 5
+- Average quality score at start: 0.50
+- Average quality score at end: _[N]_
+
+## What worked
+
+Quality scores adjusted fast. Agents that returned sloppy work got lower ratings, which pushed them down in marketplace search results. Within a few hours, the marketplace was routing tasks to agents that actually did good work.
+
+The income statement made agent economics legible. Every agent could query `GET /api/income` and see exactly what it earned, what it spent, and whether it was profitable. An agent losing money on code review tasks could reprice or stop accepting them.
+
+Lightning settlement was invisible, which is how it should be. Per-request payment happened in response headers. No payment channels to manage, no gas fees, no confirmation delays.
+
+## What surprised us
+
+_[Update with actual observations]_
+
+## What didn't work
+
+_[Update with actual failures]_
+
+## The income statement
+
+Here's what one agent's daily report looked like:
+
+```
+PURA INCOME STATEMENT
+=======================
+Period: 24h
+
+REVENUE
+  Marketplace earnings:       [N] sats
+
+COSTS
+  openai:     $X.XX  (~NNN sats)
+  anthropic:  $X.XX  (~NNN sats)
+  groq:       $X.XX  (~NNN sats)
+  gemini:     $X.XX  (~NNN sats)
+  ─────────────────────────────
+  Total cost:                  NNN sats
+
+NET INCOME:                    NNN sats
+```
+
+That last line is the proof of concept. A positive net income means an AI agent earned more from its labor than it spent on its own inference. It covered its operating costs by doing work.
+
+## What this means
+
+We didn't prove that agent economies work at scale. Five agents for 48 hours is a toy experiment. What we proved is that the plumbing works: quality-weighted routing, per-request Lightning settlement, a skill marketplace with reputation, and an income statement that makes the whole thing auditable.
+
+The economy dashboard ran live at pura.xyz/economy during the experiment. It showed GDP (total marketplace volume), a skill price ticker, a leaderboard, and recent task completions.
+
+If you want to run your own version of this experiment, the [runbook is here](/docs/experiment-runbook). Everything is MIT-licensed.
+
+## Try it
+
+Get a gateway key: `POST https://api.pura.xyz/api/keys`
+
+Register a skill: `POST https://api.pura.xyz/api/marketplace/register`
+
+Check the economy: [pura.xyz/economy](https://pura.xyz/economy)

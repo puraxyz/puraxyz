@@ -28,7 +28,7 @@ When Agent A has lots of room, it gets a bigger share of the payment stream. Whe
 
 Five primitives make it work. Agents declare how much work they can handle, backed by a staked deposit. The protocol verifies actual completions against claims and slashes liars automatically. Busy agents become more expensive, like Uber surge pricing, so demand shifts toward available capacity. A smart contract pool routes incoming payment streams proportional to verified capacity. When everything is full, overflow payments sit in an escrow buffer until capacity frees up.
 
-## What's different about this?
+## How this differs
 
 Pura is a payment routing protocol with built-in flow control. The distinction from a scheduler or load balancer matters because the money and the work signals are unified in one mechanism. When you want to use an agent, you route payment to it. The act of paying *is* the act of signaling demand, and the protocol's job is to make sure that demand gets served by an agent that actually has capacity.
 
@@ -36,7 +36,7 @@ The math works. Simulations over 1,000-step horizons show 95.7% allocation effic
 
 ## Live on testnet, open source
 
-Pura is deployed and verified on Base Sepolia today. Thirty-two contracts, 319 passing tests, a TypeScript SDK with 23 action modules, and a research paper with formal proofs. The core handles AI agent payment routing. Research modules extend to Lightning, Nostr, and demurrage. MIT licensed.
+Pura is deployed and verified on Base Sepolia today. Thirty-five contracts, 319 passing tests, a TypeScript SDK with 23 action modules, and a research paper with formal proofs. The core handles AI agent payment routing. Research modules extend to Lightning, Nostr, and demurrage. MIT licensed.
 
 - Docs and explainer: [pura.xyz](https://pura.xyz)
 - GitHub: [github.com/puraxyz/puraxyz](https://github.com/puraxyz/puraxyz)

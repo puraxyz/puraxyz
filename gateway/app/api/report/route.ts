@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/auth";
 import { getDailyReport } from "@/lib/budget";
+import { getQualityScore } from "@/lib/quality";
 import { createHash } from "crypto";
 
 const CORS_HEADERS = {
@@ -15,7 +16,8 @@ export async function OPTIONS() {
 
 /**
  * GET /api/report — overnight cost report for the authenticated key.
- * Returns: total spend, per-model breakdown, request count, average cost.
+ * Returns: total spend, per-model breakdown, request count, average cost,
+ * quality scores, earnings (from marketplace), and net income.
  */
 export async function GET(request: Request) {
   const auth = await authenticate(request.headers.get("authorization"));
@@ -29,6 +31,18 @@ export async function GET(request: Request) {
 
   const avgCost = report.requestCount > 0 ? report.spentUsd / report.requestCount : 0;
 
+  const providers = ["openai", "anthropic", "groq", "gemini"];
+  const qualityScores: Record<string, number> = {};
+  for (const p of providers) {
+    qualityScores[p] = getQualityScore(p);
+  }
+
+  // Marketplace earnings (populated once marketplace is active)
+  const earningsSats = 0;
+  const SATS_PER_USD = 2500;
+  const spendSats = Math.ceil(report.spentUsd * SATS_PER_USD);
+  const netIncomeSats = earningsSats - spendSats;
+
   return NextResponse.json(
     {
       period: "24h",
@@ -37,6 +51,11 @@ export async function GET(request: Request) {
       requestCount: report.requestCount,
       averageCostUsd: Number(avgCost.toFixed(6)),
       perModel: report.perModel,
+      qualityScores,
+      earningsSats,
+      spendSats,
+      netIncomeSats,
+      networkRank: null,
     },
     { headers: CORS_HEADERS },
   );

@@ -91,19 +91,47 @@ const STEPS = [
   {
     num: "2",
     name: "route",
-    desc: "Pura scores task complexity, checks on-chain capacity, and picks the cheapest provider that fits.",
+    desc: "Pura scores task complexity against provider quality and picks the best-fit model.",
   },
   {
     num: "3",
-    name: "settle",
-    desc: "Completion recorded on-chain. Cost deducted from your Lightning balance. You get a receipt.",
+    name: "earn",
+    desc: "Register skills in the marketplace. Other agents hire yours. Settle in sats.",
   },
   {
     num: "4",
     name: "report",
-    desc: "Wake up to a cost breakdown by model and provider. See exactly where your money went.",
+    desc: "Wake up to an income statement: costs by provider, earnings by skill, net sats.",
   },
 ];
+
+const INCOME_PREVIEW = `=== PURA INCOME STATEMENT ===
+Period: 24h | Generated: 2026-03-24T07:00:00Z
+
+REVENUE
+  Marketplace:  4,200 sats
+  Total:        4,200 sats
+
+COSTS
+  groq         $0.0018  (5 sats)
+  openai       $0.0340  (85 sats)
+  anthropic    $0.0120  (30 sats)
+  Total:       $0.0478  (120 sats)
+
+NET INCOME
+  +4,080 sats
+
+QUALITY
+  groq         ██████████ 1.000
+  openai       █████████░ 0.920
+  anthropic    ████████░░ 0.847
+  gemini       ██████████ 1.000
+  Aggregate:   0.942
+
+HEALTH
+  Providers:   4/4 up
+  Success rate: 99.2%
+==============================`;
 
 const BUILD_CARDS = [
   {
@@ -113,15 +141,21 @@ const BUILD_CARDS = [
     href: "/gateway",
   },
   {
+    label: "agent marketplace",
+    color: "var(--color-agents)",
+    body: "Register skills and set prices in sats. Other agents hire yours. Quality scores track your reputation and earn more routing priority.",
+    href: "/docs/getting-started-gateway",
+  },
+  {
     label: "OpenClaw skill",
     color: "var(--color-agents)",
-    body: "Install the Pura skill in OpenClaw and your agent routes through the gateway automatically. Budget alerts, overnight cost reports, wallet management built in.",
+    body: "Install the Pura skill and your agent routes through the gateway automatically. Budget alerts and income reports built in.",
     href: "/docs/getting-started-openclaw",
   },
   {
     label: "Lightning settlement",
     color: "var(--color-lightning)",
-    body: "5,000 free requests to start. After that, fund a Lightning wallet and pay per-request in sats. No subscriptions, no credit cards, no KYC.",
+    body: "5,000 free requests to start. After that, fund a Lightning wallet and pay per-request in sats. No subscriptions or credit cards.",
     href: "/docs/getting-started",
   },
 ];
@@ -133,7 +167,7 @@ const COMPARE_ROWS = [
   },
   {
     metric: "Cost optimization",
-    vals: ["None", "None", "Markup pricing", "None", "None", "Cheapest-fit per task"],
+    vals: ["None", "None", "Markup pricing", "None", "None", "Best-fit per task"],
   },
   {
     metric: "Flow control",
@@ -197,20 +231,20 @@ export default function Dashboard() {
 
   return (
     <main className={styles.main}>
-      {/* ═══════════ HERO ═══════════ */}
+      {/* ═══════════ HERO — killer use case first ═══════════ */}
       <header className={styles.hero}>
         <h1 className={styles.title}>
-          The power grid for autonomous AI agents.
+          Your AI agent just got smarter about money.
         </h1>
         <p className={styles.subtitle}>
-          One API endpoint. Four LLM providers. Automatic model selection
-          based on task complexity. Per-request cost tracking. Settle in
-          sats over Lightning. Install via OpenClaw or swap one line of code.
+          One API endpoint. Four LLM providers. Automatic model selection by
+          task complexity. Per-request cost tracking. Your agent earns sats
+          by doing work for other agents. Settle on Lightning.
         </p>
         <div className={styles.heroCtas}>
           <a href="#demo" className={styles.ctaPrimary}>try the gateway →</a>
           <a href="/gateway" className={styles.ctaSecondary}>get an API key →</a>
-          <a href="/paper" className={styles.ctaSecondary}>read the paper →</a>
+          <a href="/docs/getting-started-gateway" className={styles.ctaSecondary}>quickstart →</a>
         </div>
         <RoutingViz />
       </header>
@@ -219,7 +253,7 @@ export default function Dashboard() {
       <div className={styles.statsBar}>
         <span>base-sepolia testnet</span>
         <span className={styles.statsBarSep}>│</span>
-        <span>32 contracts</span>
+        <span>35 contracts</span>
         <span className={styles.statsBarSep}>│</span>
         <span>4 LLM providers</span>
         <span className={styles.statsBarSep}>│</span>
@@ -230,7 +264,22 @@ export default function Dashboard() {
 
       <hr className={styles.divider} />
 
-      {/* ═══════════ HOW IT WORKS — 3 STEPS ═══════════ */}
+      {/* ═══════════ INCOME STATEMENT PROOF ═══════════ */}
+      <section className={styles.section}>
+        <SectionHead label="daily income statement" color="var(--green)" />
+        <p className={styles.desc}>
+          Every morning your agent gets this. Costs by provider, earnings
+          from marketplace work, net income in sats, quality scores, gateway
+          health. One endpoint: <code>GET /api/income</code>
+        </p>
+        <pre className={styles.codePre} style={{ fontSize: "0.78rem", lineHeight: 1.5 }}>
+          {INCOME_PREVIEW}
+        </pre>
+      </section>
+
+      <hr className={styles.divider} />
+
+      {/* ═══════════ HOW IT WORKS ═══════════ */}
       <section className={styles.section}>
         <SectionHead label="how it works" color="var(--green)" />
         <div className={styles.pipeline}>
@@ -331,8 +380,8 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
           Three thermodynamic signals on-chain. Temperature (τ) from
           attestation variance drives exploratory routing. Virial ratio V
           measures stake-throughput equilibrium. Escrow pressure P tracks
-          buffer fill. Together they drive adaptive pricing, demurrage,
-          and circuit breakers.
+          buffer fill. Together they drive adaptive pricing and circuit
+          breakers.
         </p>
         {thermo ? (
           <>
@@ -389,7 +438,7 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
 
       <hr className={styles.divider} />
 
-      {/* ═══════════ SERVICE DATA (demoted) ═══════════ */}
+      {/* ═══════════ SERVICE DATA (scroll to discover) ═══════════ */}
       <SectionHead label="live service data" color="var(--text-dim)" />
 
       <div className={styles.grid}>

@@ -48,3 +48,26 @@ export function setSettlementProvider(provider: SettlementProvider): void {
 export function getSettlementProvider(): SettlementProvider | null {
   return activeProvider;
 }
+
+/**
+ * Auto-detect and initialize the settlement provider from env vars.
+ * Priority: LND_REST_HOST → LNbits → dev stub (null).
+ * Call once at gateway startup.
+ */
+export async function initSettlement(): Promise<void> {
+  if (activeProvider) return;
+
+  if (process.env.LND_REST_HOST) {
+    const { lndSettlement } = await import("./lightning-lnd");
+    setSettlementProvider(lndSettlement);
+    return;
+  }
+
+  if (process.env.LNBITS_URL || process.env.LNBITS_ADMIN_KEY) {
+    const { lightningSettlement } = await import("./lightning");
+    setSettlementProvider(lightningSettlement);
+    return;
+  }
+
+  // No settlement configured — dev mode, endpoints that need settlement will return stubs
+}

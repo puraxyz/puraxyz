@@ -70,7 +70,7 @@ The system has two layers: the gateway (the product) and the on-chain contracts 
          └─────────────────────────────┘
 ```
 
-The gateway scores each request for complexity (cheap/mid/premium), routes to the cheapest capable provider, streams the response, deducts cost from the user's Lightning-funded balance, and records the completion on-chain.
+The gateway scores each request for complexity (cheap/mid/premium), routes to the best-fit provider, streams the response, deducts cost from the user's Lightning-funded balance, and records the completion on-chain.
 
 ---
 

@@ -2,14 +2,14 @@
 
 ## Where things stand
 
-The codebase has 32 contracts (319 tests), a streaming LLM gateway with three providers (OpenAI, Anthropic, Groq), an SDK with 23 action modules, and a full documentation site. Everything compiles and passes. What's left is operational: deploy, verify, publish, and push the word out.
+The codebase has 35 contracts (319 tests), a streaming LLM gateway with four providers (OpenAI, Anthropic, Groq, Gemini), an SDK with 23 action modules, and a full documentation site. Everything compiles and passes. What's left is operational: deploy, verify, publish, and push the word out.
 
 ### What's done (code)
 
 - `contracts/script/DeployMainnet.s.sol` — deploys 12 contracts (core 8 + demurrage 2 + relay 2) to Base mainnet using real USDC
 - Gateway hardened: Upstash KV key storage (JSON fallback for local dev), Redis-backed rate limiting, Groq as third provider, token estimation, structured JSON logging
 - SDK relay actions exported, reference integration script at `sdk/scripts/relay-register.ts`
-- Grant applications updated with current numbers (32 contracts, 319 tests, 23 modules)
+- Grant applications updated with current numbers (35 contracts, 319 tests, 23 modules)
 
 ### What's left (operations)
 
@@ -150,4 +150,118 @@ Gateway and pura.xyz deploy in parallel. GTM starts as soon as the e2e proof wor
 
 Included: everything needed to make a live, usable system on Base mainnet that anyone can interact with, plus GTM to get people to do so.
 
-Excluded: thermodynamic layer (v0.2), V2 composition contracts, OpenClaw integration (pending partnership), Lightning contracts (separate phase).
+Excluded: thermodynamic layer (v0.2), V2 composition contracts, Lightning contracts (separate phase).
+
+---
+
+## 10. Pura-1 agent setup (human-only)
+
+Everything below requires credentials, accounts, or manual interaction.
+
+### OpenClaw install
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+openclaw onboard --install-daemon
+```
+
+During onboard, choose Anthropic claude-opus-4-6 as primary model.
+
+### Telegram bot
+
+Create a bot via @BotFather. Save the token. Add it to OpenClaw config:
+
+```bash
+# In ~/.openclaw/openclaw.json, set:
+# channels.telegram.botToken = "<your-bot-token>"
+```
+
+### Agent workspace
+
+```bash
+# Point OpenClaw at the Pura monorepo
+# In ~/.openclaw/openclaw.json, set:
+# agents.defaults.workspace = "/path/to/synthesi"
+
+# Copy the prepared directive and skill
+cp openclaw-skill/AGENTS.md ~/.openclaw/workspace/AGENTS.md
+cp -r openclaw-skill/ ~/.openclaw/workspace/skills/pura/
+
+# Set up Git identity for the agent
+cd ~/.openclaw/workspace
+git config user.name "pura-1-agent"
+git config user.email "pura-1@pura.xyz"
+```
+
+### Generate API key
+
+```bash
+# Generate a Pura gateway key for the agent
+curl -s -X POST https://api.pura.xyz/api/keys \
+  -H "Content-Type: application/json" \
+  -d '{"label":"pura-1"}'
+
+# Set the returned key in OpenClaw env
+# PURA_API_KEY=pura_...
+```
+
+### Lightning wallet
+
+Option A — LNbits:
+```bash
+# Create wallet at your LNbits instance
+# Set in gateway env:
+# LNBITS_URL=https://your-lnbits.com
+# LNBITS_ADMIN_KEY=<admin-key>
+```
+
+Option B — LND:
+```bash
+# Set in gateway env:
+# LND_REST_HOST=https://your-lnd:8080
+# LND_MACAROON_HEX=<hex-encoded-admin-macaroon>
+```
+
+Fund the wallet with ~50,000 sats via `POST /api/wallet/fund`.
+
+### ClawHub publishing
+
+```bash
+cd openclaw-skill
+openclaw skills publish pura
+# Or via clawhub CLI:
+npm install -g clawhub
+clawhub sync
+```
+
+Verify the skill appears on clawhub.com and is installable via `openclaw skills install pura`.
+
+### OpenClaw cron
+
+Configure periodic tasks in OpenClaw:
+
+| Schedule | Task |
+|----------|------|
+| Every 15 min | Health check (test request through gateway) |
+| Daily 7am | Send income statement to Telegram |
+| Nightly | QA pass (review routing decisions, spot patterns) |
+| Weekly Sunday evening | Write WEEKLY-REVIEW.md |
+
+### Verify
+
+```bash
+# Telegram bot should respond
+# Health check should pass
+openclaw status
+# Should show pura-1 agent running with skill registered
+```
+
+## 11. Run the 48-hour experiment
+
+Follow `gtm/experiment-runbook.md`. Requires 5 funded API keys and the economy dashboard live at pura.xyz/economy.
+
+After the experiment:
+- Fill in placeholder data in `pura/content/blog/first-agent-economy.mdx`
+- Post X thread narrating results
+- DM steipete with the income statement screenshot
+- Submit Show HN with live dashboard link

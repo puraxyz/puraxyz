@@ -1,6 +1,6 @@
 # Pura Smart Contracts
 
-**22 Solidity contracts across 5 domains + platform layer, deployed on Base Sepolia**
+**35 Solidity contracts across 5 domains + platform layer, deployed on Base Sepolia**
 
 ## Domains
 
@@ -51,7 +51,7 @@
 ```bash
 forge install       # install dependencies
 forge build         # compile all contracts
-forge test          # 125 tests, all passing
+forge test          # 319 tests, all passing
 forge test -vvv     # verbose output with traces
 ```
 

@@ -1,10 +1,10 @@
 ---
 title: "Get started: gateway"
-order: -0.9
+order: -1.9
 description: Route LLM inference through Pura with automatic model selection and cost tracking
 ---
 
-The Pura gateway is an OpenAI-compatible API that routes across four LLM providers (OpenAI, Anthropic, Groq, Gemini). It picks the cheapest model that fits your task and tracks per-request costs.
+The Pura gateway is an OpenAI-compatible API that routes across four LLM providers (OpenAI, Anthropic, Groq, Gemini). It picks the best model for your task and tracks per-request costs.
 
 ## Get an API key
 
@@ -25,7 +25,7 @@ curl https://api.pura.xyz/api/chat \
   -d '{"messages":[{"role":"user","content":"Hello"}]}'
 ```
 
-Pura picks the model automatically. Simple questions go to Groq or Gemini (cheapest). Complex reasoning goes to Anthropic or OpenAI.
+Pura picks the model automatically. Simple questions go to Groq or Gemini (fastest, cheapest). Complex reasoning goes to Anthropic or OpenAI (highest quality).
 
 ## Use with the OpenAI SDK
 
@@ -54,6 +54,8 @@ Every response includes routing metadata:
 | `X-Pura-Cost` | Estimated cost in USD |
 | `X-Pura-Tier` | Complexity tier (cheap / mid / premium) |
 | `X-Pura-Budget-Remaining` | Daily budget left |
+| `X-Pura-Quality` | Quality bias applied (if routing.quality was set) |
+| `X-Pura-Explored` | Whether the router explored a non-preferred provider |
 
 ## How routing works
 
@@ -63,7 +65,20 @@ Each request gets scored on complexity:
 - **mid** — Moderate length, some code, multi-turn conversations. Routes to OpenAI (gpt-4o) or Gemini.
 - **premium** — Long system prompts, code-heavy, reasoning triggers like "analyze" or "debug". Routes to Anthropic (claude-sonnet-4-20250514) or OpenAI.
 
-On-chain capacity weights (GDA pool units on Base Sepolia) break ties between providers in the same tier.
+On-chain capacity weights (GDA pool units on Base Sepolia) break ties between providers in the same tier. Quality scores from recent success rates and latency further weight the selection.
+
+## Routing hints
+
+Pass a `routing` object to influence provider selection without forcing a specific model:
+
+```bash
+curl https://api.pura.xyz/api/chat \
+  -H "Authorization: Bearer $PURA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"Analyze this code"}],"routing":{"quality":"high"}}'
+```
+
+`quality: "high"` bumps the tier up — a mid-complexity task gets routed to premium-tier models. `quality: "low"` does the reverse, pushing toward cheaper models. `prefer: "anthropic"` soft-boosts a provider's selection weight without locking to it.
 
 ## Force a specific model
 

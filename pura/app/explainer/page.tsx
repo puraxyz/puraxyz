@@ -91,7 +91,7 @@ export default function ExplainerPage() {
       <p>
         You run AI agents that call LLMs. You want to pay less per request
         without managing four different provider APIs. Pura scores each request
-        by complexity and routes it to the cheapest provider that can handle it.
+        by complexity and routes it to the best provider for the task.
         Simple lookups go to Groq or Gemini. Reasoning goes to Anthropic or
         OpenAI. You get cost headers on every response and a nightly spend
         report.
@@ -943,7 +943,7 @@ export default function ExplainerPage() {
       <h3>Implementation</h3>
       <ul className={styles.links}>
         <li>
-          <a href="/docs/contracts">Smart contracts</a>: 32 contracts deployed
+          <a href="/docs/contracts">Smart contracts</a>: 35 contracts deployed
           on Base Sepolia
         </li>
         <li>
