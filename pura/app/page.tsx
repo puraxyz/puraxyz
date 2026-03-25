@@ -87,7 +87,7 @@ function SectionHead({
 /* ── Hero diagram data ── */
 
 const HERO_NODES: DiagramNode[] = [
-  { id: "agent",    label: "Your Agent",    x: 0.0,  y: 0.45, color: "#22d3ee", shape: "pill" },
+  { id: "agent",    label: "Your Agent",    x: 0.10, y: 0.45, color: "#22d3ee", shape: "pill" },
   { id: "gateway",  label: "Pura\nGateway",  x: 0.30, y: 0.45, color: "#f97316", shape: "rect" },
   { id: "openai",   label: "OpenAI",        x: 0.60, y: 0.0,  color: "#4ade80", shape: "rect" },
   { id: "anthropic", label: "Anthropic",    x: 0.60, y: 0.30, color: "#a78bfa", shape: "rect" },
@@ -109,7 +109,7 @@ const HERO_EDGES: DiagramEdge[] = [
 ];
 
 const HERO_GROUPS: DiagramGroup[] = [
-  { id: "providers", label: "LLM PROVIDERS", x: 0.55, y: 0.0, w: 0.15, h: 0.90, color: "#808090" },
+  { id: "providers", label: "LLM PROVIDERS", x: 0.49, y: 0.0, w: 0.24, h: 0.90, color: "#808090" },
 ];
 
 const STEPS = [

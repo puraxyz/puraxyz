@@ -285,14 +285,14 @@ export default function AnimatedDiagram({
       ctx.stroke();
       ctx.restore();
 
-      // Label (unrotated)
+      // Label (unrotated, shifted up so particles pass below)
       ctx.globalAlpha = 0.85;
       ctx.font = "500 9px var(--font-mono, monospace)";
       ctx.fillStyle = "#e4e4e7";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       for (let i = 0; i < lines.length; i++) {
-        ctx.fillText(lines[i], px, py + (i - (lines.length - 1) / 2) * 12);
+        ctx.fillText(lines[i], px, py - 7 + (i - (lines.length - 1) / 2) * 12);
       }
       ctx.globalAlpha = 1;
       return;
@@ -315,21 +315,21 @@ export default function AnimatedDiagram({
     roundRect(ctx, x0, y0, w, h, r);
     ctx.stroke();
 
-    // Dot
+    // Dot (shifted up with label so particles pass below)
     ctx.globalAlpha = 0.7;
     ctx.beginPath();
-    ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+    ctx.arc(px, py - 7, 2.5, 0, Math.PI * 2);
     ctx.fillStyle = color;
     ctx.fill();
 
-    // Label
+    // Label (shifted up so particles pass below)
     ctx.globalAlpha = 0.85;
     ctx.font = "500 9px var(--font-mono, monospace)";
     ctx.fillStyle = "#e4e4e7";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     for (let i = 0; i < lines.length; i++) {
-      ctx.fillText(lines[i], px, py + (i - (lines.length - 1) / 2) * 12);
+      ctx.fillText(lines[i], px, py - 7 + (i - (lines.length - 1) / 2) * 12);
     }
     ctx.globalAlpha = 1;
   }
