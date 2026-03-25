@@ -2,7 +2,7 @@
 
 ## 0.3.0 — June 2026
 
-DVM adapters, settlement rails, shadow mode sidecar, monitor dashboard, benchmark UI, and protocol documentation.
+DVM adapters, settlement rails, shadow mode sidecar, monitor dashboard, benchmark UI, and protocol documentation
 
 ### DVM adapter contracts
 
