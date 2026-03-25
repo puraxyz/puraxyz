@@ -69,7 +69,7 @@ interface InternalState {
 
 const NODE_W = 120;
 const NODE_H = 40;
-const PAD = 40;
+const PAD = 80;
 
 /** Point on a node's border where a ray toward (tx, ty) exits. */
 function borderPt(n: ResolvedNode, tx: number, ty: number): [number, number] {
