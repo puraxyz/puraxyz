@@ -6,11 +6,11 @@ description: Implications, limitations, future work
 
 #### Contributions beyond the base protocol.
 
-This work extends the original backpressure allocation mechanism in three directions: (i) a dynamic pricing layer (Dynamic Pricing) that creates economic backpressure via EIP-1559-style fee adjustment; (ii) an off-chain attestation protocol (Off-Chain Attestation) that reduces capacity update gas by 83.5% while preserving EWMA smoothing guarantees; and (iii) a completion tracking system with dual-signed receipts that enables automatic slashing of under-performing sinks. Together, these transform BPE from a fixed-rate distributor to a market-driven mechanism with verifiable quality of service.
+This work extends the original backpressure allocation mechanism in four directions: (i) a dynamic pricing layer (Dynamic Pricing) that creates economic backpressure via EIP-1559-style fee adjustment; (ii) an off-chain attestation protocol (Off-Chain Attestation) that reduces capacity update gas by 83.5% while preserving EWMA smoothing guarantees; (iii) a completion tracking system with dual-signed receipts that enables automatic slashing of under-performing sinks; and (iv) a thermodynamic layer (Thermodynamic Extensions) that introduces temperature-driven Boltzmann routing, virial-ratio capital equilibrium, adaptive demurrage, osmotic escrow pressure, and circuit-breaker phase transitions. Together, these transform BPE from a fixed-rate distributor to a market-driven mechanism with verifiable quality of service and self-regulating macroeconomic feedback loops.
 
 #### Limitations.
 
-BPE assumes capacity is *verifiable*, that over-reporting can be detected and penalized. The completion tracker (Security Analysis) addresses this for task completions, but does not cover quality of output. Future work could integrate TEE attestation or ZK proofs of computation to provide stronger verification guarantees.
+BPE assumes capacity is *verifiable*, that over-reporting can be detected and penalized. The completion tracker (Security Analysis) addresses this for task completions, but does not cover quality of output. Catalini et al. (Catalini et al., 2026) formalize this gap as the measurability parameter $m$: completion tracking operates in the high-$m$ regime where output existence is binary, but output *quality* sits in a lower-$m$ regime where verification costs $c_H$ are structurally higher. Extending BPE's verification to these low-$m$ tasks is the primary open problem. Future work could integrate TEE attestation or ZK proofs of computation to provide stronger verification guarantees.
 
 On-chain EWMA computation and pool unit updates incur gas costs that scale linearly with the number of sinks per task type. At 50 sinks, rebalance costs are viable on Base L2; at 1000+, batched or off-chain computation with on-chain verification (e.g., via ZK proofs) may be necessary.
 
@@ -28,4 +28,4 @@ The EWMA smoothing and backpressure feedback loop bear structural similarity to 
 
 #### Backpressure-demurrage composability.
 
-BPE (flow-based allocation) and demurrage (stock-based velocity) are orthogonal. A token with both mechanisms would simultaneously incentivize spending velocity (demurrage) and efficient allocation of resulting flows (BPE).
+BPE (flow-based allocation) and demurrage (stock-based velocity) are orthogonal. The `DemurrageToken` with `adaptiveDecayEnabled` composes both mechanisms: demurrage incentivizes spending velocity while BPE routes the resulting flows. The virial ratio $V$ closes the loop between these two regimes, adjusting the decay rate based on the throughput-to-capital balance (Thermodynamic Extensions).

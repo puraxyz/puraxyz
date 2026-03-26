@@ -87,3 +87,7 @@ Sinks running inside a TEE (e.g., Intel SGX, ARM TrustZone) can produce hardware
 For deterministic ML inference tasks, recent advances in zero-knowledge machine learning (zkML) allow sinks to generate succinct proofs that a specific model produced a specific output. Integrating ZK-ML verification would upgrade the completion tracking from *statistical* (probabilistic detection over epochs) to *cryptographic* (per-task deterministic verification), at the cost of higher sink-side computation.
 
 Both extensions are backward-compatible: the `CompletionTracker` contract can be wrapped by a verifier contract that gates `recordCompletion` on additional cryptographic evidence, without modifying the epoch accounting or auto-slash logic.
+
+#### Connection to verification economics.
+
+In the framework of Catalini et al. (Catalini et al., 2026), the statistical detection mechanism described above operates squarely in the high-$m$ regime: task completion is binary and cheaply verifiable on-chain, so $c_H$ is low. The TEE and ZK-ML extensions push the protocol toward lower-$m$ domains where output *correctness*, not just output *existence*, must be certified. For tasks where $m$ is too low for any on-chain verification to be credible, the `verificationBudgetBps` parameter (set per pool via `EconomyFactory`) reserves a fraction of the payment stream for off-chain human or hybrid review, keeping the protocol honest about the limits of automated verification.
