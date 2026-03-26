@@ -4,6 +4,8 @@
  * The gateway IS the monitoring system — every routed request feeds these counters.
  */
 
+import { getRedisUrl, getRedisToken } from "./redis-config";
+
 import type { Provider } from "./providers";
 
 interface Bucket {
@@ -73,16 +75,16 @@ export function recordRequest(provider: Provider | string, latencyMs: number, su
   }
 
   // Also persist to Redis if available
-  if (process.env.UPSTASH_REDIS_REST_URL) {
+  if (getRedisUrl()) {
     persistToRedis(provider, m).catch(() => {});
   }
 }
 
 async function persistToRedis(provider: string, metrics: ProviderMetrics): Promise<void> {
-  await fetch(`${process.env.UPSTASH_REDIS_REST_URL}`, {
+  await fetch(`${getRedisUrl()}`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      Authorization: `Bearer ${getRedisToken()}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(["SET", `pura:metrics:${provider}`, JSON.stringify(metrics), "EX", "90000"]),

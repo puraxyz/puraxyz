@@ -1,16 +1,14 @@
 /**
  * Sliding-window rate limiter.
- * Uses Upstash Redis when UPSTASH_REDIS_REST_URL is set, otherwise in-memory.
+ * Uses Upstash Redis when configured, otherwise in-memory.
  */
+
+import { useRedis, getRedisUrl, getRedisToken } from "./redis-config";
 
 const WINDOW_MS = 60_000; // 1 minute
 const MAX_REQUESTS = 30; // per window per key
 
 // ─── Upstash backend ───
-
-function useRedis(): boolean {
-  return !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
-}
 
 async function redisRateCheck(keyHash: string): Promise<{
   allowed: boolean;
@@ -20,12 +18,10 @@ async function redisRateCheck(keyHash: string): Promise<{
   const now = Date.now();
   const windowKey = `pura:rl:${keyHash}`;
 
-  // Use Redis MULTI: ZADD (current timestamp), ZREMRANGEBYSCORE (prune old),
-  // ZCARD (count), all via pipeline.
-  const res = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/pipeline`, {
+  const res = await fetch(`${getRedisUrl()}/pipeline`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      Authorization: `Bearer ${getRedisToken()}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify([

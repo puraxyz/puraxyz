@@ -5,6 +5,7 @@
  */
 
 import type { SettlementProvider, Invoice, BalanceInfo } from "./settlement";
+import { useRedis, getRedisUrl, getRedisToken } from "./redis-config";
 
 const LND_REST_HOST = process.env.LND_REST_HOST ?? "";
 const LND_MACAROON_HEX = process.env.LND_MACAROON_HEX ?? "";
@@ -15,23 +16,21 @@ const AVG_COST_SATS = Math.ceil(0.003 * SATS_PER_USD);
 // In-memory balance store (same pattern as lightning.ts)
 const balances = new Map<string, number>();
 
-function useRedis(): boolean {
-  return !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
-}
+// useRedis, getRedisUrl, getRedisToken imported from redis-config
 
 async function redisGet(key: string): Promise<string | null> {
-  const res = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`, {
-    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` },
+  const res = await fetch(`${getRedisUrl()}/get/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${getRedisToken()}` },
   });
   const data = (await res.json()) as { result: string | null };
   return data.result;
 }
 
 async function redisSet(key: string, value: string): Promise<void> {
-  await fetch(`${process.env.UPSTASH_REDIS_REST_URL}`, {
+  await fetch(`${getRedisUrl()}`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      Authorization: `Bearer ${getRedisToken()}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(["SET", key, value]),

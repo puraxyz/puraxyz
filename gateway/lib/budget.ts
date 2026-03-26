@@ -5,6 +5,7 @@
  */
 
 import type { Provider } from "./providers";
+import { useRedis, getRedisUrl, getRedisToken } from "./redis-config";
 
 // Approximate cost per 1K tokens by provider (USD)
 const COST_PER_1K: Record<string, number> = {
@@ -31,13 +32,11 @@ function todayWindow(): number {
   return Math.floor(Date.now() / DAY_MS) * DAY_MS;
 }
 
-function useRedis(): boolean {
-  return !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
-}
+// useRedis, getRedisUrl, getRedisToken imported from redis-config
 
 async function redisGet(key: string): Promise<string | null> {
-  const res = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`, {
-    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` },
+  const res = await fetch(`${getRedisUrl()}/get/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${getRedisToken()}` },
   });
   const data = (await res.json()) as { result: string | null };
   return data.result;
@@ -45,10 +44,10 @@ async function redisGet(key: string): Promise<string | null> {
 
 async function redisSet(key: string, value: string, exSeconds?: number): Promise<void> {
   const cmd = exSeconds ? ["SET", key, value, "EX", String(exSeconds)] : ["SET", key, value];
-  await fetch(`${process.env.UPSTASH_REDIS_REST_URL}`, {
+  await fetch(`${getRedisUrl()}`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      Authorization: `Bearer ${getRedisToken()}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(cmd),

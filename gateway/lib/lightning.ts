@@ -4,6 +4,7 @@
  */
 
 import type { SettlementProvider, Invoice, BalanceInfo } from "./settlement";
+import { useRedis, getRedisUrl, getRedisToken } from "./redis-config";
 
 const LNBITS_URL = process.env.LNBITS_URL ?? "https://legend.lnbits.com";
 const LNBITS_ADMIN_KEY = process.env.LNBITS_ADMIN_KEY ?? "";
@@ -14,23 +15,21 @@ const SATS_PER_USD = 2500; // ~$40k/BTC
 // In-memory balance store (Redis in production)
 const balances = new Map<string, number>();
 
-function useRedis(): boolean {
-  return !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
-}
+// useRedis, getRedisUrl, getRedisToken imported from redis-config
 
 async function redisGet(key: string): Promise<string | null> {
-  const res = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`, {
-    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` },
+  const res = await fetch(`${getRedisUrl()}/get/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${getRedisToken()}` },
   });
   const data = (await res.json()) as { result: string | null };
   return data.result;
 }
 
 async function redisSet(key: string, value: string): Promise<void> {
-  await fetch(`${process.env.UPSTASH_REDIS_REST_URL}`, {
+  await fetch(`${getRedisUrl()}`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      Authorization: `Bearer ${getRedisToken()}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(["SET", key, value]),

@@ -25,25 +25,23 @@ function hashKey(raw: string): string {
 }
 
 // ─── Storage backend selection ───
-// Uses Upstash Redis when UPSTASH_REDIS_REST_URL is set, otherwise JSON file.
+// Uses Upstash Redis when configured, otherwise JSON file.
 
-function useRedis(): boolean {
-  return !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
-}
+import { useRedis, getRedisUrl, getRedisToken } from "./redis-config";
 
 async function redisGet(key: string): Promise<string | null> {
-  const res = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`, {
-    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` },
+  const res = await fetch(`${getRedisUrl()}/get/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${getRedisToken()}` },
   });
   const data = await res.json() as { result: string | null };
   return data.result;
 }
 
 async function redisSet(key: string, value: string): Promise<void> {
-  await fetch(`${process.env.UPSTASH_REDIS_REST_URL}`, {
+  await fetch(`${getRedisUrl()}`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      Authorization: `Bearer ${getRedisToken()}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(["SET", key, value]),
@@ -51,10 +49,10 @@ async function redisSet(key: string, value: string): Promise<void> {
 }
 
 async function redisSMembers(key: string): Promise<string[]> {
-  const res = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}`, {
+  const res = await fetch(`${getRedisUrl()}`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      Authorization: `Bearer ${getRedisToken()}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(["SMEMBERS", key]),
@@ -64,10 +62,10 @@ async function redisSMembers(key: string): Promise<string[]> {
 }
 
 async function redisSAdd(key: string, member: string): Promise<void> {
-  await fetch(`${process.env.UPSTASH_REDIS_REST_URL}`, {
+  await fetch(`${getRedisUrl()}`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      Authorization: `Bearer ${getRedisToken()}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(["SADD", key, member]),
