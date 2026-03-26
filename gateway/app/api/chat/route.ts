@@ -43,12 +43,37 @@ export async function POST(request: Request) {
     );
   }
   if (auth.walletRequired) {
+    // Generate a funding invoice so the user can pay immediately
+    const { getOrInitSettlement } = await import("@/lib/settlement");
+    const settlement = await getOrInitSettlement();
+    let fundingInvoice = null;
+
+    if (settlement) {
+      try {
+        const keyHash = createHash("sha256")
+          .update(request.headers.get("authorization")!.slice(7))
+          .digest("hex");
+        const invoice = await settlement.createInvoice(keyHash, 10_000, "Pura gateway funding");
+        fundingInvoice = {
+          paymentRequest: invoice.paymentRequest,
+          amount: invoice.amount,
+          expiresAt: invoice.expiresAt,
+          rail: settlement.name,
+        };
+      } catch {
+        // Invoice generation failed — still return 402 without invoice
+      }
+    }
+
     return NextResponse.json(
       {
         error: {
-          message: auth.error,
-          type: "wallet_required",
+          message: `Free tier exhausted (5,000 requests). Fund your account to continue.`,
+          type: "payment_required",
           code: "free_tier_exceeded",
+          funding: fundingInvoice,
+          fundUrl: "https://api.pura.xyz/api/wallet/fund",
+          docs: "https://pura.xyz/docs/getting-started",
         },
       },
       { status: 402, headers: CORS_HEADERS },

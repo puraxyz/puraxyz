@@ -25,13 +25,15 @@ export async function authenticate(authHeader: string | null): Promise<AuthResul
     return { valid: false, record: null, walletRequired: false, error: "Invalid API key" };
   }
 
-  // Check if wallet is required (past free tier with no wallet linked)
+  // Past free tier — check if they have Lightning balance or a linked wallet
   if (record.requests >= FREE_TIER_LIMIT && !record.wallet) {
+    // TODO: also check Lightning balance via settlement provider
+    // For now, the 402 response includes a funding invoice
     return {
       valid: true,
       record,
       walletRequired: true,
-      error: `Free tier exhausted (${FREE_TIER_LIMIT} requests). Link a wallet to continue.`,
+      error: `Free tier exhausted (${FREE_TIER_LIMIT} requests). Fund your account to continue.`,
     };
   }
 
