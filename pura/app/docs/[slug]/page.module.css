@@ -64,11 +64,24 @@
   font-size: 0.9rem;
 }
 
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.tableWrap table {
+  margin: 0;
+  min-width: 100%;
+}
+
 .article th,
 .article td {
   text-align: left;
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  overflow-wrap: anywhere;
 }
 
 .article th {
@@ -79,6 +92,13 @@
 
 .article pre {
   margin: 1.5rem 0;
+}
+
+.article td a,
+.article th a,
+.article li a,
+.article p a {
+  overflow-wrap: anywhere;
 }
 
 .article :not(pre) > code,

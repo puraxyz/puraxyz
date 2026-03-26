@@ -77,9 +77,28 @@ export default function ExplainerPage() {
         How Pura Works
       </h1>
       <p className={styles.subtitle}>
-        Pick your use case below, then scroll down for the full protocol
-        mechanics. No math degree required.
+        Pura is a backpressure-routing protocol for machine-to-machine work. It measures spare capacity, prices congestion, and routes requests and payments toward nodes that can still do the job.
       </p>
+      <p className={styles.summary}>
+        The hosted product today is the gateway at <code>api.pura.xyz</code> and the docs around it. The contracts, SDK, simulation, and protocol drafts are the open-source building blocks for the broader network.
+      </p>
+
+      <div className={styles.introGrid}>
+        <section className={styles.introCard}>
+          <p className={styles.introLabel}>Hosted now</p>
+          <p>
+            Use the live gateway, provider monitor, Lightning invoice flow, and onboarding docs if you want the thing that works today.
+          </p>
+          <p><a href="/gateway">Gateway quick start →</a></p>
+        </section>
+        <section className={styles.introCard}>
+          <p className={styles.introLabel}>Open source / protocol</p>
+          <p>
+            Read the paper, inspect the contracts and SDK, or work from the repository directly if you want the underlying protocol machinery.
+          </p>
+          <p><a href="https://github.com/puraxyz/puraxyz">GitHub repository →</a></p>
+        </section>
+      </div>
 
       <hr />
 
@@ -920,7 +939,20 @@ export default function ExplainerPage() {
 
       <h2 id="deeper">Go deeper</h2>
 
-      <h3>Academic</h3>
+      <h3>Hosted surfaces</h3>
+      <ul className={styles.links}>
+        <li>
+          <a href="/gateway">Gateway</a>: live hosted product at api.pura.xyz
+        </li>
+        <li>
+          <a href="/docs/getting-started-gateway">Gateway guide</a>: streaming, funding, balance, and cost headers
+        </li>
+        <li>
+          <a href="/monitor/providers">Provider monitor</a>: live gateway routing and health view
+        </li>
+      </ul>
+
+      <h3>Research and protocol</h3>
       <ul className={styles.links}>
         <li>
           <a href="https://pura.xyz/paper">Research paper</a>: formal model,
@@ -940,7 +972,7 @@ export default function ExplainerPage() {
         </li>
       </ul>
 
-      <h3>Implementation</h3>
+      <h3>Source artifacts</h3>
       <ul className={styles.links}>
         <li>
           <a href="/docs/contracts">Smart contracts</a>: 35 contracts deployed
@@ -954,10 +986,6 @@ export default function ExplainerPage() {
           <a href="/docs/simulation">Simulation</a>: Python simulation showing
           95.7% allocation efficiency
         </li>
-      </ul>
-
-      <h3>Domain-specific</h3>
-      <ul className={styles.links}>
         <li>
           <a href="https://github.com/puraxyz/puraxyz/blob/main/docs/nips/NIP-XX-backpressure-relay-economics.md">
             NIP-XX specification
@@ -968,7 +996,7 @@ export default function ExplainerPage() {
           <a href="https://github.com/puraxyz/puraxyz">
             GitHub repository
           </a>:
-          all code, MIT licensed
+          source tree for the hosted gateway, contracts, SDK, site, and docs
         </li>
       </ul>
     </div>

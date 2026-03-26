@@ -17,14 +17,50 @@ const TABS = [
 
 interface ProviderStatus {
   provider: string;
+  configured: boolean;
   available: boolean;
-  buckets: Record<string, { requests: number; failures: number; avgLatencyMs: number }>;
+  observedRecently: boolean;
+  status: "active" | "idle" | "degraded" | "unconfigured";
+  buckets: Array<{
+    window: string;
+    requests: number;
+    failures: number;
+    successRate: number;
+    avgLatencyMs: number;
+  }>;
 }
 
 interface StatusData {
   status: string;
   timestamp: string;
+  summary: {
+    configured: number;
+    active: number;
+    degraded: number;
+    unconfigured: number;
+  };
   providers: ProviderStatus[];
+}
+
+function bucketFor(
+  provider: ProviderStatus,
+  window: string,
+) {
+  return provider.buckets.find((bucket) => bucket.window === window);
+}
+
+function statusLabel(status: ProviderStatus["status"]) {
+  if (status === "active") return "active";
+  if (status === "idle") return "configured / idle";
+  if (status === "degraded") return "degraded";
+  return "not configured";
+}
+
+function statusClass(status: ProviderStatus["status"]) {
+  if (status === "active") return s.good;
+  if (status === "idle") return s.warn;
+  if (status === "degraded") return s.bad;
+  return s.dim;
 }
 
 export default function MonitorProvidersPage() {
@@ -70,7 +106,9 @@ export default function MonitorProvidersPage() {
       <div className={s.sourceNote}>
         <span className={s.sourceLabel}>data source</span>
         <span className={s.sourceValue}>live gateway API</span>
-        <span className={s.sourceCopy}>Pulled from `api.pura.xyz/api/status` on a 15 second poll.</span>
+        <span className={s.sourceCopy}>
+          Pulled from api.pura.xyz/api/status every 15 seconds. "Active" means configured and recently observed. "Not configured" means implemented in code, but not live on this gateway.
+        </span>
       </div>
 
       {error && (
@@ -88,7 +126,11 @@ export default function MonitorProvidersPage() {
             </div>
             <div className={s.stat}>
               <div className={s.statLabel}>providers</div>
-              <div className={s.statValue}>{data.providers.length}</div>
+              <div className={s.statValue}>{data.summary.configured}</div>
+            </div>
+            <div className={s.stat}>
+              <div className={s.statLabel}>active now</div>
+              <div className={s.statValue}>{data.summary.active}</div>
             </div>
             <div className={s.stat}>
               <div className={s.statLabel}>last update</div>
@@ -98,39 +140,53 @@ export default function MonitorProvidersPage() {
 
           <div className={s.section}>
             <div className={s.sectionHead}>provider status</div>
-            <table className={s.tbl}>
-              <thead>
-                <tr>
-                  <th>provider</th>
-                  <th>status</th>
-                  <th>1m reqs</th>
-                  <th>1m latency</th>
-                  <th>1h reqs</th>
-                  <th>1h latency</th>
-                  <th>24h reqs</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.providers.map((p) => {
-                  const b1m = p.buckets["1m"];
-                  const b1h = p.buckets["1h"];
-                  const b24h = p.buckets["24h"];
-                  return (
-                    <tr key={p.provider}>
-                      <td>{p.provider}</td>
-                      <td style={{ color: p.available ? "var(--green)" : "var(--red)" }}>
-                        {p.available ? "up" : "down"}
-                      </td>
-                      <td>{b1m?.requests ?? 0}</td>
-                      <td>{b1m?.avgLatencyMs ? `${Math.round(b1m.avgLatencyMs)}ms` : "\u2014"}</td>
-                      <td>{b1h?.requests ?? 0}</td>
-                      <td>{b1h?.avgLatencyMs ? `${Math.round(b1h.avgLatencyMs)}ms` : "\u2014"}</td>
-                      <td>{b24h?.requests ?? 0}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <p className={s.helper}>
+              This page separates provider code support from actual live routing. A provider can exist in Pura and still be inactive on this deployment.
+            </p>
+            <div className={s.tableWrap}>
+              <table className={s.tbl}>
+                <thead>
+                  <tr>
+                    <th>provider</th>
+                    <th>status</th>
+                    <th>configured</th>
+                    <th>5m reqs</th>
+                    <th>5m success</th>
+                    <th>5m latency</th>
+                    <th>24h reqs</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.providers.map((p) => {
+                    const b5m = bucketFor(p, "5m");
+                    const b24h = bucketFor(p, "24h");
+                    return (
+                      <tr key={p.provider}>
+                        <td>{p.provider}</td>
+                        <td className={statusClass(p.status)}>{statusLabel(p.status)}</td>
+                        <td>{p.configured ? "yes" : "no"}</td>
+                        <td>{b5m?.requests ?? 0}</td>
+                        <td>
+                          {b5m && b5m.requests > 0
+                            ? `${Math.round(b5m.successRate * 100)}%`
+                            : p.configured
+                              ? "no recent traffic"
+                              : "\u2014"}
+                        </td>
+                        <td>
+                          {b5m?.requests
+                            ? `${Math.round(b5m.avgLatencyMs)}ms`
+                            : p.configured
+                              ? "no recent traffic"
+                              : "\u2014"}
+                        </td>
+                        <td>{b24h?.requests ?? 0}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </>
       )}

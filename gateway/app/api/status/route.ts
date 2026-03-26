@@ -17,12 +17,20 @@ export async function OPTIONS() {
  */
 export async function GET() {
   const providers = getProviderStatuses();
-  const allAvailable = providers.every((p) => p.available);
+  const configuredProviders = providers.filter((p) => p.configured);
+  const allAvailable =
+    configuredProviders.length > 0 && configuredProviders.every((p) => p.available);
 
   return NextResponse.json(
     {
       status: allAvailable ? "operational" : "degraded",
       timestamp: new Date().toISOString(),
+      summary: {
+        configured: configuredProviders.length,
+        active: providers.filter((p) => p.status === "active").length,
+        degraded: providers.filter((p) => p.status === "degraded").length,
+        unconfigured: providers.filter((p) => !p.configured).length,
+      },
       providers,
     },
     { headers: { ...CORS_HEADERS, "Cache-Control": "public, max-age=10" } },

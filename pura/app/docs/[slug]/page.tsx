@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { compileMDX } from "next-mdx-remote/rsc";
+import type { ComponentPropsWithoutRef } from "react";
 import remarkMath from "remark-math";
 import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
@@ -12,10 +13,19 @@ import TableOfContents from "../../components/TableOfContents";
 import ProductGraph from "../../components/ProductGraph";
 import styles from "./page.module.css";
 
+function DocTable(props: ComponentPropsWithoutRef<"table">) {
+  return (
+    <div className={styles.tableWrap}>
+      <table {...props} />
+    </div>
+  );
+}
+
 const mdxComponents = {
   Accent,
   ProductGraph,
   pre: CodeBlock,
+  table: DocTable,
 };
 
 const katexMacros = {

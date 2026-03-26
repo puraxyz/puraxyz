@@ -6,6 +6,8 @@ description: Route LLM inference through Pura with automatic model selection and
 
 The Pura gateway is an OpenAI-compatible API that routes across four LLM providers (OpenAI, Anthropic, Groq, Gemini). It picks the best model for your task and tracks per-request costs.
 
+Today those costs are <Accent tone="muted">estimated gateway costs</Accent>, not exact upstream provider invoices. The gateway estimates tokens, applies a static per-provider rate card, and exposes that number in headers and reports so you have one consistent figure to bill against.
+
 The shortest useful path looks like this:
 
 1. Create a key.
@@ -81,6 +83,8 @@ Every response includes routing metadata:
 | `X-Pura-Quality` | Quality bias applied (if routing.quality was set) |
 | `X-Pura-Explored` | Whether the router explored a non-preferred provider |
 
+If you charge your own customers today, use `X-Pura-Cost` and the report endpoint as your canonical usage number. It is the gateway's estimate of what that request cost to route, not a provider-native invoice line item.
+
 ## How routing works
 
 Each request gets scored on complexity:
@@ -123,6 +127,8 @@ curl https://api.pura.xyz/api/report \
 ```
 
 Returns a JSON breakdown: total spend, per-model costs, request count, average cost per request over the past 24 hours.
+
+Those numbers use the same estimate model as `X-Pura-Cost`, so headers and reports stay aligned.
 
 ## Budget enforcement
 

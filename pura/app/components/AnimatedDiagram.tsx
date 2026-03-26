@@ -54,6 +54,9 @@ interface Particle {
 
 interface ResolvedNode extends DiagramNode {
   px: number; py: number;   // absolute pixel positions
+  width: number;
+  height: number;
+  lines: string[];
 }
 
 interface InternalState {
@@ -67,9 +70,152 @@ interface InternalState {
   direction: "LR" | "TB";
 }
 
-const NODE_W = 120;
-const NODE_H = 40;
-const PAD = 80;
+const NODE_FONT = "500 9px var(--font-mono, monospace)";
+const NODE_LINE_HEIGHT = 12;
+const NODE_MIN_W = 112;
+const NODE_MIN_H = 40;
+const NODE_MAX_W = 180;
+const NODE_X_PAD = 14;
+const NODE_Y_PAD = 16;
+const NODE_GAP = 18;
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function createMeasureContext() {
+  if (typeof document === "undefined") return null;
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.font = NODE_FONT;
+  return ctx;
+}
+
+function splitLongToken(
+  ctx: CanvasRenderingContext2D,
+  token: string,
+  maxWidth: number,
+) {
+  const segments: string[] = [];
+  let current = "";
+
+  for (const char of token) {
+    const next = `${current}${char}`;
+    if (current && ctx.measureText(next).width > maxWidth) {
+      segments.push(current);
+      current = char;
+    } else {
+      current = next;
+    }
+  }
+
+  if (current) segments.push(current);
+  return segments;
+}
+
+function wrapLabel(
+  ctx: CanvasRenderingContext2D | null,
+  label: string,
+  maxTextWidth: number,
+) {
+  const rawLines = label.split("\n");
+  if (!ctx) return rawLines;
+
+  const wrapped: string[] = [];
+  for (const rawLine of rawLines) {
+    const words = rawLine.split(/\s+/).filter(Boolean);
+    if (words.length === 0) {
+      wrapped.push("");
+      continue;
+    }
+
+    let current = "";
+    for (const word of words) {
+      const candidate = current ? `${current} ${word}` : word;
+      if (ctx.measureText(candidate).width <= maxTextWidth) {
+        current = candidate;
+        continue;
+      }
+
+      if (current) wrapped.push(current);
+      if (ctx.measureText(word).width <= maxTextWidth) {
+        current = word;
+        continue;
+      }
+
+      const pieces = splitLongToken(ctx, word, maxTextWidth);
+      wrapped.push(...pieces.slice(0, -1));
+      current = pieces[pieces.length - 1] ?? "";
+    }
+
+    if (current) wrapped.push(current);
+  }
+
+  return wrapped.length > 0 ? wrapped : rawLines;
+}
+
+function measureNode(
+  ctx: CanvasRenderingContext2D | null,
+  label: string,
+  maxTextWidth: number,
+) {
+  const lines = wrapLabel(ctx, label, maxTextWidth);
+  const widest = ctx
+    ? lines.reduce((max, line) => Math.max(max, ctx.measureText(line).width), 0)
+    : NODE_MIN_W - NODE_X_PAD * 2;
+  const width = clamp(Math.ceil(widest + NODE_X_PAD * 2), NODE_MIN_W, NODE_MAX_W);
+  const height = Math.max(NODE_MIN_H, NODE_Y_PAD + lines.length * NODE_LINE_HEIGHT + 8);
+  return { lines, width, height };
+}
+
+function clampNode(node: ResolvedNode, w: number, h: number, padX: number, padY: number) {
+  node.px = clamp(node.px, padX + node.width / 2, w - padX - node.width / 2);
+  node.py = clamp(node.py, padY + node.height / 2, h - padY - node.height / 2);
+}
+
+function resolveNodeCollisions(
+  nodes: ResolvedNode[],
+  w: number,
+  h: number,
+  padX: number,
+  padY: number,
+) {
+  for (let iteration = 0; iteration < 10; iteration++) {
+    let changed = false;
+
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i];
+        const b = nodes[j];
+        const dx = b.px - a.px;
+        const dy = b.py - a.py;
+        const overlapX = a.width / 2 + b.width / 2 + NODE_GAP - Math.abs(dx);
+        const overlapY = a.height / 2 + b.height / 2 + NODE_GAP - Math.abs(dy);
+
+        if (overlapX <= 0 || overlapY <= 0) continue;
+        changed = true;
+
+        if (overlapX < overlapY) {
+          const direction = dx === 0 ? (i % 2 === 0 ? -1 : 1) : Math.sign(dx);
+          const push = overlapX / 2;
+          a.px -= direction * push;
+          b.px += direction * push;
+        } else {
+          const direction = dy === 0 ? (i % 2 === 0 ? -1 : 1) : Math.sign(dy);
+          const push = overlapY / 2;
+          a.py -= direction * push;
+          b.py += direction * push;
+        }
+
+        clampNode(a, w, h, padX, padY);
+        clampNode(b, w, h, padX, padY);
+      }
+    }
+
+    if (!changed) break;
+  }
+}
 
 /** Point on a node's border where a ray toward (tx, ty) exits. */
 function borderPt(n: ResolvedNode, tx: number, ty: number): [number, number] {
@@ -82,12 +228,12 @@ function borderPt(n: ResolvedNode, tx: number, ty: number): [number, number] {
   const shape = n.shape || "rect";
   let t: number;
   if (shape === "diamond") {
-    const d = 22 * Math.SQRT2;
-    t = d / (Math.abs(ux) + Math.abs(uy) || 1);
+    const hw = n.width / 2;
+    const hh = n.height / 2;
+    t = 1 / ((Math.abs(ux) / hw) + (Math.abs(uy) / hh) || 1);
   } else {
-    const hw = NODE_W / 2;
-    const lines = n.label.split("\n");
-    const hh = Math.max(NODE_H, 14 + lines.length * 13) / 2;
+    const hw = n.width / 2;
+    const hh = n.height / 2;
     const sx = Math.abs(ux) > 0.001 ? hw / Math.abs(ux) : 1e9;
     const sy = Math.abs(uy) > 0.001 ? hh / Math.abs(uy) : 1e9;
     t = Math.min(sx, sy);
@@ -108,11 +254,21 @@ export default function AnimatedDiagram({
 
   const buildState = useCallback(
     (w: number, h: number, dpr: number): InternalState => {
-      const resolved: ResolvedNode[] = nodes.map((n) => ({
+      const measureCtx = createMeasureContext();
+      const maxTextWidth = clamp(w * 0.2, 84, NODE_MAX_W - NODE_X_PAD * 2);
+      const nodeMetrics = nodes.map((node) => measureNode(measureCtx, node.label, maxTextWidth));
+      const maxNodeWidth = nodeMetrics.reduce((max, node) => Math.max(max, node.width), NODE_MIN_W);
+      const maxNodeHeight = nodeMetrics.reduce((max, node) => Math.max(max, node.height), NODE_MIN_H);
+      const padX = maxNodeWidth / 2 + 28;
+      const padY = maxNodeHeight / 2 + 24;
+      const resolved: ResolvedNode[] = nodes.map((n, index) => ({
         ...n,
-        px: PAD + n.x * (w - 2 * PAD),
-        py: PAD + n.y * (h - 2 * PAD),
+        ...nodeMetrics[index],
+        px: padX + n.x * Math.max(1, w - 2 * padX),
+        py: padY + n.y * Math.max(1, h - 2 * padY),
       }));
+      for (const node of resolved) clampNode(node, w, h, padX, padY);
+      resolveNodeCollisions(resolved, w, h, padX, padY);
       const nodeMap = new Map<string, ResolvedNode>();
       for (const n of resolved) nodeMap.set(n.id, n);
       return { nodes: resolved, nodeMap, edges, groups, particles: [], w, h, dpr, tick: 0, direction };
@@ -171,12 +327,16 @@ export default function AnimatedDiagram({
 
     // ── Groups / subgraphs ──────────────────────────────────
     for (const g of st.groups) {
-      const mx = NODE_W / 2 + 8;  // horizontal margin: ensures rect/pill nodes fit
-      const my = NODE_H / 2 + 14; // vertical margin: half node height + label clearance
-      const gx = PAD + g.x * (w - 2 * PAD) - mx;
-      const gy = PAD + g.y * (h - 2 * PAD) - my;
-      const gw = g.w * (w - 2 * PAD) + 2 * mx;
-      const gh = g.h * (h - 2 * PAD) + 2 * my;
+      const maxNodeWidth = st.nodes.reduce((max, node) => Math.max(max, node.width), NODE_MIN_W);
+      const maxNodeHeight = st.nodes.reduce((max, node) => Math.max(max, node.height), NODE_MIN_H);
+      const padX = maxNodeWidth / 2 + 28;
+      const padY = maxNodeHeight / 2 + 24;
+      const mx = maxNodeWidth / 2 + 12;
+      const my = maxNodeHeight / 2 + 18;
+      const gx = padX + g.x * Math.max(1, w - 2 * padX) - mx;
+      const gy = padY + g.y * Math.max(1, h - 2 * padY) - my;
+      const gw = g.w * Math.max(1, w - 2 * padX) + 2 * mx;
+      const gh = g.h * Math.max(1, h - 2 * padY) + 2 * my;
       const gc = g.color || "#334155";
 
       ctx.globalAlpha = 0.08;
@@ -296,17 +456,14 @@ export default function AnimatedDiagram({
   }
 
   function drawNode(ctx: CanvasRenderingContext2D, n: ResolvedNode) {
-    const { px, py, label, color, shape = "rect" } = n;
-    const lines = label.split("\n");
-    const h = Math.max(NODE_H, 14 + lines.length * 13);
-    const w = NODE_W;
+    const { px, py, color, shape = "rect", width: w, height: h, lines } = n;
 
     if (shape === "diamond") {
       ctx.save();
       ctx.translate(px, py);
       ctx.rotate(Math.PI / 4);
-      const ds = 22;
-      roundRect(ctx, -ds, -ds, ds * 2, ds * 2, 4);
+      const ds = Math.min(w, h) / 1.55;
+      roundRect(ctx, -ds / 2, -ds / 2, ds, ds, 4);
       ctx.fillStyle = color + "18";
       ctx.fill();
       ctx.strokeStyle = color;
@@ -317,12 +474,12 @@ export default function AnimatedDiagram({
 
       // Label (unrotated)
       ctx.globalAlpha = 0.85;
-      ctx.font = "500 9px var(--font-mono, monospace)";
+      ctx.font = NODE_FONT;
       ctx.fillStyle = "#e4e4e7";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       for (let i = 0; i < lines.length; i++) {
-        ctx.fillText(lines[i], px, py + (i - (lines.length - 1) / 2) * 12);
+        ctx.fillText(lines[i], px, py + (i - (lines.length - 1) / 2) * NODE_LINE_HEIGHT);
       }
       ctx.globalAlpha = 1;
       return;
@@ -347,12 +504,12 @@ export default function AnimatedDiagram({
 
     // Label
     ctx.globalAlpha = 0.85;
-    ctx.font = "500 9px var(--font-mono, monospace)";
+    ctx.font = NODE_FONT;
     ctx.fillStyle = "#e4e4e7";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     for (let i = 0; i < lines.length; i++) {
-      ctx.fillText(lines[i], px, py + (i - (lines.length - 1) / 2) * 12);
+      ctx.fillText(lines[i], px, py + (i - (lines.length - 1) / 2) * NODE_LINE_HEIGHT);
     }
     ctx.globalAlpha = 1;
   }

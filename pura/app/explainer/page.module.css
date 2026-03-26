@@ -56,7 +56,40 @@
 .page .subtitle {
   color: var(--text-secondary);
   font-size: 1.1rem;
+  margin-bottom: 0.85rem;
+}
+
+.summary {
+  color: #c2c2cb;
+  max-width: 68ch;
+  margin-bottom: 1.5rem;
+}
+
+.introGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
   margin-bottom: 2rem;
+}
+
+.introCard {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+}
+
+.introCard p:last-child {
+  margin-bottom: 0;
+}
+
+.introLabel {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ffd783;
+  margin-bottom: 0.6rem;
 }
 
 .page blockquote {
@@ -123,4 +156,10 @@
 
 .links li a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 960px) {
+  .introGrid {
+    grid-template-columns: 1fr;
+  }
 }

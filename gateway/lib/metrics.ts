@@ -5,6 +5,7 @@
  */
 
 import { getRedisUrl, getRedisToken } from "./redis-config";
+import { getProviderConfigs } from "./providers";
 
 import type { Provider } from "./providers";
 
@@ -93,7 +94,10 @@ async function persistToRedis(provider: string, metrics: ProviderMetrics): Promi
 
 export interface ProviderStatus {
   provider: string;
+  configured: boolean;
   available: boolean;
+  observedRecently: boolean;
+  status: "active" | "idle" | "degraded" | "unconfigured";
   buckets: {
     window: string;
     requests: number;
@@ -110,6 +114,8 @@ export interface ProviderStatus {
  */
 export function getProviderStatuses(): ProviderStatus[] {
   const providers = ["openai", "anthropic", "groq", "gemini"];
+  const configuredProviders = new Set(getProviderConfigs().map((config) => config.name));
+
   return providers.map((p) => {
     const m = getMetrics(p);
     const buckets = (Object.keys(BUCKET_DURATIONS) as BucketKey[]).map((key) => {
@@ -126,8 +132,24 @@ export function getProviderStatuses(): ProviderStatus[] {
     });
 
     const recent = buckets.find((b) => b.window === "5m");
-    const available = !recent || recent.requests === 0 || recent.successRate > 0.5;
+    const configured = configuredProviders.has(p as Provider);
+    const observedRecently = Boolean(recent && recent.requests > 0);
+    const healthyRecent = !recent || recent.requests === 0 || recent.successRate > 0.5;
+    const available = configured && healthyRecent;
 
-    return { provider: p, available, buckets };
+    let status: ProviderStatus["status"] = "unconfigured";
+    if (configured) {
+      if (!observedRecently) status = "idle";
+      else status = healthyRecent ? "active" : "degraded";
+    }
+
+    return {
+      provider: p,
+      configured,
+      available,
+      observedRecently,
+      status,
+      buckets,
+    };
   });
 }

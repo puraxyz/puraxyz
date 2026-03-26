@@ -33,7 +33,9 @@
   --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
 
   --radius: 1px;
-  --header-height: 56px;
+  --nav-height: 56px;
+  --subnav-height: 42px;
+  --header-height: calc(var(--nav-height) + var(--subnav-height));
   --max-width-wide: 1200px;
 }
 

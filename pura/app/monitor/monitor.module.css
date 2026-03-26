@@ -114,10 +114,22 @@
   text-transform: uppercase;
 }
 
+.helper {
+  color: #8f8f8f;
+  font-size: 0.72rem;
+  margin: 0 0 0.9rem;
+  max-width: 70ch;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
 .tbl {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.75rem;
+  min-width: 720px;
 }
 
 .tbl th {
@@ -139,6 +151,7 @@
 .good { color: #22c55e; }
 .warn { color: #eab308; }
 .bad { color: #ef4444; }
+.dim { color: #737373; }
 
 .barOuter {
   width: 100%;

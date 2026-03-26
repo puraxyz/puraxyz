@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import styles from "./Nav.module.css";
 
 const NAV_LINKS = [
@@ -14,8 +15,17 @@ const NAV_LINKS = [
   { href: "/blog", label: "blog" },
 ];
 
+const START_LINKS = [
+  { href: "/docs/getting-started", label: "agents" },
+  { href: "/docs/getting-started-gateway", label: "gateway" },
+  { href: "/docs/getting-started-openclaw", label: "openclaw" },
+  { href: "/docs/getting-started-lightning", label: "lightning" },
+  { href: "/docs/getting-started-relay", label: "relays" },
+];
+
 export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <nav className={styles.nav}>
@@ -27,7 +37,12 @@ export function Nav() {
 
         <div className={styles.links}>
           {NAV_LINKS.map(({ href, label }) => (
-            <Link key={href} href={href} className={styles.link}>
+            <Link
+              key={href}
+              href={href}
+              className={styles.link}
+              data-active={pathname === href || (href !== "/" && pathname.startsWith(href))}
+            >
               {label}
             </Link>
           ))}
@@ -73,6 +88,24 @@ export function Nav() {
           </a>
         </div>
       )}
+
+      <div className={styles.subnav}>
+        <div className={styles.subnavInner}>
+          <span className={styles.subnavLabel}>get started</span>
+          <div className={styles.subnavLinks}>
+            {START_LINKS.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className={styles.subnavLink}
+                data-active={pathname === href}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
     </nav>
   );
 }
