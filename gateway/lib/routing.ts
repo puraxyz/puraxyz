@@ -144,11 +144,14 @@ export async function selectProvider(
   });
 
   // If user explicitly requests a model, route directly
-  if (requestModel) {
-    if (requestModel.startsWith("gpt") || requestModel.startsWith("o")) return noopResult("openai", "premium");
-    if (requestModel.startsWith("claude")) return noopResult("anthropic", "premium");
-    if (requestModel.startsWith("llama") || requestModel.startsWith("mixtral") || requestModel.startsWith("gemma")) return noopResult("groq", "cheap");
-    if (requestModel.startsWith("gemini")) return noopResult("gemini", "mid");
+  if (requestModel && requestModel !== "auto") {
+    const m = requestModel.toLowerCase();
+    if (m.startsWith("gpt") || m.startsWith("o1") || m.startsWith("o3") || m.startsWith("o4")) return noopResult("openai", "premium");
+    if (m.startsWith("claude")) return noopResult("anthropic", "premium");
+    if (m.startsWith("llama") || m.startsWith("mixtral") || m.startsWith("gemma")) return noopResult("groq", "cheap");
+    if (m.startsWith("gemini")) return noopResult("gemini", "mid");
+    // Unknown model name — log and fall through to auto-routing
+    log.info("routing.unknown_model", { model: requestModel });
   }
 
   const available = getProviderConfigs();
