@@ -109,7 +109,7 @@ const HERO_EDGES: DiagramEdge[] = [
 ];
 
 const HERO_GROUPS: DiagramGroup[] = [
-  { id: "providers", label: "LLM PROVIDERS", x: 0.58, y: 0.0, w: 0.04, h: 0.90, color: "#808090" },
+  { id: "providers", label: "LLM PROVIDERS", x: 0.58, y: 0.05, w: 0.04, h: 0.80, color: "#808090" },
 ];
 
 const STEPS = [

@@ -172,7 +172,7 @@ export default function AnimatedDiagram({
     // ── Groups / subgraphs ──────────────────────────────────
     for (const g of st.groups) {
       const mx = NODE_W / 2 + 8;  // horizontal margin: ensures rect/pill nodes fit
-      const my = 44;               // vertical margin: clears group label + diamond nodes
+      const my = NODE_H / 2 + 14; // vertical margin: half node height + label clearance
       const gx = PAD + g.x * (w - 2 * PAD) - mx;
       const gy = PAD + g.y * (h - 2 * PAD) - my;
       const gw = g.w * (w - 2 * PAD) + 2 * mx;

@@ -10,7 +10,7 @@ This work extends the original backpressure allocation mechanism in four directi
 
 #### Limitations.
 
-BPE assumes capacity is *verifiable*, that over-reporting can be detected and penalized. The completion tracker (Security Analysis) addresses this for task completions, but does not cover quality of output. Future work could integrate TEE attestation or ZK proofs of computation to provide stronger verification guarantees.
+BPE assumes capacity is *verifiable*, that over-reporting can be detected and penalized. The completion tracker (Security Analysis) addresses this for task completions, but does not cover quality of output. Catalini et al. (Catalini et al., 2026) formalize this gap as the measurability parameter $m$: completion tracking operates in the high-$m$ regime where output existence is binary, but output *quality* sits in a lower-$m$ regime where verification costs $c_H$ are structurally higher. Extending BPE's verification to these low-$m$ tasks is the primary open problem. Future work could integrate TEE attestation or ZK proofs of computation to provide stronger verification guarantees.
 
 On-chain EWMA computation and pool unit updates incur gas costs that scale linearly with the number of sinks per task type. At 50 sinks, rebalance costs are viable on Base L2; at 1000+, batched or off-chain computation with on-chain verification (e.g., via ZK proofs) may be necessary.
 
