@@ -10,12 +10,29 @@ The codebase has 35 contracts (319 tests), a streaming LLM gateway with four pro
 - Gateway hardened: Upstash KV key storage (JSON fallback for local dev), Redis-backed rate limiting, Groq as third provider, token estimation, structured JSON logging
 - SDK relay actions exported, reference integration script at `sdk/scripts/relay-register.ts`
 - Grant applications updated with current numbers (35 contracts, 319 tests, 23 modules)
+- NVM advanced systems: 7 economic systems (credit, futures, spawning, reputation, bridging, protocol negotiation, genome), 13 new event kinds (31910-31922), all with typed interfaces and builder functions
+- 82 NVM tests passing across 10 test files (unit tests against mock Nostr events)
+- Credit graph and reputation publisher wired into AgentRelay and RoutingService
+- Evolution dashboard at `/evolution` (force-directed phylogeny visualization)
+- 16 blog posts, full docs site, products page, getting-started guides
 
 ### What's left (operations)
 
 Everything below requires manual steps: wallet funding, Vercel deploys, form submissions, content publishing. Ordered by dependency chain.
 
 ---
+
+## 0. Verify public content (pre-commit gate)
+
+Before committing, confirm that all public-facing pages are consistent with the source of truth in `nvm/src/events/kinds.ts`:
+
+- Event kind numbers match across README, blog, docs, NVM dashboard, and plan documents
+- Base NVM table (31900–31905) labels are correct: capacity, completion receipt, quality score, job assignment, pipeline spec, pipeline state
+- Advanced systems table (31910–31922) assigns each kind to the correct system
+- Status markers distinguish "live" (gateway), "implemented" (NVM + advanced systems), and "stubbed" (network-level operations like bridge forwarding, futures settlement)
+- No claims that imply production deployment of NVM relay or advanced systems
+
+Run `npx tsc --noEmit` in nvm, pura, and gateway. Run `npx vitest run` in nvm (82 tests). All must pass.
 
 ## 1. Commit and tag
 
@@ -131,6 +148,21 @@ Write a blog post: how BPE generalizes from LLMs to relays. Post in Nostr develo
 - **Monitoring**: Forward Vercel logs to Axiom (free tier). Set up Checkly on `api.pura.xyz/api/health`. Alert on gateway down, provider error rate > 10%, operator balance < 0.005 ETH.
 - **Formal audit**: Commission Cyfrin or Code4rena for the 12 mainnet contracts before opening to external stakers. Budget $15-30k, timeline 2-4 weeks.
 
+## 9a. NVM integration tests (parallel with step 8)
+
+Unit tests (82 across 10 files) verify logic against mock Nostr events. Integration tests verify the same logic against a real relay.
+
+**Tier 1 — base NVM round-trip:**
+Spin up a `strfry` relay in Docker (`nvm/docker-compose.yml`). Connect `AgentRelay`, publish kind-31900 capacity from 3 test agents, submit a job request, verify kind-31903 assignment and kind-31901 receipt appear on the relay.
+
+**Tier 2 — credit + reputation:**
+Publish kind-31910 credit lines between test agents. Route a job, verify credit dispatch was used (not atomic). Wait for reputation cycle, verify kind-31913 profile published.
+
+**Tier 3 — spawning + genome:**
+Feed synthetic capacity data with skill gaps into `SpawningManager`. Verify kind-31912 and kind-31917 events appear on relay. Verify `GenomeTracker` ingests them.
+
+Infrastructure: Docker compose with strfry, test keypair fixtures, `nvm/test/integration/` directory. Optional Playwright tests for the evolution dashboard.
+
 ---
 
 ## Critical path
@@ -151,6 +183,31 @@ Gateway and pura.xyz deploy in parallel. GTM starts as soon as the e2e proof wor
 Included: everything needed to make a live, usable system on Base mainnet that anyone can interact with, plus GTM to get people to do so.
 
 Excluded: thermodynamic layer (v0.2), V2 composition contracts, Lightning contracts (separate phase).
+
+Advanced NVM systems: implemented and tested locally, deployment deferred to relay integration phase (step 8). Blog, docs, and homepage describe these systems with explicit "implemented, not yet deployed" status markers.
+
+---
+
+## Advanced NVM systems (implemented)
+
+Seven economic systems built on top of the base NVM relay. All have typed event definitions (kinds 31910-31922), builder functions, and working TypeScript implementations. See `plan/14-ADVANCED-NVM-SYSTEMS.md` for the full spec.
+
+**Working code (tested):**
+- Agent credit / web of trust — bilateral credit lines, BFS transitive routing, settlement/default tracking
+- Reputation substrate — receipt aggregation into portable AgentProfiles, cross-network attestations
+- Self-spawning agents — market opportunity detection, eligibility checks, 5-stage spawn pipeline
+- Skill genome / evolutionary optimization — population tracking, phylogeny tree, ancestry chains
+
+**Stubs (interfaces + ingestion, no execution):**
+- Capacity futures — orderbook, buy/sell matching, price oracle
+- Cross-NVM bridging — registry, sanitizer, attestation store
+- Emergent protocol negotiation — proposal tracking, endorsement counting, activation
+
+**Wired into relay:** Credit and reputation are integrated into the AgentRelay. The routing service checks credit availability before dispatching jobs. Reputation profiles are published periodically alongside quality scores.
+
+**Visualization:** Evolution dashboard at `/evolution` renders agent phylogeny as a force-directed Canvas graph.
+
+**Next:** Wire futures into the relay subscription loop. Build a real bridge agent that connects two relay instances. Convert protocol stubs into active governance. All of these require multi-relay test infrastructure that doesn't exist yet.
 
 ---
 
@@ -265,3 +322,94 @@ After the experiment:
 - Post X thread narrating results
 - DM steipete with the income statement screenshot
 - Submit Show HN with live dashboard link
+
+---
+
+## 12. NVM (Nostr Virtual Machine) — future work
+
+The `nvm/` package implements BPE routing over Nostr events with Lightning settlement. Below are items explicitly deferred from the initial implementation. Each one has a stub, a TODO comment, or an interface ready for it.
+
+### Real Lightning wallet backends
+
+`nvm/src/payments/lightning.ts` has a mock wallet. Real backends need implementing:
+
+- **Alby**: OAuth token → NWC (Nostr Wallet Connect) flow. Most agents will use this.
+- **LND**: gRPC/REST macaroon auth, invoice creation, payment monitoring.
+- **CLN**: `lightning-cli` or commando plugin interface.
+- **Cashu**: ecash mints for instant micro-settlements. Good for sub-100-sat jobs.
+
+The `LightningWallet` interface is defined. Each backend is a factory function in `createWallet()`.
+
+### Formal NIP proposal
+
+The six NVM event kinds (31900-31905) work today as application-specific events. For broader adoption, write a NIP (Nostr Implementation Proposal) specifying:
+
+- Tag schemas for each kind
+- Dual-signature verification protocol (kind-31901)
+- Expected relay behavior for parameterized replaceable events
+- Interaction with NIP-90 (DVM) and NIP-57 (zaps)
+
+Draft in `docs/nips/nip-nvm.md`. Submit to `nostr-protocol/nips` repo.
+
+### Thermodynamic adoption layer
+
+`plan/13-THERMODYNAMIC-ADOPTION.md` describes agent temperature, Gibbs free energy for task-agent matching, and entropy-driven exploration. The NVM's `adaptiveExplorationRate()` in `nvm/src/routing/scoring.ts` is the first step — it adjusts exploration based on quality score volatility. The full thermodynamic model would replace the flat exploration rate with temperature-aware Boltzmann selection across the entire routing decision.
+
+### Dynamic DAGs (runtime pipeline modification)
+
+Current pipelines (kind-31904) are static: you define the DAG, it runs. Dynamic DAGs would allow:
+
+- Conditional branches (if node A score > threshold, skip node B)
+- Loop nodes (retry with exponentially increasing budget)
+- Runtime node insertion (agent discovers it needs a sub-task)
+
+The `PipelineExecutor` in `nvm/src/orchestrator/executor.ts` would need a `modifyDAG()` hook and support for kind-31904 updates mid-execution.
+
+### Agent guilds and specialization markets
+
+Groups of agents that coordinate internally before competing externally. A guild has a shared reputation, shared capacity pool, and internal job routing. The relay sees the guild as a single agent; internally the guild has its own BPE instance.
+
+Would need: kind-31906 (guild attestation), guild-level EWMA aggregation in `CapacityIndex`, and a guild membership protocol.
+
+### Physical IoT integration
+
+The research-6 proposal describes capacity attestations from physical devices (compute nodes, storage, bandwidth). The kind-31900 schema already supports this — `skillType` can be `compute-gpu-a100` or `storage-s3-compatible`. What's missing:
+
+- Hardware attestation (proving you actually have the GPU, not just claiming it)
+- Bandwidth measurement protocol
+- Physical-world latency measurement vs. Nostr message propagation delay
+
+### Gateway NVM consumer refactor
+
+The HTTP gateway at `gateway/` currently routes via its own provider scoring. It could consume NVM events instead:
+
+- Subscribe to kind-31900 attestations from LLM providers running as NVM agents
+- Use the BPE router (`nvm/src/routing/router.ts`) for provider selection
+- Publish kind-31901 receipts after each completion
+- Settle via NIP-57 zaps instead of tracking USD spend
+
+This makes the gateway a thin NVM client rather than a standalone routing engine. Both modes should coexist during transition.
+
+### SDK Nostr transport
+
+The SDK (`sdk/`) currently talks to Base contracts via ethers.js. Add a Nostr transport layer:
+
+- `sdk/src/transports/nostr.ts` wrapping `NostrClient`
+- Same action module interface, different backend
+- Agent chooses transport at init: `createAgent({ transport: 'nostr' })` or `createAgent({ transport: 'base' })`
+
+### Relay federation
+
+Multiple Agent Relays sharing capacity indices. When relay A has no agents for a skill, it forwards to relay B. Needs:
+
+- Relay discovery (kind-31907 relay attestation?)
+- Inter-relay capacity gossip protocol
+- Split routing fees between forwarding and executing relays
+
+### Agent reputation portability
+
+An agent's quality score (kind-31902) is currently relay-local. For scores to be portable across relays:
+
+- Standardize the composite score formula across implementations
+- Cryptographic proof of completion count (aggregate Schnorr sigs?)
+- Sybil resistance for score bootstrapping (new agents with no history)

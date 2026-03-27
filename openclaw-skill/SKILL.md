@@ -1,6 +1,6 @@
 ---
 name: pura
-description: Route LLM calls through the Pura gateway — automatic model selection, cost tracking, quality-weighted routing, Lightning settlement
+description: Route LLM calls through the Pura gateway — automatic model selection, cost tracking, quality-weighted routing, Lightning settlement. Supports both HTTP gateway and Nostr NVM (NIP-90 DVM) modes.
 emoji: ⚡
 homepage: https://pura.xyz
 metadata:
@@ -9,16 +9,34 @@ metadata:
       - PURA_API_KEY
   optional_env:
     - PURA_GATEWAY_URL
+    - NVM_PRIVATE_KEY
+    - NVM_RELAYS
+    - NVM_SKILLS
+    - LIGHTNING_BACKEND
+    - LIGHTNING_ALBY_TOKEN
+    - LIGHTNING_LND_MACAROON
+    - LIGHTNING_LND_HOST
   tags:
     - llm
     - routing
     - lightning
     - ai-agent
+    - nostr
+    - nip-90
+    - dvm
 ---
 
 # Pura — intelligent inference gateway
 
 Route LLM requests across OpenAI, Anthropic, Groq, and Gemini. Pura picks the best model for each task, tracks per-key spend, and settles on Lightning. Drop-in OpenAI-compatible.
+
+## Dual-mode operation
+
+Pura supports two transport modes. Both use the same BPE routing algorithm and quality scoring math. Use whichever fits your deployment:
+
+**HTTP gateway** — OpenAI-compatible REST API at `api.pura.xyz`. Familiar, works with any OpenAI SDK. Centralized relay point.
+
+**Nostr NVM** — Decentralized agent-to-agent routing over Nostr events (NIP-90 DVM protocol). Agents publish capacity attestations (kind-31900), accept job requests, and settle with Lightning zaps (NIP-57). No central server required.
 
 ## Setup
 
@@ -163,6 +181,50 @@ curl -s "https://api.pura.xyz/api/marketplace/search?skill=code-review&maxPrice=
 ## How routing works
 
 Pura scores each request's complexity based on message length, code blocks, reasoning triggers, and conversation depth. Simple tasks go to Groq or Gemini. Complex reasoning goes to Anthropic or OpenAI. Quality scores (derived from recent success rate and latency) weight the selection so underperforming providers get fewer requests until they recover.
+
+## Nostr NVM mode
+
+For decentralized operation without the HTTP gateway. Agents talk directly to each other via Nostr relays.
+
+### Setup
+
+```bash
+# Generate a Nostr keypair (or provide your own)
+export NVM_PRIVATE_KEY=""  # hex private key; leave blank to auto-generate
+
+# Which relays to connect to
+export NVM_RELAYS="wss://relay.damus.io,wss://nos.lol"
+
+# Skills this agent offers (NIP-90 job kinds)
+export NVM_SKILLS="nip90-5100,nip90-5050"
+
+# Lightning backend for zap settlement
+export LIGHTNING_BACKEND="mock"  # alby, lnd, cln, cashu, mock
+```
+
+### Running as a DVM worker
+
+```bash
+# Start capacity reporter (publishes kind-31900 every 5 min)
+npx ts-node openclaw-skill/scripts/capacity-reporter.ts
+
+# Start DVM listener (accepts NIP-90 job requests and returns results)
+npx ts-node openclaw-skill/scripts/nostr-dvm.ts
+
+# Monitor income from zap receipts
+npx ts-node openclaw-skill/scripts/income-tracker.ts
+```
+
+### NVM event kinds
+
+| Kind | Purpose | Equivalent contract |
+|------|---------|-------------------|
+| 31900 | Capacity attestation | CapacityRegistry.sol |
+| 31901 | Completion receipt | CompletionTracker.sol |
+| 31902 | Quality score | ReputationLedger.sol |
+| 31903 | Job assignment | BackpressurePool.sol |
+| 31904 | Pipeline spec | Pipeline.sol |
+| 31905 | Pipeline state | (no on-chain equiv) |
 
 ## Links
 

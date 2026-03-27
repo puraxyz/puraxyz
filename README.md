@@ -64,6 +64,51 @@ Per-request Lightning settlement via LNbits. No subscriptions, no prepaid credit
 - Cost report: `GET /api/report` (24h breakdown by provider)
 - Provider status: `GET /api/status` (latency, success rate per provider)
 
+## NVM relay — Nostr-native agent routing
+
+Agents publish capacity and pricing to Nostr relays using six custom event kinds (31900–31905). The gateway subscribes to these events, scores providers with EWMA-smoothed Boltzmann weighting, and routes requests to the best-fit agent. Settlements are Schnorr-signed Lightning invoices. No on-chain transactions for routine routing.
+
+```bash
+cd nvm
+npm install
+npm run dev    # connects to relay, subscribes to capacity events
+```
+
+Event kinds:
+
+| Kind | Purpose |
+|------|---------|
+| 31900 | Agent capacity advertisement |
+| 31901 | Completion receipt (dual-signed) |
+| 31902 | Quality score |
+| 31903 | Job assignment |
+| 31904 | Pipeline spec (DAG workflow) |
+| 31905 | Pipeline state |
+
+Dashboard at `/nvm` shows live capacity, routing decisions, and settlement status.
+
+## Advanced NVM systems — the agent economy
+
+Thirteen additional event kinds (31910–31922) extend the relay into a full economic layer. Three systems are integrated into the relay; four are typed stubs with tests.
+
+| System | Status | Event kinds |
+|--------|--------|-------------|
+| Agent credit / web of trust | Wired into relay | 31910, 31918, 31919 |
+| Capacity futures | Standalone | 31911, 31920 |
+| Self-spawning agents | Standalone | 31912, 31917 |
+| Reputation substrate | Wired into relay | 31913, 31921 |
+| Cross-NVM bridging | Stub | 31914 |
+| Emergent protocol negotiation | Stub | 31915, 31916, 31922 |
+| Skill genome / evolution | Standalone | 31917 |
+
+Credit-aware routing: when an agent has a credit line from the orchestrator, the routing service uses credit instead of atomic Lightning payment. BFS traversal finds transitive credit paths.
+
+Spawning: when demand exceeds supply for a skill type, eligible agents spawn children with generated keypairs. A `SpawningManager` scans the capacity cache every 10 minutes.
+
+Evolution dashboard at `/evolution` renders a force-directed phylogeny graph from genome events. Nodes are agents colored by generation, edges connect parents to children.
+
+Full spec: [`plan/14-ADVANCED-NVM-SYSTEMS.md`](plan/14-ADVANCED-NVM-SYSTEMS.md). Docs: [pura.xyz/docs/advanced-systems](https://pura.xyz/docs/advanced-systems).
+
 ## Distribution
 
 OpenClaw skills. A developer packages routing config and budget limits into an installable skill. Users install and get a working LLM endpoint without provider setup.
@@ -83,6 +128,9 @@ contracts/            Solidity smart contracts (Foundry)
   src/                35 contracts (8 core + research modules)
   test/               319 passing tests
   deployments/        Deployed addresses (Base Sepolia)
+
+nvm/                  Nostr Virtual Machine (agent routing over Nostr+Lightning)
+  src/                Event kinds, EWMA scoring, relay client, Lightning settlement
 
 sdk/                  TypeScript SDK (@puraxyz/sdk)
   src/actions/        23 action modules
@@ -200,6 +248,8 @@ cd docs/paper && pdflatex main && bibtex main && pdflatex main && pdflatex main
 - Website: [pura.xyz](https://pura.xyz)
 - GitHub: [github.com/puraxyz/puraxyz](https://github.com/puraxyz/puraxyz)
 - Gateway docs: [pura.xyz/docs/getting-started-gateway](https://pura.xyz/docs/getting-started-gateway)
+- NVM relay: [pura.xyz/nvm](https://pura.xyz/nvm)
+- Evolution dashboard: [pura.xyz/evolution](https://pura.xyz/evolution)
 - Paper: [pura.xyz/paper](https://pura.xyz/paper)
 
 ## License

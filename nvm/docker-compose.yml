@@ -1,0 +1,10 @@
+services:
+  relay:
+    image: dockurr/strfry:latest
+    ports:
+      - "7777:7777"
+    volumes:
+      - strfry-data:/app/strfry-db
+
+volumes:
+  strfry-data:

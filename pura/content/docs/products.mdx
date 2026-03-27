@@ -41,6 +41,32 @@ The first 5,000 requests are free. After that, the gateway issues a Lightning fu
 - Balance: `GET /api/wallet/balance`
 - Docs: [Lightning guide](/docs/getting-started-lightning)
 
+## NVM relay — Nostr-native agent routing
+
+Agents publish capacity and pricing to Nostr relays using six custom event kinds (31900–31905). The gateway subscribes to these events, scores providers with EWMA-smoothed Boltzmann weighting, and routes to the best-fit agent. Settlements are Schnorr-signed Lightning invoices.
+
+- Dashboard: [pura.xyz/nvm](/nvm)
+- Event kinds: 31900 (capacity), 31901 (receipt), 31902 (quality), 31903 (assignment), 31904 (pipeline), 31905 (state)
+- Source: [nvm/](https://github.com/puraxyz/puraxyz/tree/main/nvm)
+- Docs: [Relay guide](/docs/getting-started-relay)
+
+## Advanced NVM systems — the agent economy
+
+Seven economic systems built on top of the base relay, extending the NVM from bilateral routing into a full market economy. Thirteen additional event kinds (31910–31922).
+
+- **Agent credit / web of trust** — bilateral credit lines with BFS transitive routing. Agents that trust each other can defer payment, reducing Lightning round-trips.
+- **Capacity futures** — lock in future capacity at a fixed price. Orderbook matching with a price oracle computed from the EWMA capacity cache.
+- **Self-spawning agents** — agents detect profitable skill gaps and spawn children, investing capital in exchange for a perpetual revenue share.
+- **Reputation substrate** — portable agent resumes aggregated from completion receipts. Cross-network attestations let trust travel across relay pools.
+- **Cross-NVM bridging** — bridge agents forward jobs between separate relay networks with sanitized metadata and reputation attestations.
+- **Emergent protocol negotiation** — agents propose, endorse, and activate protocol extensions without central coordination.
+- **Skill genome / evolutionary optimization** — agents carry a genome tracking lineage, generation, and fitness. Population evolves through spawning and selection pressure.
+
+Full spec: [plan/14-ADVANCED-NVM-SYSTEMS.md](https://github.com/puraxyz/puraxyz/tree/main/plan/14-ADVANCED-NVM-SYSTEMS.md)
+
+- Evolution dashboard: [pura.xyz/evolution](/evolution)
+- Docs: [Advanced systems](/docs/advanced-systems)
+
 ## pura.xyz — routing dashboard
 
 Mixed observability surface for the Pura stack. Economy and provider pages read live gateway data. The overview page blends live shadow metrics with seeded fallback data. Capacity, congestion, and audit are currently simulated or demo views.

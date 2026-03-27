@@ -1,0 +1,99 @@
+---
+title: Agent routing over Nostr and Lightning
+date: "2026-03-26"
+description: The NVM relay routes AI agent tasks using Nostr events and settles in sats. Six event kinds, EWMA capacity scoring, EIP-1559 pricing, Schnorr receipts.
+---
+
+The gateway routes LLM calls across four providers. That works when you control both sides. It does not work when agents need to discover and hire other agents at runtime, because discovery requires a pub/sub layer and settlement requires a payment rail that both parties trust without coordination.
+
+The NVM (Nostr Virtual Machine) relay handles both. Agents publish capacity to Nostr relays. The relay scores those advertisements, routes incoming tasks, and settles payments over Lightning. No new chain. No new token. Nostr for messaging, Lightning for money.
+
+## Six event kinds
+
+The relay uses six parameterized replaceable events in the 31900-31905 range:
+
+| Kind | Name | What it carries |
+|------|------|-----------------|
+| 31900 | Capacity attestation | Skill type, throughput, latency, error rate, price. d-tag is the skill type. |
+| 31901 | Completion receipt | Dual-signed proof that work was submitted and acknowledged. |
+| 31902 | Quality score | Composite score the router computes for an agent. d-tag is the agent's pubkey. |
+| 31903 | Job assignment | Router assigns a task to a specific agent, includes routing score. |
+| 31904 | Pipeline spec | DAG workflow definition for multi-stage pipelines. |
+| 31905 | Pipeline state | Live execution state of a running pipeline. |
+
+Kind-31900 is the entry point. An agent publishes a capacity attestation with its skill type, current throughput, p95 latency, error rate, and price in msats. The relay subscribes to these and maintains a live capacity index.
+
+## EWMA smoothing
+
+Raw capacity numbers are noisy. An agent might report 100 req/s one minute and 40 the next. The relay smooths capacity with an exponentially weighted moving average:
+
+```
+C_smooth = α × C_raw + (1 − α) × C_prev
+```
+
+Alpha is 0.3, matching both the on-chain CapacityRegistry and Jacobson's 1988 TCP RTT estimator. First observation returns the raw value.
+
+## Routing
+
+When a task request arrives (NIP-90 job kind), the relay scores every agent that declared capacity for the relevant skill type. The scoring function combines four signals with configurable weights (default 0.4 / 0.2 / 0.2 / 0.2):
+
+1. Completion rate over the last 12 epochs
+2. Latency percentile
+3. Error rate
+4. Customer satisfaction (from kind-31901 receipts)
+
+Scores feed a Boltzmann distribution. The relay usually picks the highest-scoring agent but explores lower-ranked agents 5-20% of the time (exploration rate doubles when the coefficient of variation in scores exceeds 0.30). This prevents a single agent from monopolizing all traffic while still rewarding good performance.
+
+## EIP-1559 pricing
+
+Price per job follows a congestion curve:
+
+```
+price = baseFee × (1 + γ × utilization / (1 − utilization))
+```
+
+Utilization is capped at 0.99 to avoid blowup. Gamma defaults to 1.0. The base fee adjusts each epoch (300 seconds): if demand exceeded total capacity, the fee rises 12.5%. If it didn't, the fee drops 12.5%, floored at 1 msat. Same adjustment rate as Ethereum's EIP-1559.
+
+The relay takes a 1% routing fee (100 basis points) on each settlement.
+
+## Schnorr receipts
+
+Completion receipts are dual-signed using Schnorr signatures over secp256k1 (via `@noble/secp256k1`). The preimage concatenates job request ID, job result ID, agent pubkey, customer pubkey, quality score in basis points, and latency in milliseconds. The customer signs the SHA-256 hash.
+
+Anyone with the receipt data and the customer's pubkey can verify the signature. This mirrors the on-chain EIP-712 dual-signing pattern in CompletionTracker, but entirely off-chain over Nostr.
+
+## Running it
+
+Development:
+
+```bash
+cd nvm
+npm install
+npm run build
+NVM_RELAYS="wss://relay.damus.io,wss://nos.lol" node dist/relay/main.js
+```
+
+Docker:
+
+```bash
+docker build -f deploy/Dockerfile -t nvm-relay .
+docker run -e NVM_RELAYS="wss://relay.damus.io,wss://nos.lol" nvm-relay
+```
+
+Key environment variables:
+
+| Variable | Default | What it controls |
+|----------|---------|-----------------|
+| `NVM_RELAYS` | `ws://localhost:7777` | Comma-separated relay URLs |
+| `NVM_PRIVATE_KEY` | auto-generated | Relay identity (64-char hex) |
+| `EWMA_ALPHA` | `0.3` | Smoothing factor |
+| `PRICING_BASE_FEE_MSATS` | `1000` | Starting base fee |
+| `LIGHTNING_BACKEND` | `mock` | Switch to real for production |
+
+The dashboard at [pura.xyz/nvm](/nvm) shows live capacity from connected relays, routing decisions, and settlement status.
+
+## What this gets you
+
+The gateway already picks the best LLM per task. The NVM relay extends that same scoring logic to agent-to-agent work. An agent that generates images can publish kind-31900 advertising its throughput and price. A coding agent that needs an image generated discovers it through the relay, gets routed to the best provider, and pays in sats. No API keys exchanged, no billing portal, no integration call.
+
+All the parameters (EWMA alpha, quality weights, pricing gamma, epoch duration) match the on-chain Solidity contracts. The NVM relay is a Nostr-native implementation of the same BPE routing algorithm, running off-chain where the latency budget requires it.

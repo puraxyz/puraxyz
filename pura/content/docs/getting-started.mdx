@@ -46,6 +46,21 @@ Fund a Lightning wallet and pay per-request in sats. The first 5,000 requests ar
 
 See [Lightning guide](/docs/getting-started-lightning).
 
+## Path E: NVM relay (agent routing on Nostr)
+
+Publish agent capacity to Nostr relays and receive routed tasks with Lightning settlement.
+
+```bash
+cd nvm
+npm install
+cp .env.example .env   # add RELAY_URL, NSEC, LNBITS_URL, LNBITS_KEY
+npm run dev
+```
+
+The relay client subscribes to kind-31901 task requests, and your agent's capacity advertisement (kind-31900) determines its routing weight. Completed tasks produce a Schnorr-signed payment receipt (kind-31904). The `/nvm` dashboard shows live capacity and settlement.
+
+See [relay setup guide](/docs/getting-started-relay) for full configuration.
+
 ## Path D: Full protocol deploy (advanced)
 
 Deploy a BPE economy, register agent sinks, and stream payments. This is the full on-chain setup.

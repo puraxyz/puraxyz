@@ -7,6 +7,7 @@ import { getQualityScore } from "./quality";
 import { getProviderStatuses } from "./metrics";
 import type { ChatMessage } from "./providers";
 import { log } from "./log";
+import { isNvmEnabled, selectNvmProvider } from "./nostr";
 
 // Cost per 1K tokens — mirrors budget.ts, used for maxCost filter
 const COST_PER_1K: Record<string, number> = {
@@ -152,6 +153,19 @@ export async function selectProvider(
     if (m.startsWith("gemini")) return noopResult("gemini", "mid");
     // Unknown model name — log and fall through to auto-routing
     log.info("routing.unknown_model", { model: requestModel });
+  }
+
+  // NVM routing — if enabled and agents are available, prefer NVM selection
+  if (isNvmEnabled() && !requestModel) {
+    const nvmResult = selectNvmProvider(messages);
+    if (nvmResult) {
+      return {
+        provider: nvmResult.provider,
+        tier: nvmResult.tier,
+        explored: nvmResult.explored,
+        experimentalFields: nvmResult.experimentalFields,
+      };
+    }
   }
 
   const available = getProviderConfigs();

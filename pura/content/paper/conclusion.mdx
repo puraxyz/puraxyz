@@ -10,6 +10,6 @@ Our formal model maps network backpressure concepts (virtual queues, differentia
 
 The thermodynamic extensions recast the protocol as a physical system. A `TemperatureOracle` derives economic temperature from capacity variance to drive Boltzmann-weighted probabilistic routing. A `VirialMonitor` tracks the ratio of throughput to bound capital and feeds adaptive demurrage rates back into the `DemurrageToken`. Circuit breakers in the `Pipeline` contract decouple stages under stress across five phases (Steady, Bull, Shock, Recovery, Collapse), preventing cascade failures. Boltzmann routing preserves the Lyapunov drift bound, so throughput optimality holds under the thermodynamic regime.
 
-Simulation results demonstrate that BPE achieves 95.7% allocation efficiency compared to 93.5% for round-robin and 79.7% for random allocation, with robust shock recovery and effective Sybil resistance via the concave stake cap.
+Simulation results demonstrate that BPE achieves 95.7% allocation efficiency compared to 93.5% for round-robin and 79.7% for random allocation, with shock recovery in ~50 steps and effective Sybil resistance via the concave stake cap.
 
 As AI agent economies scale and payment flows become continuous, capacity-aware flow control will be as essential to monetary infrastructure as congestion control is to data networks. BPE is a working foundation for this capability.

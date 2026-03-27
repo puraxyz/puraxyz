@@ -1,0 +1,31 @@
+# docker-compose.yml — local development stack for NVM
+#
+# Runs strfry (Nostr relay) + NVM Agent Relay.
+# Usage: docker compose up
+#
+# strfry WebSocket: ws://localhost:7777
+# strfry metrics:   http://localhost:7777/metrics
+
+services:
+  relay:
+    image: ghcr.io/hoytech/strfry:latest
+    ports:
+      - "7777:7777"
+    volumes:
+      - strfry-data:/app/strfry-db
+      - ./strfry.conf:/etc/strfry.conf:ro
+    restart: unless-stopped
+
+  nvm-relay:
+    build:
+      context: ./nvm
+      dockerfile: deploy/Dockerfile
+    environment:
+      NVM_RELAYS: "ws://relay:7777"
+      LN_BACKEND: "mock"
+    depends_on:
+      - relay
+    restart: unless-stopped
+
+volumes:
+  strfry-data:

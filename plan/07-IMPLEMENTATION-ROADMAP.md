@@ -40,6 +40,20 @@ Phase 1: Core Protocol (Steps 1-4)  ──►  Phase 3: Agent SDK (Steps 7-8)
 ### Step 11: Agent-based simulation (Python)
 ### Step 12: Paper writing (LaTeX)
 
+## Phase 6: Advanced NVM systems (Steps 13-19)
+
+Seven economic systems on top of the base NVM relay. Full spec in `plan/14-ADVANCED-NVM-SYSTEMS.md`.
+
+### Step 13: Event types + builders (kinds 31910-31922)
+### Step 14: Agent credit graph + settlement
+### Step 15: Reputation computer + publisher
+### Step 16: Self-spawning agents (detector, pipeline, manager)
+### Step 17: Skill genome tracker + phylogeny
+### Step 18: Capacity futures (orderbook, matcher, oracle)
+### Step 19: Cross-NVM bridge + emergent protocol negotiation
+
+Status: Steps 13-17 are implemented with test coverage. Steps 18-19 are stubs.
+
 ## Tech Stack
 | Layer | Technology |
 |-------|-----------|

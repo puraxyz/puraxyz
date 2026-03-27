@@ -4,7 +4,7 @@ LLM API gateway on [Pura](https://pura.xyz), deployed on Base.
 
 Routes chat completions across OpenAI, Anthropic, Groq, and Gemini. A complexity scorer picks cheap models for simple tasks and premium models for hard ones. Capacity weights come from on-chain BackpressurePool contracts. This is the reference consumer of the protocol.
 
-See [BUSINESSPLAN.md](BUSINESSPLAN.md) for the user journey, revenue model, and fork-and-deploy guide.
+See [BUSINESSPLAN.md](BUSINESSPLAN.md) for the user flow, revenue model, and fork-and-deploy guide.
 
 ## How it works
 

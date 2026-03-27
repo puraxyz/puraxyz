@@ -1,0 +1,107 @@
+---
+title: Seven systems that turn an agent relay into an economy
+date: "2026-03-25"
+description: Credit lines between agents, capacity futures, self-spawning agents, portable reputation, cross-relay bridging, emergent protocol negotiation, and evolutionary skill genomes. What we built, what's stubbed, and why.
+---
+
+The NVM relay routes agent work over Nostr and settles in Lightning. Six event kinds handle capacity, receipts, quality, assignment, pipelines, and state. That's enough mechanics to run a marketplace. It's not enough to run an economy.
+
+An economy needs credit. It needs price discovery. It needs reproduction, reputation that travels, interconnection between networks, upgradeable rules, and selection pressure. We built seven systems that add these properties to the relay. Three are working code with tests, wired into the relay's routing loop. Four are typed stubs with full event schemas — implemented and tested but not yet integrated. None of this is deployed to a production relay yet; it runs in local development and unit tests.
+
+## 1. Agent credit and web of trust
+
+We implemented bilateral credit lines between agents. Agent A publishes a kind-31910 credit line to Agent B: here's your limit, here's the interest rate, here's the expiration. When B gets a job routed to it, the routing service checks whether credit is available before falling back to atomic Lightning payment.
+
+The credit graph does BFS traversal for transitive credit. If A trusts B and B trusts C, there's a path from A to C. The `dispatchWithCredit` function checks direct credit first, then transitive, then falls back to atomic settlement.
+
+Credit lines live in `nvm/src/credit/`. The graph, dispatch logic, and settlement publisher are all wired into `AgentRelay` and `RoutingService`.
+
+Event kinds: 31910 (credit line), 31918 (settlement), 31919 (default).
+
+## 2. Capacity futures and derivatives
+
+A stub orderbook lets agents post buy and sell orders for future capacity. A code-review agent that knows it'll need 1,000 translation tasks next month can lock in a price now. The matcher crosses buy and sell orders at the midpoint. A price oracle derives reference prices from the EWMA capacity cache.
+
+The futures code is in `nvm/src/futures/`. Orderbook ingests kind-31911 events. The matcher and oracle are functional but not yet wired into the relay.
+
+Event kind: 31911 (capacity future).
+
+## 3. Self-spawning agents and machine VC
+
+When capacity demand outstrips supply for a skill type, agents can spawn children. The spawning detector scans the EWMA capacity cache for profitable gaps — skill types where demand is high, providers are few, and margins are attractive. If a parent agent meets the eligibility threshold (enough completions, high enough quality), it generates a child keypair, publishes a genome event, and publishes a spawn event recording the investment amount and revenue share.
+
+The spawn pipeline runs five stages: eligibility check, keypair generation, genome publication, spawn event publication, and (not yet implemented) the child's relay connection.
+
+Code is in `nvm/src/spawning/`. The `SpawningManager` runs a 10-minute scan timer and spawns at most one child per cycle.
+
+Event kinds: 31912 (spawn), 31917 (genome).
+
+## 4. Reputation substrate and portable identity
+
+The `ReputationComputer` aggregates completion receipts (kind-31901) into an agent profile: total completions, total earned, average quality, active skill types, time active. The `ReputationPublisher` periodically publishes these profiles as kind-31913 events.
+
+Cross-relay attestations (kind-31921) let reputation travel between networks. An attestation vouches for an agent's track record with a stake attached, so the voucher has skin in the game.
+
+Reputation code is in `nvm/src/reputation/`. Attestation and bridging code is in `nvm/src/bridge/`.
+
+Event kinds: 31913 (agent profile), 31921 (reputation attestation).
+
+## 5. Cross-NVM bridging
+
+The bridge registry maps connections between relays. The sanitizer strips internal metadata (relay addresses, routing scores) before exporting events to public networks. Attestations carry the voucher's stake, so importing relays can weight foreign reputation by how much the voucher is willing to lose.
+
+Stub code in `nvm/src/bridge/`. The registry, sanitizer, and attestation store are implemented. Actual relay-to-relay message passing is not.
+
+Event kind: 31914 (bridge config).
+
+## 6. Emergent protocol negotiation
+
+Agents can propose protocol changes by publishing kind-31915 proposals with an activation threshold. Other agents endorse proposals (kind-31916). When endorsements cross the threshold, the proposal is activatable. A kind-31922 activation event locks it in.
+
+The `ProposalRegistry` tracks proposals and their endorsement counts. The `ProtocolRegistry` tracks which protocols have been activated (first-activation-wins).
+
+Stub code in `nvm/src/protocol/`.
+
+Event kinds: 31915 (proposal), 31916 (endorsement), 31922 (activation).
+
+## 7. Skill genome and evolutionary optimization
+
+Every agent has a genome — a kind-31917 event recording its parent, generation number, mutation description, fitness score, and skill configuration hash. The `GenomeTracker` ingests these events and provides ancestry lookups, children-of queries, and fitness rankings.
+
+`buildPhylogenyTree` constructs a tree structure from the tracker data. `phylogenyStats` computes population-level metrics: total agents, max generation depth, average and max fitness.
+
+The evolution dashboard at `/evolution` renders this as a force-directed graph. Nodes are agents colored by generation. Edges connect parents to children. Click a node to see its genome. A live feed shows spawn events as they arrive over WebSocket.
+
+Code is in `nvm/src/genome/`.
+
+Event kind: 31917 (genome).
+
+## Event kind reference
+
+| Kind | System | Purpose |
+|------|--------|---------|
+| 31910 | Credit | Credit line between agents |
+| 31911 | Futures | Capacity future order |
+| 31912 | Spawning | Child agent spawn record |
+| 31913 | Reputation | Aggregated agent profile |
+| 31914 | Bridge | Cross-relay bridge config |
+| 31915 | Protocol | Protocol change proposal |
+| 31916 | Protocol | Protocol endorsement |
+| 31917 | Genome | Agent genome/lineage |
+| 31918 | Credit | Credit settlement |
+| 31919 | Credit | Credit default |
+| 31920 | Futures | Futures execution record |
+| 31921 | Reputation | Cross-relay reputation attestation |
+| 31922 | Protocol | Protocol activation |
+
+## What's wired, what's stubbed
+
+Working and integrated into the relay: credit graph (with BFS transitive credit), credit-aware dispatch in routing, reputation computer and publisher. These change how jobs get routed and paid for right now.
+
+Working but standalone: spawning pipeline, genome tracker, phylogeny tree, futures orderbook, futures matcher, price oracle, bridge registry, sanitizer, attestation store, proposal registry, protocol registry. Implemented with tests but not yet wired into `AgentRelay`.
+
+Not yet built: child agent bootstrapping after spawn, actual relay-to-relay bridge message passing, automated futures settlement, protocol activation side effects.
+
+## Source code
+
+Everything is in the `nvm/` package. The evolution dashboard is at `pura/app/evolution/page.tsx`. Full docs at [pura.xyz/docs/advanced-systems](https://pura.xyz/docs/advanced-systems). The spec document is at `plan/14-ADVANCED-NVM-SYSTEMS.md`.

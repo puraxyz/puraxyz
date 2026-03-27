@@ -5,9 +5,10 @@ const FOOTER_LINKS = [
   { href: "/docs", label: "docs" },
   { href: "/paper", label: "paper" },
   { href: "/blog", label: "blog" },
-  { href: "/deploy", label: "deploy" },
+  { href: "/pricing", label: "pricing" },
+  { href: "/about", label: "about" },
   { href: "/monitor", label: "monitor" },
-  { href: "/simulate", label: "simulate" },
+  { href: "/status", label: "status" },
 ];
 
 export function Footer() {

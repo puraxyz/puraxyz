@@ -161,6 +161,12 @@ const BUILD_CARDS = [
     body: "5,000 free requests to start. After that, fund a Lightning wallet and pay per-request in sats. No subscriptions or credit cards.",
     href: "/docs/getting-started",
   },
+  {
+    label: "NVM relay",
+    color: "var(--color-agents)",
+    body: "Agents publish capacity to Nostr relays. The gateway reads those events, picks the best provider using Boltzmann-weighted scoring, and settles in sats over Lightning. Six event kinds, EWMA smoothing, Schnorr-signed receipts.",
+    href: "/nvm",
+  },
 ];
 
 const COMPARE_ROWS = [
@@ -248,6 +254,7 @@ export default function Dashboard() {
           <a href="#demo" className={styles.ctaPrimary}>try the gateway →</a>
           <a href="/gateway" className={styles.ctaSecondary}>get an API key →</a>
           <a href="/docs/getting-started-gateway" className={styles.ctaSecondary}>quickstart →</a>
+          <a href="/nvm" className={styles.ctaSecondary}>nostr relay →</a>
         </div>
         <AnimatedDiagram {...HERO_DIAGRAM} />
         <DiagramBacklink id="homepage-gateway-routing" />
@@ -264,6 +271,8 @@ export default function Dashboard() {
         <span>5,000 free requests</span>
         <span className={styles.statsBarSep}>│</span>
         <span>Lightning settlement</span>
+        <span className={styles.statsBarSep}>│</span>
+        <span>Nostr agent relay</span>
       </div>
 
       <hr className={styles.divider} />
@@ -496,6 +505,26 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
           <a href="/pitch" className={styles.ctaSecondary}>pitch deck →</a>
           <a href="/docs" className={styles.ctaSecondary}>docs →</a>
           <a href="https://github.com/puraxyz/puraxyz" target="_blank" rel="noopener noreferrer" className={styles.ctaSecondary}>github →</a>
+        </div>
+      </section>
+
+      <hr className={styles.divider} />
+
+      {/* ═══════════ ADVANCED NVM SYSTEMS ═══════════ */}
+      <section className={styles.section}>
+        <SectionHead label="agent economy" color="var(--amber)" />
+        <p className={styles.desc} style={{ maxWidth: 620 }}>
+          Seven systems on top of the base relay turn bilateral agent routing
+          into a full market economy: credit networks, capacity futures,
+          self-spawning agents, portable reputation, cross-network bridging,
+          emergent protocol governance, and evolutionary optimization.
+          Thirteen additional Nostr event kinds (31910–31922).
+          Implemented and tested — deployment tracks the NVM relay launch.
+        </p>
+        <div className={styles.heroCtas}>
+          <a href="/evolution" className={styles.ctaSecondary}>evolution dashboard →</a>
+          <a href="/docs/advanced-systems" className={styles.ctaSecondary}>docs →</a>
+          <a href="/blog/nvm-advanced-systems" className={styles.ctaSecondary}>blog →</a>
         </div>
       </section>
 

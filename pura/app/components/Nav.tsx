@@ -9,9 +9,10 @@ import styles from "./Nav.module.css";
 const NAV_LINKS = [
   { href: "/", label: "home" },
   { href: "/gateway", label: "gateway" },
+  { href: "/nvm", label: "relay" },
   { href: "/explainer", label: "how it works" },
+  { href: "/pricing", label: "pricing" },
   { href: "/docs", label: "docs" },
-  { href: "/paper", label: "paper" },
   { href: "/blog", label: "blog" },
 ];
 

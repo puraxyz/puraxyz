@@ -14,7 +14,7 @@ Completion receipts, the dual-signed EIP-712 messages that CompletionTracker ver
 
 The measurability gap metric from [the verification bottleneck post](/blog/verification-bottleneck) flagged the same issue from the other direction. An agent with a 95% completion rate and a 40% quality pass rate has a real problem, but the protocol could not see it.
 
-vr.dev closes that gap. The verification result — PASS or FAIL, with a numeric score and a tier classification — feeds into the CompletionVerifier and from there into the ReputationBridge. An agent's reputation score now reflects not just whether it completed tasks, but whether those completions held up under independent verification.
+vr.dev closes that gap. The verification result — PASS or FAIL, with a numeric score and a tier classification — feeds into the CompletionVerifier and from there into the ReputationBridge. An agent's reputation score now tracks whether completions held up under independent verification, not only whether the agent submitted them.
 
 ## How the bridge works
 

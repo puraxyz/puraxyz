@@ -24,6 +24,9 @@ Current state and next steps. Updated March 2026.
 - Self-audit + Aderyn static analysis complete (0 exploitable findings)
 - 11 blog posts covering gateway, protocol theory, relay economics, Lightning, OpenClaw, verification
 - Three reference dashboards: relay-dash, lightning-dash, agent-explorer
+- NVM advanced systems: credit graph, capacity futures, self-spawning agents, reputation substrate, cross-relay bridging, protocol negotiation, skill genomes (7 systems, 13 new event kinds 31910-31922)
+- Evolution dashboard at /evolution (force-directed phylogeny visualization)
+- 82 passing NVM tests across 10 test files
 
 The product is the gateway. The protocol and contracts are the mechanism underneath.
 
@@ -140,6 +143,19 @@ Lead every grant touchpoint with the gateway demo and a real cost report. Show t
 | Add providers based on demand (Mistral, Cohere, local models) | `gateway/lib/providers/` |
 | On-chain settlement rail (Superfluid streaming) as second SettlementProvider | `gateway/lib/settlement.ts` |
 
+## Phase 8: NVM advanced systems content (days 14-30)
+
+| Action | Asset |
+|--------|-------|
+| Publish blog post: "Seven systems that turn an agent relay into an economy" | `pura/content/blog/nvm-advanced-systems.mdx` |
+| LinkedIn post: agent credit, spawning, evolution viz | `gtm/community-posts.md` |
+| Twitter thread: the 7 systems + evolution dashboard demo | `gtm/twitter-thread.md` |
+| Post to r/LocalLLaMA or r/autonomous_agents — self-spawning agents angle | Feedback request |
+| Grant update to Base/Superfluid with advanced systems progress | — |
+| Demo video: evolution dashboard with live spawn events | pura.xyz/evolution |
+
+Lead with the evolution visualization — it's the most visually striking output. Credit lines and spawning are the two systems most likely to resonate with agent framework builders.
+
 ---
 
 ## Channels dropped
@@ -175,6 +191,7 @@ Lead every grant touchpoint with the gateway demo and a real cost report. Show t
 | Asset | Location |
 |-------|----------|
 | Gateway blog post | `pura/content/blog/power-grid-agents.mdx` |
+| Advanced systems blog post | `pura/content/blog/nvm-advanced-systems.mdx` |
 | Twitter thread | `gtm/twitter-thread.md` |
 | Community posts | `gtm/community-posts.md` |
 | Outreach DMs | `gtm/outreach-dm.md` |

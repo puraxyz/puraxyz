@@ -506,3 +506,199 @@ python simulation/bpe_sim.py        # Run simulation
 | mkdocs.yml | pura/next.config.ts |
 
 Can be removed or moved to `archive/`.
+
+---
+
+## 17. NVM (Nostr Virtual Machine)
+
+The NVM package (`nvm/`) adds a Nostr-native routing layer on top of the gateway. Agents publish capacity attestations as Nostr events; a relay process consumes those events, computes BPE weights, and assigns incoming jobs to the best available agent. Settlement runs over Lightning via NIP-57 zaps.
+
+### Package layout
+
+```
+nvm/
+├── src/
+│   ├── capacity/        EWMA cache, live index
+│   ├── client/          NostrClient, key management
+│   ├── events/          Kind definitions (31900-31905), validators
+│   ├── orchestrator/    DAG pipeline execution
+│   ├── payments/        Lightning wallet (LND REST, mock), NIP-57 zaps
+│   ├── relay/           AgentRelay process + CLI entry (main.ts)
+│   ├── routing/         BPE scoring, dynamic pricing, config
+│   └── verification/    Schnorr receipts, quality scoring
+├── test/integration/    Relay roundtrip tests
+├── experiment/          Full experiment orchestrator
+├── deploy/              Dockerfile
+├── vitest.config.ts
+└── package.json
+```
+
+### Running locally
+
+```bash
+# Start the Nostr relay + NVM relay
+docker compose up -d
+
+# Or run the relay directly
+cd nvm
+npm install
+NVM_RELAYS=ws://localhost:7777 npx tsx src/relay/main.ts
+```
+
+### Environment variables
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| NVM_RELAYS | ws://localhost:7777 | Comma-separated relay WebSocket URLs |
+| NVM_PRIVATE_KEY | (generated) | 64-char hex Nostr private key |
+| NVM_JOB_KINDS | 5100 | Comma-separated NIP-90 job kinds to route |
+| NVM_PRUNE_INTERVAL_MS | 300000 | How often to prune stale capacity entries |
+| LND_REST_HOST | — | LND REST endpoint (e.g. https://my-node:8080) |
+| LND_MACAROON_HEX | — | Hex-encoded LND admin macaroon |
+| LN_BACKEND | mock | Lightning backend: lnd, mock, alby, cln, cashu |
+
+### Testing
+
+```bash
+cd nvm
+npm test               # vitest run — unit + integration
+npm run test:watch     # vitest in watch mode
+npm run lint           # tsc --noEmit
+```
+
+Unit tests cover: EWMA math, BPE scoring, dynamic pricing, DAG cycle detection, Schnorr receipt verification, composite quality scores. Integration tests check relay roundtrip (publish → query → subscribe).
+
+### Docker
+
+The `docker-compose.yml` at the repo root runs two containers:
+- **strfry** (ghcr.io/hoytech/strfry) — Nostr relay on port 7777. Config in `strfry.conf`.
+- **nvm-relay** — built from `nvm/deploy/Dockerfile`, connects to strfry.
+
+```bash
+docker compose up -d          # start both
+docker compose logs -f relay  # follow strfry logs
+docker compose logs -f nvm-relay  # follow NVM relay logs
+docker compose down           # stop
+```
+
+The strfry relay stores data in a named volume (`strfry-data`). To reset: `docker compose down -v`.
+
+---
+
+## 18. NVM infrastructure (production)
+
+### VPS setup
+
+Target: Hetzner CX22 ($5/mo), Ubuntu 24.04, 2 vCPU, 4GB RAM.
+
+1. SSH in, create a non-root user, install Docker + Docker Compose.
+2. Clone the repo and `cd` to the root.
+3. Copy `strfry.conf` and adjust `relay.info.name`, `relay.info.contact`.
+
+### strfry relay
+
+strfry is a single C++ binary with LMDB storage. No Postgres, no Redis.
+
+```bash
+# Pull and run with docker compose
+docker compose up -d relay
+
+# Check health
+curl -s http://localhost:7777 | head    # should return relay info JSON
+curl -s http://localhost:7777/metrics   # Prometheus metrics
+```
+
+TLS termination: put Caddy or nginx in front with Let's Encrypt. Point a subdomain (e.g. `relay.pura.xyz`) to the VPS and proxy `wss://` to `ws://localhost:7777`.
+
+### LND (Lightning Network Daemon)
+
+Run LND in Neutrino mode — no full Bitcoin node required.
+
+```bash
+# Install LND
+wget https://github.com/lightningnetwork/lnd/releases/download/v0.18.0-beta/lnd-linux-amd64-v0.18.0-beta.tar.gz
+tar xzf lnd-*.tar.gz && sudo mv lnd-*/lnd lnd-*/lncli /usr/local/bin/
+
+# Minimal config (~/.lnd/lnd.conf)
+[Application Options]
+alias=pura-nvm
+listen=0.0.0.0:9735
+restlisten=0.0.0.0:8080
+
+[Bitcoin]
+bitcoin.active=true
+bitcoin.mainnet=true
+bitcoin.node=neutrino
+
+[Neutrino]
+neutrino.connect=btcd-mainnet.lightning.community
+neutrino.feeurl=https://nodes.lightning.computer/fees/v1/btc-fee-estimates.json
+
+# Start
+lnd &
+lncli create           # first run: create wallet
+lncli unlock           # subsequent runs
+lncli getinfo          # verify synced
+
+# Get the macaroon hex for NVM_MACAROON_HEX
+xxd -ps -c 10000 ~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon
+```
+
+Set `LND_REST_HOST=https://localhost:8080` and `LND_MACAROON_HEX` in your environment or `.env` file.
+
+### Monitoring
+
+strfry exposes `/metrics` (Prometheus format). LND has `lncli getinfo` and REST endpoints.
+
+Minimum checks to run periodically:
+- strfry WebSocket accepts connections: `websocat ws://localhost:7777`
+- LND channels have outbound liquidity: `lncli listchannels | jq '.channels[].local_balance'`
+- NVM relay process is running: `docker compose ps`
+- Capacity events are flowing: check the NVM dashboard at `pura.xyz/nvm`
+
+### Backup
+
+- **strfry**: the LMDB database lives in the `strfry-data` Docker volume. Back up with `docker run --rm -v strfry-data:/data alpine tar czf - /data > strfry-backup.tar.gz`.
+- **LND**: back up `~/.lnd/data/chain/bitcoin/mainnet/channel.backup` (SCB file) after every channel open/close. Also back up the wallet seed (written down during `lncli create`).
+
+### Costs
+
+| Item | Monthly |
+|------|---------|
+| Hetzner CX22 VPS | $5 |
+| Domain (annual, amortized) | ~$1 |
+| Lightning channel funding | one-time, amount depends on expected volume |
+
+### Troubleshooting
+
+**strfry won't start**: Check `docker compose logs relay`. Common issue: port 7777 already in use.
+
+**LND sync stuck**: Neutrino mode can take a few hours on first sync. Check `lncli getinfo` — `synced_to_chain` should be `true`.
+
+**No capacity events on dashboard**: Verify the NVM relay is connected to strfry (`docker compose logs nvm-relay`). Check that at least one agent process is publishing kind-31900 events.
+
+**Gateway not using NVM**: Set `NVM_ENABLED=true` and `NVM_RELAY_URL=ws://localhost:7777` (or `wss://relay.pura.xyz`) in the gateway environment.
+
+---
+
+## 19. NVM gateway integration
+
+The gateway can optionally route via NVM when `NVM_ENABLED=true`.
+
+How it works:
+1. `gateway/lib/nostr.ts` opens a persistent WebSocket to the NVM relay.
+2. It subscribes to kind-31900 capacity attestations and caches them in memory.
+3. When `selectProvider()` runs and NVM is enabled, it checks the NVM agent cache.
+4. If fresh agents are available, it picks the best one using BPE weights (capacity × price factor × latency score).
+5. The agent's model tag maps to a gateway Provider (gpt → openai, claude → anthropic, etc.).
+6. Falls through to existing on-chain routing if no NVM agents are available.
+
+The `X-Pura-Experimental: nvm` response header indicates the request was routed via NVM.
+
+### NVM dashboard
+
+The dashboard at `/nvm` on the pura site (pura.xyz/nvm) shows:
+- Agent capacity table (pubkey, skill, capacity, latency, price, quality, last seen)
+- Live event feed (capacity, assignments, receipts, quality scores)
+
+The page connects to the relay via an SSE endpoint at `/api/nvm/events`. It subscribes to kinds 31900-31905 and streams events to the browser in real time.
