@@ -104,7 +104,7 @@ export default function Home() {
             Pura
           </a>
           <a
-            href="https://pura.xyz/explainer"
+            href="https://pura.xyz/docs"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}

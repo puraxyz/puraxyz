@@ -81,7 +81,7 @@ const DEEPER_CARDS = [
     label: "how it works",
     color: "var(--green)",
     body: "Backpressure routing, four architectural planes, five standard objects.",
-    href: "/docs/how-it-works",
+    href: "/explainer",
   },
   {
     label: "paper",
