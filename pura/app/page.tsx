@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import styles from "./page.module.css";
 import { DemoTerminal } from "./components/DemoTerminal";
 
@@ -188,18 +189,29 @@ export default function Dashboard() {
     <main className={styles.main}>
       {/* ═══════════ HERO ═══════════ */}
       <header className={styles.hero}>
-        <h1 className={styles.title}>
-          Your AI agent just got smarter about money.
-        </h1>
-        <p className={styles.subtitle}>
-          One API endpoint. Automatic model selection. Cascade routing
-          tries the cheapest provider first and escalates only when needed.
-          Per-request cost tracking. Your agent earns sats.
-        </p>
-        <div className={styles.heroCtas}>
-          <a href="#demo" className={styles.ctaPrimary}>try the gateway →</a>
-          <a href="/gateway" className={styles.ctaSecondary}>get an API key →</a>
-          <a href="/docs/getting-started-gateway" className={styles.ctaSecondary}>quickstart →</a>
+        <div className={styles.heroText}>
+          <h1 className={styles.title}>
+            Your AI agent just got smarter about money.
+          </h1>
+          <p className={styles.subtitle}>
+            One API endpoint. Automatic model selection. Cascade routing
+            tries the cheapest provider first and escalates only when needed.
+            Per-request cost tracking. Your agent earns sats.
+          </p>
+          <div className={styles.heroCtas}>
+            <a href="#demo" className={styles.ctaPrimary}>try the gateway →</a>
+            <a href="/gateway" className={styles.ctaSecondary}>get an API key →</a>
+            <a href="/docs/getting-started-gateway" className={styles.ctaSecondary}>quickstart →</a>
+          </div>
+        </div>
+        <div className={styles.heroImage}>
+          <Image
+            src="/pura.png"
+            alt="Pura mascot"
+            width={340}
+            height={340}
+            priority
+          />
         </div>
         <DemoTerminal />
       </header>

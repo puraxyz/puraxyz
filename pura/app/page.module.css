@@ -10,6 +10,26 @@
 
 .hero {
   margin-bottom: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2rem;
+}
+
+.heroText {
+  flex: 1 1 400px;
+  min-width: 0;
+}
+
+.heroImage {
+  flex: 0 0 auto;
+  display: block;
+}
+
+.heroImage img {
+  display: block;
+  width: 340px;
+  height: auto;
 }
 
 .title {
@@ -561,5 +581,9 @@
   .heroCtas {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .heroImage {
+    display: none;
   }
 }
