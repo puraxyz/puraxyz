@@ -14,11 +14,25 @@ import { getScenarioState } from "@/lib/sim/scenario";
 
 export const runtime = "nodejs";
 
+const TIMEOUT_MS = 8_000;
+
 export async function GET() {
   const addrs = getAddresses(chainId);
 
   const EPOCH = Math.floor(new Date("2026-03-01T00:00:00Z").getTime() / 1000);
-  const block = await publicClient.getBlock();
+  const block = await Promise.race([
+    publicClient.getBlock(),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("rpc timeout")), TIMEOUT_MS),
+    ),
+  ]).catch(() => null);
+
+  if (!block) {
+    return NextResponse.json(
+      { error: "rpc timeout", seed: true },
+      { status: 503 },
+    );
+  }
   const tickNumber = Math.floor((Number(block.timestamp) - EPOCH) / 60);
   const scenario = getScenarioState(tickNumber);
 

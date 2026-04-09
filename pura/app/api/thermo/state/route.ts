@@ -64,16 +64,30 @@ export async function GET() {
   }
 
   // Live on-chain reads
-  const [temp, bounds, v, demRate, eqTarget] = await Promise.all([
-    temperature.getTemperature(publicClient, addrs).catch(() => PRECISION),
-    temperature.getTauBounds(publicClient, addrs).catch(() => ({
-      tauMin: 5n * PRECISION / 10n,
-      tauMax: 5n * PRECISION,
-    })),
-    virial.getVirialRatio(publicClient, addrs).catch(() => PRECISION),
-    virial.getRecommendedDemurrageRate(publicClient, addrs).catch(() => 0n),
-    virial.getEquilibriumTarget(publicClient, addrs).catch(() => PRECISION),
-  ]);
+  const rpcResult = await Promise.race([
+    Promise.all([
+      temperature.getTemperature(publicClient, addrs).catch(() => PRECISION),
+      temperature.getTauBounds(publicClient, addrs).catch(() => ({
+        tauMin: 5n * PRECISION / 10n,
+        tauMax: 5n * PRECISION,
+      })),
+      virial.getVirialRatio(publicClient, addrs).catch(() => PRECISION),
+      virial.getRecommendedDemurrageRate(publicClient, addrs).catch(() => 0n),
+      virial.getEquilibriumTarget(publicClient, addrs).catch(() => PRECISION),
+    ]),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("rpc timeout")), 5_000),
+    ),
+  ]).catch(() => null);
+
+  if (!rpcResult) {
+    return NextResponse.json(
+      { error: "rpc timeout", seed: true },
+      { status: 503 },
+    );
+  }
+
+  const [temp, bounds, v, demRate, eqTarget] = rpcResult;
 
   const pressure = 0n; // would read from escrowBuffer if deployed
   const phaseIdx = derivePhase(temp, v, pressure);
